@@ -1,0 +1,736 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.7.2",
+  "pathMappings": {
+    "@onboarded/shared": [
+      "packages/shared/src/index.ts"
+    ],
+    "@onboarded/shared/*": [
+      "packages/shared/src/*"
+    ],
+    "@onboarded/shared/tenants/*": [
+      "packages/shared/src/lib/tenants/*"
+    ]
+  },
+  "nxJsonPlugins": [
+    {
+      "name": "@nx/angular/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "testTargetName": "test"
+      }
+    }
+  ],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": "packages/feedback/tests/fixtures/test/domain.json",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "docs/development/commands.md",
+        "hash": "18001750218015908047"
+      },
+      {
+        "file": "docs/development/architecture.md",
+        "hash": "4160598636421512576"
+      },
+      {
+        "file": "docker-compose.yml",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "docs/patent/Onboarded_Patent_Application_v2_Lowenstein.docx:sec.endpointdlp",
+        "hash": "307231651718854890"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/gap_detection/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/docker/Dockerfile.portal",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/git_scanner.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/nginx/spa.conf",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/shell/ob_learn.zsh",
+        "hash": "829042639666356235"
+      },
+      {
+        "file": "justfile",
+        "hash": "8509524972993744753"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "4236916436341510625"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "1379983966652230747"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/suggestions.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "Makefile",
+        "hash": "9136414123982176653"
+      },
+      {
+        "file": "docs/roadmap/PR-1_benchmark.md",
+        "hash": "4198201623444327531"
+      },
+      {
+        "file": "docs/patent/Onboarded_Patent_Application_v2_Lowenstein.docx:Zone.Identifier",
+        "hash": "6175566146444302201"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/cli/main.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "docker-compose.override.yml",
+        "hash": "7593559573157783588"
+      },
+      {
+        "file": "templates/msi/scaffolds/diagnostic.sql",
+        "hash": "4794614274845562976"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/telemetry/store.py",
+        "hash": "1234175425087920283"
+      },
+      {
+        "file": "docs/development/derivation.md",
+        "hash": "6078851254581231963"
+      },
+      {
+        "file": "docs/patent/Onboarded_Patent_Application_v1_PreReview.docx",
+        "hash": "193386187432179152"
+      },
+      {
+        "file": "packages/feedback/tests/test_telemetry.py",
+        "hash": "14468986043514989674"
+      },
+      {
+        "file": "docs/reports/Domain_Schema_Extensions.md",
+        "hash": "9058323691144337335"
+      },
+      {
+        "file": "README.md",
+        "hash": "8770212075259679428"
+      },
+      {
+        "file": "docs/roadmap/PR-0_docs-project-foundation.md",
+        "hash": "1537133855719312341"
+      },
+      {
+        "file": "deploy/azure/staticwebapp.config.json",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/admin-cli/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "4361406078602606092"
+      },
+      {
+        "file": "docs/development/linux.md",
+        "hash": "12986559841862331121"
+      },
+      {
+        "file": "docs/patent/PATENT_APPLICATION_v1_DRAFT.docx",
+        "hash": "18373525898893469196"
+      },
+      {
+        "file": "docs/development/windows.md",
+        "hash": "12363725995309812787"
+      },
+      {
+        "file": "package.json",
+        "hash": "9741754597947432337"
+      },
+      {
+        "file": "packages/feedback/tests/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/gap_detection/operation_gaps.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "nx.json",
+        "hash": "11044632387527613089"
+      },
+      {
+        "file": "packages/feedback/shell/ob_suggest.zsh",
+        "hash": "9697021290012604636"
+      },
+      {
+        "file": "templates/msi/scaffolds/dryrun.sql",
+        "hash": "12762928888802743671"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/telemetry/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "templates/msi/scaffolds/fix.sql",
+        "hash": "2774321318024648604"
+      },
+      {
+        "file": "docs/roadmap/onboarded-scratch-build-plan.md",
+        "hash": "6802050899312532171"
+      },
+      {
+        "file": "packages/feedback/pyproject.toml",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/rule_effectiveness.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/domain_loader.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "templates/msi/scaffolds/rollback.sql",
+        "hash": "18011590613759308927"
+      },
+      {
+        "file": "packages/admin-cli/README.md",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/README.md",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/gap_detection/stale_paths.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/cli/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "docs/patent/Onboarded_Patent_Application_v2_Lowenstein.docx",
+        "hash": "6575878789686340228"
+      },
+      {
+        "file": "deploy/k8s/onboarded.yml",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "templates/msi/scaffolds/README.md",
+        "hash": "16021051396315707877"
+      },
+      {
+        "file": "packages/api/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/.gitkeep",
+        "hash": "13993176259416255302"
+      },
+      {
+        "file": "packages/feedback/tests/conftest.py",
+        "hash": "16490295234933519223"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "1954145905062977063"
+      },
+      {
+        "file": "docs/reports/Onboarded_Project_Summary.docx",
+        "hash": "14645617732576709851"
+      },
+      {
+        "file": ".msi-nav-snapshot.sha",
+        "hash": "3208305615283270009"
+      },
+      {
+        "file": "packages/feedback/tests/test_suggestion_engine.py",
+        "hash": "11078587135207810077"
+      },
+      {
+        "file": "packages/feedback/tests/test_gap_detection.py",
+        "hash": "15125986599303811312"
+      },
+      {
+        "file": "packages/feedback/tests/fixtures/sample_domain.json",
+        "hash": "16488815117103706836"
+      },
+      {
+        "file": "packages/feedback/shell/ob_telemetry.zsh",
+        "hash": "13172969088622010629"
+      },
+      {
+        "file": "packages/api/README.md",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/nginx/nginx.conf",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/docker/Dockerfile.api",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/.gitkeep",
+        "hash": "3244421341483603138"
+      }
+    ],
+    "projectFileMap": {
+      "@onboarded/portal": [
+        {
+          "file": "packages/portal/.editorconfig",
+          "hash": "4165385352547808172"
+        },
+        {
+          "file": "packages/portal/.gitignore",
+          "hash": "8735202651818384803"
+        },
+        {
+          "file": "packages/portal/.prettierrc",
+          "hash": "11411277661116404690"
+        },
+        {
+          "file": "packages/portal/.tools",
+          "hash": "1887422520195366442"
+        },
+        {
+          "file": "packages/portal/README.md",
+          "hash": "2753219328009612239"
+        },
+        {
+          "file": "packages/portal/package.json",
+          "hash": "13122258063283130414"
+        },
+        {
+          "file": "packages/portal/package.project.json",
+          "hash": "13555064231424165756"
+        },
+        {
+          "file": "packages/portal/project.json",
+          "hash": "14191643957011091227"
+        },
+        {
+          "file": "packages/portal/proxy.conf.json",
+          "hash": "4230152418827895070"
+        },
+        {
+          "file": "packages/portal/public/favicon.ico",
+          "hash": "3988961587069885523"
+        },
+        {
+          "file": "packages/portal/src/app/config.ts",
+          "hash": "13978070610693508645",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "packages/portal/src/app/core/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/core/services/domain.ts",
+          "hash": "10862133922781491021",
+          "deps": [
+            "npm:@angular/core",
+            "@onboarded/shared"
+          ]
+        },
+        {
+          "file": "packages/portal/src/app/features/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/db/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/db/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/glossary/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/glossary/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/islands/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/islands/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/nav/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/nav/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/portals/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/portals/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/queues/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/queues/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/scan/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/scan/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/status/index.html",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/features/status/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/portal/src/app/index.ts",
+          "hash": "17458332110146323923",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "packages/portal/src/app/routes.ts",
+          "hash": "15428919367721349362",
+          "deps": [
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "packages/portal/src/envs/env.generic.ts",
+          "hash": "12158669377461933142",
+          "deps": [
+            "@onboarded/shared"
+          ]
+        },
+        {
+          "file": "packages/portal/src/envs/env.prod.ts",
+          "hash": "2295802299462685566",
+          "deps": [
+            "@onboarded/shared"
+          ]
+        },
+        {
+          "file": "packages/portal/src/envs/env.ts",
+          "hash": "8994973495865554981",
+          "deps": [
+            "@onboarded/shared"
+          ]
+        },
+        {
+          "file": "packages/portal/src/index.html",
+          "hash": "2002239805662585375"
+        },
+        {
+          "file": "packages/portal/src/main.ts",
+          "hash": "16117404295427330518",
+          "deps": [
+            "npm:@angular/platform-browser"
+          ]
+        },
+        {
+          "file": "packages/portal/src/styles.css",
+          "hash": "16443956230567556466"
+        },
+        {
+          "file": "packages/portal/tsconfig.app.json",
+          "hash": "15007175820984186635"
+        },
+        {
+          "file": "packages/portal/tsconfig.json",
+          "hash": "4890922876705235074"
+        },
+        {
+          "file": "packages/portal/tsconfig.spec.json",
+          "hash": "15785744800117888015"
+        }
+      ],
+      "@onboarded/cli": [
+        {
+          "file": "packages/cli/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/cli/README.md",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/cli/package.json",
+          "hash": "11675294832338139045"
+        },
+        {
+          "file": "packages/cli/project.json",
+          "hash": "16411462516099783992"
+        },
+        {
+          "file": "packages/cli/src/core/ob_core_display.zsh",
+          "hash": "8609812680579916317"
+        },
+        {
+          "file": "packages/cli/src/core/ob_core_loader.zsh",
+          "hash": "13181612378821297689"
+        },
+        {
+          "file": "packages/cli/src/nav/ob_nav_capsule.zsh",
+          "hash": "13344704522131717797"
+        },
+        {
+          "file": "packages/cli/src/nav/ob_nav_db.zsh",
+          "hash": "2473894050000063280"
+        },
+        {
+          "file": "packages/cli/src/nav/ob_nav_engine.zsh",
+          "hash": "952112297124701057"
+        },
+        {
+          "file": "packages/cli/src/nav/ob_nav_env.zsh",
+          "hash": "13224811492199171965"
+        },
+        {
+          "file": "packages/cli/src/nav/ob_nav_ticket.zsh",
+          "hash": "7915080867372488887"
+        },
+        {
+          "file": "packages/cli/src/nav/ob_nav_where_ext.zsh",
+          "hash": "6753875109192104004"
+        },
+        {
+          "file": "packages/cli/src/ob_dispatcher.zsh",
+          "hash": "16976169934421518884"
+        },
+        {
+          "file": "packages/cli/src/scan/ob_scan_engine.zsh",
+          "hash": "1446678629937735761"
+        },
+        {
+          "file": "packages/cli/tests/bats/nav/scan/test_scan_msi.bats",
+          "hash": "9747629240147015207"
+        },
+        {
+          "file": "packages/cli/tests/bats/nav/test_nav_generic.bats",
+          "hash": "1498856498539460384"
+        },
+        {
+          "file": "packages/cli/tests/bats/nav/test_nav_msi.bats",
+          "hash": "9811120562915107953"
+        },
+        {
+          "file": "packages/cli/tests/fixtures/scan_fixtures/PolicyService.clean.cs",
+          "hash": "1898233039048533465"
+        },
+        {
+          "file": "packages/cli/tests/fixtures/scan_fixtures/TestData.violation.json",
+          "hash": "15202499529547164862"
+        },
+        {
+          "file": "packages/cli/tests/fixtures/scan_fixtures/ViolationService.cs",
+          "hash": "1187933445235227190"
+        },
+        {
+          "file": "packages/cli/tests/helpers/ob_nav_helper.zsh",
+          "hash": "10603811347791374442"
+        },
+        {
+          "file": "packages/cli/tests/helpers/ob_scan_helper.zsh",
+          "hash": "17815956578692720429"
+        }
+      ],
+      "@onboarded/shared": [
+        {
+          "file": "packages/shared/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/shared/README.md",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/shared/package.json",
+          "hash": "4086942593256550327"
+        },
+        {
+          "file": "packages/shared/project.json",
+          "hash": "15897087158149509371"
+        },
+        {
+          "file": "packages/shared/src/index.ts",
+          "hash": "4236912180198501452"
+        },
+        {
+          "file": "packages/shared/src/lib/tenants/generic.ts",
+          "hash": "7121708515481128325"
+        },
+        {
+          "file": "packages/shared/src/lib/tenants/msi.ts",
+          "hash": "8674608343674566759"
+        },
+        {
+          "file": "packages/shared/src/lib/types/tenant.types.ts",
+          "hash": "5073885939098020981"
+        },
+        {
+          "file": "packages/shared/tsconfig.json",
+          "hash": "15138801513685754767"
+        }
+      ],
+      "@onboarded/core": [
+        {
+          "file": "packages/core/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/core/README.md",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/core/data/tenant.schema.json",
+          "hash": "14832238063273944242"
+        },
+        {
+          "file": "packages/core/generated/generic/nav_maps.ps1",
+          "hash": "4727255429055253136"
+        },
+        {
+          "file": "packages/core/generated/generic/nav_maps.zsh",
+          "hash": "855088072522573334"
+        },
+        {
+          "file": "packages/core/generated/generic/nav_maps_db.zsh",
+          "hash": "15349257563137002787"
+        },
+        {
+          "file": "packages/core/generated/generic/scan_rules.ps1",
+          "hash": "8126313677647256237"
+        },
+        {
+          "file": "packages/core/generated/generic/scan_rules.zsh",
+          "hash": "15466953160506045104"
+        },
+        {
+          "file": "packages/core/generated/msi/nav_maps.ps1",
+          "hash": "7273567897396194214"
+        },
+        {
+          "file": "packages/core/generated/msi/nav_maps.zsh",
+          "hash": "5364247551162642953"
+        },
+        {
+          "file": "packages/core/generated/msi/nav_maps_db.ps1",
+          "hash": "13323300582222964518"
+        },
+        {
+          "file": "packages/core/generated/msi/nav_maps_db.zsh",
+          "hash": "3974838214887308659"
+        },
+        {
+          "file": "packages/core/generated/msi/scan_rules.ps1",
+          "hash": "18014605019040690415"
+        },
+        {
+          "file": "packages/core/generated/msi/scan_rules.zsh",
+          "hash": "8625242830695511705"
+        },
+        {
+          "file": "packages/core/package.json",
+          "hash": "4388774898160565898"
+        },
+        {
+          "file": "packages/core/project.json",
+          "hash": "8737609710182162308"
+        },
+        {
+          "file": "packages/core/scripts/bootstrap.sh",
+          "hash": "18008269169199029296"
+        },
+        {
+          "file": "packages/core/scripts/generate_adapters.py",
+          "hash": "15620101951555832116"
+        },
+        {
+          "file": "packages/core/scripts/patch_domain.py",
+          "hash": "16727050187188590076"
+        },
+        {
+          "file": "packages/core/scripts/validate_domain.py",
+          "hash": "9346320528580959971"
+        },
+        {
+          "file": "packages/core/tenants/generic/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/core/tenants/generic/domain/domain.json",
+          "hash": "7107912553144228240"
+        },
+        {
+          "file": "packages/core/tenants/generic/schema.json",
+          "hash": "17925496361488992573"
+        },
+        {
+          "file": "packages/core/tenants/msi/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/core/tenants/msi/domain/domain.json",
+          "hash": "11992621190015170648"
+        },
+        {
+          "file": "packages/core/tenants/msi/schema.json",
+          "hash": "3555259728613172061"
+        }
+      ]
+    }
+  },
+  "externalNodesHash": "5170781537991011473"
+}

@@ -16,7 +16,7 @@ _ob_load_tenant() {
     # Resolve repo root from this file's absolute path.
     # Chain: ob_core_loader.zsh → core/ → src/ → cli/ → packages/ → repo root
     local loader_path="${${(%):-%x}:A}"
-    local repo_root="${loader_path:h:h:h:h}"
+    local repo_root="${ONBOARDED_DIR:-${loader_path:h:h:h:h:h}}"
 
     local nav_maps="${repo_root}/packages/core/generated/${tenant}/nav_maps.zsh"
     local scan_rules="${repo_root}/packages/core/generated/${tenant}/scan_rules.zsh"

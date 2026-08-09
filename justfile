@@ -236,6 +236,74 @@ diff-suite:
     @just diff "msi portal avalon"
 
 # ─────────────────────────────────────────────────────────────────────────────
+# PORTAL — Nx-managed Angular application
+# ─────────────────────────────────────────────────────────────────────────────
+
+portal-start:
+    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal
+
+portal-start-prod:
+    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal --configuration=production
+
+portal-start-generic:
+    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal --configuration=generic
+
+portal-build:
+    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal
+
+portal-build-prod:
+    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal --configuration=production
+
+portal-build-msi:
+    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal --configuration=msi
+
+portal-test:
+    @cd {{ONBOARDED_DIR}} && npx nx test @onboarded/portal
+
+portal-lint:
+    @cd {{ONBOARDED_DIR}} && npx nx lint @onboarded/portal
+
+portal-typecheck:
+    @cd {{ONBOARDED_DIR}} && npx nx typecheck @onboarded/portal
+
+portal-graph:
+    @cd {{ONBOARDED_DIR}} && npx nx graph --focus=@onboarded/portal
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NX WORKSPACE — cross-project targets
+# ─────────────────────────────────────────────────────────────────────────────
+
+nx-build:
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t build
+
+nx-test:
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t test
+
+nx-lint:
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t lint
+
+nx-typecheck:
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t typecheck
+
+nx-affected:
+    @cd {{ONBOARDED_DIR}} && npx nx affected -t build test lint typecheck
+
+nx-graph:
+    @cd {{ONBOARDED_DIR}} && npx nx graph
+
+nx-report:
+    @cd {{ONBOARDED_DIR}} && npx nx report
+
+nx-format-check:
+    @cd {{ONBOARDED_DIR}} && npx nx format:check
+
+nx-format-write:
+    @cd {{ONBOARDED_DIR}} && npx nx format:write
+
+nx-reset:
+    @cd {{ONBOARDED_DIR}} && npx nx reset
+
+# ─────────────────────────────────────────────────────────────────────────────
 # PR-3 CHECKPOINT — the full gate that must pass before moving to PR-4
 # ─────────────────────────────────────────────────────────────────────────────
 #
@@ -302,10 +370,22 @@ pr4:
 
 pr5:
     @just generate
-    @echo "  TypeScript typecheck …"
-    @cd {{ONBOARDED_DIR}} && npm run typecheck
-    @echo "  Angular portal build …"
-    @cd {{ONBOARDED_DIR}} && npm run portal:build
+    @echo ""
+    @echo "  ── PR-5 Gate: portal typecheck + build + test ────────────────────"
+    @echo ""
+    @echo "  [1/4] Nx workspace typecheck …"
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t typecheck
+    @echo ""
+    @echo "  [2/4] Portal unit tests …"
+    @cd {{ONBOARDED_DIR}} && npx nx test @onboarded/portal
+    @echo ""
+    @echo "  [3/4] Portal lint …"
+    @cd {{ONBOARDED_DIR}} && npx nx lint @onboarded/portal
+    @echo ""
+    @echo "  [4/4] Portal production build …"
+    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal --configuration=production
+    @echo ""
+    @echo "  ✔  PR-5 gate passed"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # INTERNAL HELPERS

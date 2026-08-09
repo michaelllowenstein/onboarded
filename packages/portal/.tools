@@ -1,0 +1,3 @@
+GEN_PREFIX=app
+GEN_TYPES=feature,page,layout,ui,widget
+GEN_STYLE_EXT=scss

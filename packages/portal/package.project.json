@@ -1,0 +1,10 @@
+{
+  "name": "@onboarded/portal",
+  "version": "1.0.0",
+  "description": "Onboarded web portal — Angular 20 standalone + zoneless + React islands",
+  "private": true,
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

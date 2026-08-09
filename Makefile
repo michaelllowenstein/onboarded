@@ -27,7 +27,7 @@
 
 # ── Configurable ──────────────────────────────────────────────────────────────
 MSI_NAV_DIR    ?= $(HOME)/msi-nav
-ONBOARDED_DIR  ?= $(HOME)/workspaces/miloseng/onboarded
+ONBOARDED_DIR  ?= $(HOME)/integrations/onboarded
 OB_TENANT      ?= msi
 BATS           ?= $(shell which bats 2>/dev/null || echo bats)
 
@@ -42,6 +42,7 @@ ZSH             := $(shell which zsh)
 BATS_NAV_MSI    := $(ONBOARDED_DIR)/packages/cli/tests/bats/nav/test_nav_msi.bats
 BATS_NAV_GEN    := $(ONBOARDED_DIR)/packages/cli/tests/bats/nav/test_nav_generic.bats
 BATS_SCAN_MSI   := $(ONBOARDED_DIR)/packages/cli/tests/bats/scan/test_scan_msi.bats
+NX              := cd $(ONBOARDED_DIR) && npx nx
 
 # ── Source block — load onboarded engine in a clean Zsh subshell ─────────────
 # No ~/.zshrc, no msi-nav. Used by every CLI invocation target.
@@ -59,7 +60,12 @@ endef
 .PHONY: default help status snapshot verify-stable verify-zshrc check which-msi \
         generate generate-all shell smoke run test test-nav test-generic test-scan \
         diff diff-suite checkpoint-pr3 pr3 pr4 pr5 \
-        _check-generated _dispatcher-check
+        portal-start portal-start-prod portal-start-generic \
+        portal-build portal-build-prod portal-build-msi portal-test portal-lint \
+        portal-typecheck portal-graph \
+        nx-build nx-test nx-lint nx-typecheck nx-affected nx-graph nx-report \
+        nx-format-check nx-format-write nx-reset \
+        _check-generated _check-onboarded _dispatcher-check
 
 # ─────────────────────────────────────────────────────────────────────────────
 default: help
@@ -91,14 +97,36 @@ help:
 	@echo "    make test-generic      generic nav bats only"
 	@echo "    make test-scan         scan bats only"
 	@echo ""
+	@echo "  PORTAL (Nx + Angular)"
+	@echo "    make portal-start      dev server (development)"
+	@echo "    make portal-start-prod dev server (production)"
+	@echo "    make portal-build      build (default = production)"
+	@echo "    make portal-build-msi  build with MSI configuration"
+	@echo "    make portal-test       unit tests"
+	@echo "    make portal-lint       lint"
+	@echo "    make portal-typecheck  typecheck"
+	@echo "    make portal-graph      dep graph focused on portal"
+	@echo ""
+	@echo "  NX WORKSPACE"
+	@echo "    make nx-build          build all projects"
+	@echo "    make nx-test           test all projects"
+	@echo "    make nx-lint           lint all projects"
+	@echo "    make nx-typecheck      typecheck all projects"
+	@echo "    make nx-affected       build+test+lint+typecheck affected"
+	@echo "    make nx-graph          interactive dependency graph"
+	@echo "    make nx-report         Nx + plugin version report"
+	@echo "    make nx-format-check   check formatting (CI)"
+	@echo "    make nx-format-write   auto-format workspace"
+	@echo "    make nx-reset          full cache + daemon reset"
+	@echo ""
 	@echo "  DIFF"
 	@echo "    CMD='msi where bind' make diff"
 	@echo "    make diff-suite        diff all canonical commands"
 	@echo ""
 	@echo "  PR GATES"
-	@echo "    make checkpoint-pr3    full 6-step PR-3 gate (run before merging)"
+	@echo "    make checkpoint-pr3    full 6-step PR-3 gate"
 	@echo "    make pr4               generate + smoke + pytest"
-	@echo "    make pr5               generate + typecheck + portal build"
+	@echo "    make pr5               generate + typecheck + test + lint + portal build"
 	@echo ""
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -238,6 +266,72 @@ diff-suite: _check-generated
 	@$(MAKE) --no-print-directory CMD='msi portal avalon'   diff
 
 # ─────────────────────────────────────────────────────────────────────────────
+# PORTAL — Nx-managed Angular application
+# ─────────────────────────────────────────────────────────────────────────────
+portal-start:
+	@$(NX) serve @onboarded/portal
+
+portal-start-prod:
+	@$(NX) serve @onboarded/portal --configuration=production
+
+portal-start-generic:
+	@$(NX) serve @onboarded/portal --configuration=generic
+
+portal-build:
+	@$(NX) build @onboarded/portal
+
+portal-build-prod:
+	@$(NX) build @onboarded/portal --configuration=production
+
+portal-build-msi:
+	@$(NX) build @onboarded/portal --configuration=msi
+
+portal-test:
+	@$(NX) test @onboarded/portal
+
+portal-lint:
+	@$(NX) lint @onboarded/portal
+
+portal-typecheck:
+	@$(NX) typecheck @onboarded/portal
+
+portal-graph:
+	@$(NX) graph --focus=@onboarded/portal
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NX WORKSPACE — cross-project targets
+# ─────────────────────────────────────────────────────────────────────────────
+nx-build:
+	@$(NX) run-many -t build
+
+nx-test:
+	@$(NX) run-many -t test
+
+nx-lint:
+	@$(NX) run-many -t lint
+
+nx-typecheck:
+	@$(NX) run-many -t typecheck
+
+nx-affected:
+	@$(NX) affected -t build test lint typecheck
+
+nx-graph:
+	@$(NX) graph
+
+nx-report:
+	@$(NX) report
+
+nx-format-check:
+	@$(NX) format:check
+
+nx-format-write:
+	@$(NX) format:write
+
+nx-reset:
+	@$(NX) reset
+
+# ─────────────────────────────────────────────────────────────────────────────
 # PR-3 CHECKPOINT
 # ─────────────────────────────────────────────────────────────────────────────
 checkpoint-pr3:
@@ -277,10 +371,22 @@ pr4: generate smoke
 	@cd $(ONBOARDED_DIR)/packages/api && pytest --tb=short -q
 
 pr5: generate
-	@echo "  TypeScript typecheck …"
-	@cd $(ONBOARDED_DIR) && npm run typecheck
-	@echo "  Angular portal build …"
-	@cd $(ONBOARDED_DIR) && npm run portal:build
+	@echo ""
+	@echo "  ── PR-5 Gate: portal typecheck + build + test ────────────────────"
+	@echo ""
+	@echo "  [1/4] Nx workspace typecheck …"
+	@$(NX) run-many -t typecheck
+	@echo ""
+	@echo "  [2/4] Portal unit tests …"
+	@$(NX) test @onboarded/portal
+	@echo ""
+	@echo "  [3/4] Portal lint …"
+	@$(NX) lint @onboarded/portal
+	@echo ""
+	@echo "  [4/4] Portal production build …"
+	@$(NX) build @onboarded/portal --configuration=production
+	@echo ""
+	@echo "  ✔  PR-5 gate passed"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # INTERNAL GUARDS

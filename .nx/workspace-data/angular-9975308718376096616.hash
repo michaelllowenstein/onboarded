@@ -1,0 +1,276 @@
+{
+  "15318216128012825571": {
+    "packages/portal": {
+      "projectType": "application",
+      "sourceRoot": "packages/portal/src",
+      "targets": {
+        "build": {
+          "command": "ng build",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"build\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:build --help",
+              "example": {
+                "options": {
+                  "localize": true
+                }
+              }
+            }
+          },
+          "dependsOn": [
+            "^build"
+          ],
+          "outputs": [
+            "{projectRoot}/dist/@onboarded/portal"
+          ],
+          "cache": true,
+          "inputs": [
+            "production",
+            "^production",
+            {
+              "externalDependencies": [
+                "@angular/cli"
+              ]
+            }
+          ],
+          "configurations": {
+            "production": {
+              "command": "ng run @onboarded/portal:build:production"
+            },
+            "development": {
+              "command": "ng run @onboarded/portal:build:development"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "command": "ng serve",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"serve\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:serve --help",
+              "example": {
+                "options": {
+                  "port": 4201
+                }
+              }
+            }
+          },
+          "continuous": true,
+          "configurations": {
+            "production": {
+              "command": "ng run @onboarded/portal:serve:production"
+            },
+            "development": {
+              "command": "ng run @onboarded/portal:serve:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "command": "ng extract-i18n",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"extract-i18n\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:extract-i18n --help",
+              "example": {
+                "options": {
+                  "format": "json"
+                }
+              }
+            }
+          }
+        },
+        "test": {
+          "command": "ng test",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"test\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:test --help",
+              "example": {
+                "options": {
+                  "codeCoverage": true
+                }
+              }
+            }
+          },
+          "cache": true,
+          "inputs": [
+            "default",
+            "^production",
+            {
+              "externalDependencies": [
+                "@angular/cli",
+                "karma"
+              ]
+            }
+          ],
+          "outputs": [
+            "{workspaceRoot}/packages/portal/coverage/{projectName}"
+          ]
+        }
+      }
+    }
+  },
+  "1471580015039396250": {
+    "packages/portal": {
+      "projectType": "application",
+      "sourceRoot": "packages/portal/src",
+      "targets": {
+        "build": {
+          "command": "ng build",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"build\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:build --help",
+              "example": {
+                "options": {
+                  "localize": true
+                }
+              }
+            }
+          },
+          "dependsOn": [
+            "^build"
+          ],
+          "outputs": [
+            "{projectRoot}/dist/@onboarded/portal"
+          ],
+          "cache": true,
+          "inputs": [
+            "production",
+            "^production",
+            {
+              "externalDependencies": [
+                "@angular/cli"
+              ]
+            }
+          ],
+          "configurations": {
+            "production": {
+              "command": "ng run @onboarded/portal:build:production"
+            },
+            "development": {
+              "command": "ng run @onboarded/portal:build:development"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "command": "ng serve",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"serve\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:serve --help",
+              "example": {
+                "options": {
+                  "port": 4201
+                }
+              }
+            }
+          },
+          "continuous": true,
+          "configurations": {
+            "production": {
+              "command": "ng run @onboarded/portal:serve:production"
+            },
+            "development": {
+              "command": "ng run @onboarded/portal:serve:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "command": "ng extract-i18n",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"extract-i18n\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:extract-i18n --help",
+              "example": {
+                "options": {
+                  "format": "json"
+                }
+              }
+            }
+          }
+        },
+        "test": {
+          "command": "ng test",
+          "options": {
+            "cwd": "packages/portal"
+          },
+          "metadata": {
+            "technologies": [
+              "angular"
+            ],
+            "description": "Run the \"test\" target for \"@onboarded/portal\".",
+            "help": {
+              "command": "npx ng run @onboarded/portal:test --help",
+              "example": {
+                "options": {
+                  "codeCoverage": true
+                }
+              }
+            }
+          },
+          "cache": true,
+          "inputs": [
+            "default",
+            "^production",
+            {
+              "externalDependencies": [
+                "@angular/cli",
+                "karma"
+              ]
+            }
+          ],
+          "outputs": [
+            "{workspaceRoot}/packages/portal/coverage/{projectName}"
+          ]
+        }
+      }
+    }
+  }
+}

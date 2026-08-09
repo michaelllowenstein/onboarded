@@ -1,3 +1,9 @@
 node_modules
 dist
 .vscode
+refs
+
+packages/shared/node_modules
+packages/portal/node_modules
+packages/portal/cert/
+packages/api/cert/

@@ -1,0 +1,21 @@
+{
+  "run": {
+    "command": "nx typecheck @onboarded/shared",
+    "startTime": "2026-08-09T20:59:57.510Z",
+    "endTime": "2026-08-09T21:00:01.131Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "@onboarded/shared:typecheck",
+      "target": "typecheck",
+      "projectName": "@onboarded/shared",
+      "hash": "16939420740026069301",
+      "startTime": "2026-08-09T20:59:57.523Z",
+      "endTime": "2026-08-09T21:00:01.121Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    }
+  ]
+}

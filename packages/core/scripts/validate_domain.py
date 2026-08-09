@@ -34,10 +34,13 @@ def load_schema() -> dict:
 
 
 def find_domain(tenant: str) -> pathlib.Path:
-    """Return the domain.json path for a tenant (flat layout only)."""
-    path = TENANTS_DIR / tenant / "domain.json"
-    if path.exists():
-        return path
+    """Return the domain.json path for a tenant (nested or flat layout)."""
+    nested = TENANTS_DIR / tenant / "domain" / "domain.json"
+    if nested.exists():
+        return nested
+    flat = TENANTS_DIR / tenant / "domain.json"
+    if flat.exists():
+        return flat
     print(f"ERROR: domain.json not found for tenant '{tenant}'", file=sys.stderr)
     print(f"  Expected: {path}", file=sys.stderr)
     sys.exit(1)

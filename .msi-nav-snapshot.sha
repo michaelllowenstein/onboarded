@@ -1,0 +1,16 @@
+d9d5fa4dfa7c8389fdd937c6141cfbff4a94491d8b22672066bff073c440e069  /home/m/msi-nav/data/examples/msi_domain.example.json
+016ca3add2fe3ec20807626d387a7b6d3a42474e2467dec98be37f39efe87dcd  /home/m/msi-nav/data/msi_domain.json
+d9d70ed5639581e24418a53b77c0d78e57892f65c82b3fa127c0542a185b280b  /home/m/msi-nav/data/msi_schema.json
+bafe6ef1b75f0988e3c717ff44b113a3c4693ea2cbadc16a500a64507745755e  /home/m/msi-nav/install/install-linux.sh
+6afd5980491c3589f6d3824da28ee90e3f9ca38a329cc1562e02e7d75e48b2b0  /home/m/msi-nav/install/profile_snippet.zsh
+0ca8b6eb106497bf4570f30ad9a0c941bdd8d7b41ae2ee6e72cf2a8d34c95fd8  /home/m/msi-nav/install/uninstall-linux.sh
+32bec9e3d2538df4530f83975b7ff5c6cf1ec2f3ebbdd12974f6e73c2c46dd26  /home/m/msi-nav/scripts/msi_demo.sh
+731560bf1ffdf0c7cbb3088019ffd5c10b42baa554425d46d14568e8c3d6e6dd  /home/m/msi-nav/src/python/generate_adapters.py
+dbe24a5c159854020aa1135bf7752a0f7089facfd7418530e61cf516c055e83b  /home/m/msi-nav/src/python/migrate_domain.py
+540889f9b69631c8571e4d11a3b2983dd187a9642779616893afb0ee2f7a4d34  /home/m/msi-nav/src/python/validate_domain.py
+0569c0d2ba837fb8e7d7e1b7b0b6b5cb637e2143bd5820324c04d887ed0eb878  /home/m/msi-nav/src/sh/lib/output.sh
+ffe3f77be3845b73de8418c0788b7370cfaa57d83cbf5aeb763ec43cb6e9dce2  /home/m/msi-nav/src/sh/lib/paths.sh
+db25ca3d501799a4a0a1af943122b904cd99ec1acf32ceaa4513d56968da1c26  /home/m/msi-nav/src/sh/lib/search.sh
+5f4986be695448d481d463603bdbfc1825b3fd8093e788992c82790a0063a95d  /home/m/msi-nav/src/zsh/msi_domain.zsh
+ea5bb47a57ea14e165f7cf2e0f8f5b857443366ff32ffcf60a4a1d2891024da6  /home/m/msi-nav/src/zsh/msi_nav.zsh
+b25449fb47514e7c6ed2457dfc6941278a87651df2d7875a22f37d14d90d370f  /home/m/msi-nav/tests/fixtures/msi_domain.test.json

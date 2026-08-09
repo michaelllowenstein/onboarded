@@ -714,7 +714,7 @@ export const TENANT_DOMAIN: TenantDomain = {domain_ts} as unknown as TenantDomai
 # Main — now emits 6 files instead of 4
 # ═════════════════════════════════════════════════════════════════════════════
  
-def generate_tenant(tenant: str, dry_run: bool = False) -> int:
+def generate_tenant(tenant: str, ts_only: bool = False, dry_run: bool = False) -> int:
     domain_path = TENANTS_DIR / tenant / "domain" / "domain.json"
     if not domain_path.exists():
         print(f"ERROR: domain file not found: {domain_path}", file=sys.stderr)

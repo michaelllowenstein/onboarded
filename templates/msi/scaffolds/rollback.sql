@@ -1,5 +1,6 @@
--- ADO #{{TICKET_ID}} | PRODUCTION FIX
--- Cluster: {{CLUSTER}} | Target: {{TARGET_TABLE}}
+-- ADO #{{TICKET_ID}} | ROLLBACK
+-- Restores prior values from dryrun RS1.
+-- All values below MUST be populated from dryrun output.
 -- Default: ROLLBACK active, COMMIT commented out.
 
 BEGIN
@@ -7,12 +8,13 @@ BEGIN
         SET XACT_ABORT ON;
 
         DECLARE @ustrCodeAuthor NVARCHAR(80) = N'{{AUTHOR_NAME}}';
-        DECLARE @ustrAdHocBlock NVARCHAR(80) = N'{{TICKET_ID}}_{{CLUSTER}}_FIX';
+        DECLARE @ustrAdHocBlock NVARCHAR(80) = N'{{TICKET_ID}}_{{CLUSTER}}_ROLLBACK';
 
         BEGIN TRANSACTION;
 
         DECLARE @intAuthorPartyID INT = {{AUTHOR_PARTY_ID}};
-        -- TODO: Declare targets + fix logic
+        -- TODO: Declare targets
+        -- TODO: Hardcode prior values from dryrun RS1
 
         -- COMMIT TRANSACTION;
         ROLLBACK TRANSACTION;

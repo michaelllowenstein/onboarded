@@ -1,0 +1,59 @@
+/* ── Onboarded portal — global styles ──────────────────────────────────────── */
+
+:root {
+  --ob-sidebar-bg:    #0f1117;
+  --ob-main-bg:       #13141c;
+  --ob-card-bg:       #15161e;
+  --ob-input-bg:      #1a1d2e;
+  --ob-border:        #1e2030;
+  --ob-hover:         #1a1d2e;
+  --ob-active-bg:     #1e1f3a;
+  --ob-accent:        #7c6ef6;
+  --ob-accent-bg:     #1e1f3a;
+  --ob-text-primary:  #e2e0d8;
+  --ob-text-secondary:#a8a7a0;
+  --ob-text-muted:    #8b8a82;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background: var(--ob-main-bg);
+  color: var(--ob-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.9em;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ob-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ob-text-muted);
+}

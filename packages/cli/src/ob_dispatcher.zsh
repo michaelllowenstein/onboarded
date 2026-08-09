@@ -112,7 +112,7 @@ _ob_help() {
 }
 
 # ── Main dispatcher ──────────────────────────────────────────────────────────
-function global:onboarded() {
+onboarded() {
     local cmd="${1:l}"; shift 2>/dev/null
 
     case "$cmd" in
@@ -162,7 +162,7 @@ _ob_register_alias() {
     local cli="${OB_CLI_NAME:-onboarded}"
     [[ "$cli" == "onboarded" ]] && return
 
-    eval "function global:${cli}() { onboarded \"\$@\"; }"
+    eval "${cli}() { onboarded \"\$@\"; }"
     local -a suffixes=(w s a sec sch sql cls pol t tr env cap)
     local -a commands=(where status audit secrets schema sql cluster policy ticket trace env capsule)
     local i

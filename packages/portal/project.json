@@ -1,0 +1,104 @@
+{
+  "name": "@onboarded/portal",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "ob",
+  "root": "packages/portal",
+  "sourceRoot": "packages/portal/src",
+  "generators": {
+    "@schematics/angular:component": {
+      "inlineStyle": true,
+      "style": "css"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "options": {
+        "outputPath": "dist/packages/portal",
+        "browser": "packages/portal/src/main.ts",
+        "tsConfig": "packages/portal/tsconfig.app.json",
+        "inlineStyleLanguage": "css",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "packages/portal/public"
+          }
+        ],
+        "styles": [
+          "packages/portal/src/styles.scss"
+        ],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            { "type": "initial", "maximumWarning": "500kB", "maximumError": "1MB" },
+            { "type": "anyComponentStyle", "maximumWarning": "4kB", "maximumError": "8kB" }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "packages/portal/src/environments/environment.ts",
+              "with": "packages/portal/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "msi": {
+          "budgets": [
+            { "type": "initial", "maximumWarning": "500kB", "maximumError": "1MB" }
+          ],
+          "outputHashing": "all"
+        },
+        "generic": {
+          "fileReplacements": [
+            {
+              "replace": "packages/portal/src/environments/environment.ts",
+              "with": "packages/portal/src/environments/environment.generic.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "configurations": {
+        "production": { "buildTarget": "@onboarded/portal:build:production" },
+        "development": { "buildTarget": "@onboarded/portal:build:development" },
+        "generic": { "buildTarget": "@onboarded/portal:build:generic,development" }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n"
+    },
+    "test": {
+      "executor": "@angular/build:karma",
+      "options": {
+        "tsConfig": "packages/portal/tsconfig.spec.json",
+        "inlineStyleLanguage": "css",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "packages/portal/public"
+          }
+        ],
+        "styles": [
+          "packages/portal/src/styles.scss"
+        ]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/portal/tsconfig.app.json --noEmit"
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "/api": {
+    "target": "http://localhost:5005",
+    "pathRewrite": { "^/api/onboarded": "" },
+    "changeOrigin": true,
+    "secure": false,
+    "logLevel": "warn"
+  }
+}

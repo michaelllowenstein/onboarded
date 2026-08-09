@@ -1,8 +1,15 @@
-// export type {
-//   TenantDomain,
-//   Operation,
-//   ScanRule,
-//   GlossaryEntry,
-//   RepoConfig,
-//   IslandProps,
-// } from './lib/types/tenant.types';
+export type {
+  TenantDomain,
+  Operation,
+  ScanRule,
+  GlossaryTerm,
+  RepoConfig,
+  IslandProps,
+  Severity,
+  Category,
+  TenantMeta,
+  ScanFinding,
+  Portal,
+  Queue,
+  Product
+} from './lib/types/tenant.types';
