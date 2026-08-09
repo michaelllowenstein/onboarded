@@ -1,0 +1,270 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://onboarded.ca/schemas/tenant.schema.json",
+  "title": "Onboarded Tenant Domain Schema",
+  "description": "v4.0.0: adds schema, sql_templates, clusters, config_keys, env_config, capsules, capsule_config, ticket_config, policy_config, trace_config sections and tables/clusters fields on operations.",
+  "type": "object",
+  "required": ["version", "tenant", "config", "operations", "statuses", "glossary", "scan_rules"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema":   { "type": "string" },
+    "version":   { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "generated": { "type": "string" },
+
+    "tenant": {
+      "type": "object",
+      "required": ["slug", "brand_name", "cli_name", "terminology"],
+      "additionalProperties": false,
+      "properties": {
+        "slug":       { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+        "brand_name": { "type": "string" },
+        "cli_name":   { "type": "string" },
+        "terminology": {
+          "type": "object",
+          "required": ["operations", "statuses", "products"],
+          "additionalProperties": false,
+          "properties": {
+            "operations": { "type": "string" },
+            "statuses":   { "type": "string" },
+            "products":   { "type": "string" },
+            "queues":     { "type": "string" },
+            "portals":    { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "config": {
+      "type": "object",
+      "required": ["repos"],
+      "additionalProperties": false,
+      "properties": {
+        "repos": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["env", "default"],
+            "additionalProperties": false,
+            "properties": {
+              "env":     { "type": "string" },
+              "default": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "operations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "controllers", "services", "queues"],
+        "additionalProperties": false,
+        "properties": {
+          "label":       { "type": "string", "minLength": 1 },
+          "controllers": { "type": "array", "items": { "type": "string" } },
+          "services":    { "type": "array", "items": { "type": "string" } },
+          "queues":      { "type": "array", "items": { "type": "string" } },
+          "js":          { "type": "array", "items": { "type": "string" } },
+          "tables": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "v4.0.0: database tables this operation writes to"
+          },
+          "clusters": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "v4.0.0: known error cluster codes for this operation"
+          }
+        }
+      }
+    },
+
+    "statuses": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+
+    "products": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "code":        { "type": "integer" },
+          "label":       { "type": "string", "minLength": 1 },
+          "controllers": { "type": "array", "items": { "type": "string" } },
+          "gen3":        { "type": "array", "items": { "type": "string" } },
+          "js":          { "type": "array", "items": { "type": "string" } },
+          "webjobs":     { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "portals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "url"],
+        "additionalProperties": false,
+        "properties": {
+          "label":       { "type": "string" },
+          "url":         { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+
+    "queues": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label":       { "type": "string" },
+          "webjobs":     { "type": "string" },
+          "consumer":    { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+
+    "qe_tests": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["paths"],
+        "additionalProperties": false,
+        "properties": {
+          "paths": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        }
+      }
+    },
+
+    "glossary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "definition"],
+        "additionalProperties": false,
+        "properties": {
+          "label":      { "type": "string", "minLength": 1 },
+          "definition": { "type": "string", "minLength": 10 },
+          "see_also":   { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+        }
+      }
+    },
+
+    "glossary_xrefs": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 10 }
+    },
+
+    "status_triggers": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 5 }
+    },
+
+    "scan_rules": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "pattern", "severity", "scope"],
+        "additionalProperties": false,
+        "properties": {
+          "label":     { "type": "string", "minLength": 1 },
+          "pattern":   { "type": "string", "minLength": 1 },
+          "severity":  { "enum": ["critical", "error", "warning", "info"] },
+          "category":  { "enum": ["security", "convention", "architecture", "dependency", "observability"] },
+          "scope":     { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "repos":     { "type": "array", "items": { "type": "string" } },
+          "exclude":   { "type": "array", "items": { "type": "string" } },
+          "reference": { "type": "string" },
+          "fixHint":   { "type": "string" }
+        }
+      }
+    },
+
+    "schema": {
+      "type": "object",
+      "description": "v4.0.0: Confirmed table column profiles.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "type"],
+          "additionalProperties": false,
+          "properties": {
+            "name":     { "type": "string", "minLength": 1 },
+            "type":     { "type": "string", "minLength": 1 },
+            "nullable": { "type": "boolean", "default": false }
+          }
+        }
+      }
+    },
+
+    "sql_templates": {
+      "type": "object",
+      "description": "v4.0.0: Named SQL template files.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description", "file"],
+        "additionalProperties": false,
+        "properties": {
+          "description": { "type": "string" },
+          "file":        { "type": "string" }
+        }
+      }
+    },
+
+    "clusters": {
+      "type": "object",
+      "description": "v4.0.0: Error pattern classification.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "code", "target_table", "fix_mechanism"],
+        "additionalProperties": false,
+        "properties": {
+          "label":         { "type": "string" },
+          "code":          { "type": "string" },
+          "target_table":  { "type": "string" },
+          "fix_mechanism": { "type": "string" },
+          "template":      { "type": "string" },
+          "variant_check": { "type": "string" }
+        }
+      }
+    },
+
+    "config_keys": {
+      "type": "object",
+      "description": "v4.0.0: Environment configuration keys.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["key", "type", "category", "environments"],
+        "additionalProperties": false,
+        "properties": {
+          "key":          { "type": "string" },
+          "type":         { "type": "string" },
+          "category":     { "type": "string" },
+          "environments": { "type": "object", "additionalProperties": { "type": "string" } },
+          "related":      { "type": "array", "items": { "type": "string" } },
+          "notes":        { "type": "string" }
+        }
+      }
+    },
+
+    "env_config": {
+      "type": "object",
+      "description": "v4.0.0: Environment metadata.",
+      "properties": {
+        "env_names": { "type": "array", "items": { "type": "string" } },
+        "instances": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+
+    "capsules":       { "type": "object", "description": "v4.0.0: Feature capsule registry.", "additionalProperties": { "type": "object", "properties": { "reference": {"type":"string"}, "route": {"type":"string"}, "migrations": {"type":"integer"}, "display_name": {"type":"string"} } } },
+    "capsule_config": { "type": "object", "description": "v4.0.0: Proxy dev settings.", "additionalProperties": { "type": "string" } },
+    "ticket_config":  { "type": "object", "description": "v4.0.0: Fix package conventions.", "additionalProperties": { "type": "string" } },
+    "policy_config":  { "type": "object", "description": "v4.0.0: Policy decomposition rules.", "additionalProperties": { "type": "string" } },
+    "trace_config":   { "type": "object", "description": "v4.0.0: Exception parsing settings.", "additionalProperties": { "type": "string" } }
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "./schema.json",
+  "title": "MSI Nav Domain Schema",
+  "description": "Validates msi/domain.json — the single source of truth for the MSI codebase navigation tool. v4.0.0 adds DB extension, workflow, environment, and capsule sections.",
+  "type": "object",
+  "required": ["version", "tenant", "config", "operations", "products", "statuses", "portals", "queues", "qe_tests", "glossary"],
+  "additionalProperties": true,
+
+  "properties": {
+    "$schema":   { "type": "string" },
+    "version":   { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "generated": { "type": "string" },
+
+    "tenant": {
+      "type": "object",
+      "required": ["slug", "brand_name", "cli_name", "terminology"],
+      "additionalProperties": false,
+      "properties": {
+        "slug":       { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+        "brand_name": { "type": "string" },
+        "cli_name":   { "type": "string" },
+        "terminology": {
+          "type": "object",
+          "required": ["operations", "statuses", "products"],
+          "additionalProperties": false,
+          "properties": {
+            "operations": { "type": "string" },
+            "statuses":   { "type": "string" },
+            "products":   { "type": "string" },
+            "queues":     { "type": "string" },
+            "portals":    { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "config": {
+      "type": "object",
+      "required": ["repos"],
+      "additionalProperties": false,
+      "properties": {
+        "repos": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["env", "default"],
+            "additionalProperties": false,
+            "properties": {
+              "env":     { "type": "string" },
+              "default": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "operations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "controllers", "services", "queues", "js"],
+        "additionalProperties": false,
+        "properties": {
+          "label":       { "type": "string", "minLength": 1 },
+          "controllers": { "type": "array", "items": { "type": "string", "pattern": "^[A-Za-z0-9_-]+:.+" } },
+          "services":    { "type": "array", "items": { "type": "string" } },
+          "queues":      { "type": "array", "items": { "type": "string" } },
+          "js":          { "type": "array", "items": { "type": "string" } },
+          "tables": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[a-z]+\\.[A-Za-z]+$" },
+            "description": "v4.0.0: database tables this operation writes to (schema.Table format)"
+          },
+          "clusters": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "v4.0.0: known error cluster codes associated with this operation"
+          }
+        }
+      }
+    },
+
+    "products": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "code":        { "type": "integer" },
+          "label":       { "type": "string", "minLength": 1 },
+          "controllers": { "type": "array", "items": { "type": "string" } },
+          "gen3":        { "type": "array", "items": { "type": "string" } },
+          "js":          { "type": "array", "items": { "type": "string" } },
+          "webjobs":     { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "statuses": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+
+    "portals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "path", "products"],
+        "additionalProperties": false,
+        "properties": {
+          "name":     { "type": "string", "minLength": 1 },
+          "path":     { "type": "string", "pattern": "^[A-Za-z0-9_-]+:.+" },
+          "products": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        }
+      }
+    },
+
+    "queues": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label":       { "type": "string" },
+          "webjobs":     { "type": "array", "items": { "type": "string" } },
+          "consumer":    { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+
+    "qe_tests": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["paths"],
+        "properties": {
+          "paths": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "glossary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "definition"],
+        "additionalProperties": false,
+        "properties": {
+          "label":      { "type": "string", "minLength": 1 },
+          "definition": { "type": "string", "minLength": 10 },
+          "see_also":   {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+
+    "glossary_xrefs": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 10 }
+    },
+
+    "status_triggers": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 5 }
+    },
+
+    "scan_rules": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "pattern", "severity", "scope"],
+        "additionalProperties": false,
+        "properties": {
+          "label":     { "type": "string", "minLength": 1 },
+          "pattern":   { "type": "string", "minLength": 1 },
+          "severity":  { "enum": ["critical", "error", "warning", "info"] },
+          "category":  { "enum": ["security", "convention", "architecture", "dependency", "observability"] },
+          "scope":     { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "repos":     { "type": "array", "items": { "type": "string" } },
+          "exclude":   { "type": "array", "items": { "type": "string" } },
+          "reference": { "type": "string" },
+          "fixHint":   { "type": "string" }
+        }
+      }
+    },
+
+    "schema": {
+      "type": "object",
+      "description": "v4.0.0: Confirmed table column profiles from live Q0 probes.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "type"],
+          "additionalProperties": false,
+          "properties": {
+            "name":     { "type": "string", "minLength": 1 },
+            "type":     { "type": "string", "minLength": 1 },
+            "nullable": { "type": "boolean", "default": false }
+          }
+        },
+        "minItems": 1
+      }
+    },
+
+    "sql_templates": {
+      "type": "object",
+      "description": "v4.0.0: Named SQL template files in templates/<tenant>/.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description", "file"],
+        "additionalProperties": false,
+        "properties": {
+          "description": { "type": "string", "minLength": 1 },
+          "file":        { "type": "string", "pattern": "^[a-z0-9_]+\\.sql$" }
+        }
+      }
+    },
+
+    "clusters": {
+      "type": "object",
+      "description": "v4.0.0: Error pattern classification. Keys are lowercase error fragments for substring matching.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "code", "target_table", "fix_mechanism"],
+        "additionalProperties": false,
+        "properties": {
+          "label":         { "type": "string", "minLength": 1 },
+          "code":          { "type": "string", "minLength": 1 },
+          "target_table":  { "type": "string" },
+          "fix_mechanism": { "type": "string" },
+          "template":      { "type": "string" },
+          "variant_check": { "type": "string" }
+        }
+      }
+    },
+
+    "config_keys": {
+      "type": "object",
+      "description": "v4.0.0: Environment configuration keys with per-environment values.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["key", "type", "category", "environments"],
+        "additionalProperties": false,
+        "properties": {
+          "key":          { "type": "string", "minLength": 1 },
+          "type":         { "type": "string", "enum": ["bool", "string", "int", "keyvault"] },
+          "category":     { "type": "string", "enum": ["connection", "feature_flag", "observability", "sentinel"] },
+          "environments": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "related": { "type": "array", "items": { "type": "string" } },
+          "notes":   { "type": "string" }
+        }
+      }
+    },
+
+    "env_config": {
+      "type": "object",
+      "description": "v4.0.0: Environment metadata — names and instance identifiers.",
+      "additionalProperties": false,
+      "properties": {
+        "env_names": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "instances": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+
+    "capsules": {
+      "type": "object",
+      "description": "v4.0.0: Feature capsule registry for strangler-fig proxy demos.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["reference", "route", "migrations", "display_name"],
+        "additionalProperties": false,
+        "properties": {
+          "reference":    { "type": "string" },
+          "route":        { "type": "string" },
+          "migrations":   { "type": "integer", "minimum": 0 },
+          "display_name": { "type": "string" }
+        }
+      }
+    },
+
+    "capsule_config": {
+      "type": "object",
+      "description": "v4.0.0: Strangler-fig proxy development settings.",
+      "additionalProperties": { "type": "string" }
+    },
+
+    "ticket_config": {
+      "type": "object",
+      "description": "v4.0.0: Fix package submission conventions.",
+      "additionalProperties": { "type": "string" }
+    },
+
+    "policy_config": {
+      "type": "object",
+      "description": "v4.0.0: Policy identifier decomposition rules.",
+      "additionalProperties": { "type": "string" }
+    },
+
+    "trace_config": {
+      "type": "object",
+      "description": "v4.0.0: Exception chain parsing settings.",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}

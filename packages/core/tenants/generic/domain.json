@@ -1,0 +1,155 @@
+{
+  "$schema": "../../data/tenant.schema.json",
+  "version": "1.0.0",
+  "tenant": {
+    "slug": "generic",
+    "brand_name": "Onboarded",
+    "cli_name": "ob",
+    "terminology": {
+      "operations": "operations",
+      "statuses": "policy status codes",
+      "products": "insurance product lines",
+      "queues": "message queues",
+      "portals": "white-label portals"
+    }
+  },
+  "config": {
+    "repos": {
+      "MSI-PAS": {
+        "env": "MSI_REPO_PAS",
+        "default": "MSI-PAS"
+      },
+      "MSI-PAS-CORE": {
+        "env": "MSI_REPO_CORE",
+        "default": "MSI-PAS-CORE"
+      },
+      "MSI-Widget": {
+        "env": "MSI_REPO_WIDGET",
+        "default": "MSI-Widget"
+      },
+      "MSI-QE": {
+        "env": "MSI_REPO_QE",
+        "default": "MSI-QE"
+      },
+      "PAS-APP-CONFIG": {
+        "env": "MSI_REPO_CONFIG",
+        "default": "PAS-APP-CONFIG"
+      }
+    }
+  },
+  "operations": {
+    "create": {"label": "Create a resource",  "controllers": ["REPO-A:controllers/CreateController.cs"], "services": ["REPO-A:services/CreateService.cs"],   "queues": ["create-queue"], "js": []},
+    "read":   {"label": "Read a resource",    "controllers": ["REPO-A:controllers/ReadController.cs"],   "services": ["REPO-A:services/ReadService.cs"],     "queues": [],              "js": []},
+    "update": {"label": "Update a resource",  "controllers": ["REPO-A:controllers/UpdateController.cs"], "services": ["REPO-A:services/UpdateService.cs"],   "queues": ["update-queue"], "js": []},
+    "delete": {"label": "Delete a resource",  "controllers": ["REPO-A:controllers/DeleteController.cs"], "services": ["REPO-A:services/DeleteService.cs"],   "queues": ["delete-queue"], "js": []},
+    "list":   {"label": "List resources",     "controllers": ["REPO-A:controllers/ListController.cs"],   "services": ["REPO-A:services/ListService.cs"],     "queues": [],              "js": []},
+    "search": {"label": "Search resources",   "controllers": ["REPO-A:controllers/SearchController.cs"], "services": ["REPO-A:services/SearchService.cs"],   "queues": [],              "js": ["search-widget"]},
+    "export": {"label": "Export data",        "controllers": ["REPO-B:controllers/ExportController.cs"], "services": ["REPO-B:services/ExportService.cs"],   "queues": ["export-queue"], "js": []},
+    "import": {"label": "Import data",        "controllers": ["REPO-B:controllers/ImportController.cs"], "services": ["REPO-B:services/ImportService.cs"],   "queues": ["import-queue"], "js": []},
+    "auth":   {"label": "Authentication",     "controllers": ["REPO-A:controllers/AuthController.cs"],   "services": ["REPO-A:services/AuthService.cs"],     "queues": [],              "js": []},
+    "notify": {"label": "Send notifications", "controllers": ["REPO-B:controllers/NotifyController.cs"], "services": ["REPO-B:services/NotifyService.cs"],   "queues": ["notify-queue"], "js": []}
+  },
+  "statuses": {
+    "1": "Draft", "2": "Active", "3": "Suspended", "4": "Cancelled", "5": "Archived"
+  },
+  "products": {},
+  "portals": {},
+  "glossary": {
+    "api":    {"label": "API",    "definition": "Application Programming Interface — the contract between services.", "see_also": ["rest", "auth"]},
+    "rest":   {"label": "REST",   "definition": "Representational State Transfer — HTTP-based stateless API style.",  "see_also": ["api"]},
+    "auth":   {"label": "Auth",   "definition": "Authentication and authorisation layer.",                            "see_also": ["api"]},
+    "queue":  {"label": "Queue",  "definition": "Message queue enabling async decoupled communication.",              "see_also": []},
+    "worker": {"label": "Worker", "definition": "Background process consuming from a queue.",                         "see_also": ["queue"]}
+  },
+  "qe_tests": {
+    "create": {"paths": ["REPO-A:tests/CreateController.spec.ts"]},
+    "auth":   {"paths": ["REPO-A:tests/AuthController.spec.ts"]},
+    "export": {"paths": ["REPO-B:tests/ExportController.spec.ts"]}
+  },
+  "scan_rules": {
+    "hardcoded_secret": {
+      "label": "Hardcoded credential",
+      "pattern": "password\\s*=\\s*['\"][^'\"]{4,}['\"]",
+      "severity": "critical",
+      "category": "security",
+      "scope": [
+        "*.cs",
+        "*.ts",
+        "*.py",
+        "*.json"
+      ],
+      "repos": [],
+      "exclude": [
+        "**/tests/**",
+        "**/fixtures/**"
+      ],
+      "reference": "OWASP A02:2021",
+      "fixHint": "Move to environment variables or a secrets manager."
+    },
+    "console_log": {
+      "label": "console.log in production code",
+      "pattern": "console\\.log\\(",
+      "severity": "warning",
+      "category": "convention",
+      "scope": [
+        "*.ts",
+        "*.js"
+      ],
+      "repos": [],
+      "exclude": [
+        "**/tests/**",
+        "**/spec/**"
+      ],
+      "reference": "internal",
+      "fixHint": "Replace with structured logger."
+    },
+    "todo_comment": {
+      "label": "TODO without ticket reference",
+      "pattern": "TODO(?!.*#\\d{4,})",
+      "severity": "info",
+      "category": "convention",
+      "scope": [
+        "*.cs",
+        "*.ts",
+        "*.py"
+      ],
+      "repos": [],
+      "exclude": [],
+      "reference": "internal",
+      "fixHint": "Add a ticket reference: TODO #12345"
+    },
+    "direct_db_connection": {
+      "label": "Direct database connection string",
+      "pattern": "Server=.*;Database=.*;",
+      "severity": "error",
+      "category": "security",
+      "scope": [
+        "*.cs",
+        "*.json",
+        "*.config"
+      ],
+      "repos": [],
+      "exclude": [
+        "**/tests/**"
+      ],
+      "reference": "internal",
+      "fixHint": "Use App Configuration or Key Vault reference."
+    },
+    "missing_cancellation_token": {
+      "label": "Async method missing CancellationToken",
+      "pattern": "public async Task",
+      "severity": "warning",
+      "category": "architecture",
+      "scope": [
+        "*.cs"
+      ],
+      "repos": [],
+      "exclude": [
+        "**/tests/**",
+        "**/migrations/**"
+      ],
+      "reference": "internal",
+      "fixHint": "Add CancellationToken ct = default as the last parameter."
+    }
+  }
+}

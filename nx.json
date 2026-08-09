@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "main",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": ["default", "!{projectRoot}/**/*.spec.ts", "!{projectRoot}/tests/**/*"],
+    "sharedGlobals": []
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/angular/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "testTargetName": "test"
+      }
+    }
+  ],
+  "targetDefaults": {
+    "build":     { "dependsOn": ["^build"], "inputs": ["production", "^production"], "cache": true },
+    "generate":  { "cache": false },
+    "typecheck": { "inputs": ["default", "^default"], "cache": true }
+  }
+}
