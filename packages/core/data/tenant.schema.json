@@ -570,5 +570,15 @@
         "type": "string"
       }
     }
+  },
+  "db_schema": {
+    "type": "object",
+    "properties": {
+      "server":             { "type": "string" },
+      "database":           { "type": "string" },
+      "driver":             { "type": "string" },
+      "trusted_connection": { "type": "boolean" }
+    },
+    "required": ["server", "database"]
   }
 }

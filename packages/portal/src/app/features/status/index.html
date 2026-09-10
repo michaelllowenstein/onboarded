@@ -1,0 +1,28 @@
+<div class="ob-feature">
+    <div class="ob-feature__header">
+        <h1 class="ob-feature__title">Policy Status Codes</h1>
+        <span class="ob-feature__count">{{ filteredStatuses().length }} codes</span>
+    </div>
+
+    <input class="ob-search" type="text" placeholder="Filter by code or description…" [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)" />
+
+    <table class="ob-table">
+        <thead>
+            <tr>
+                <th class="ob-table__th ob-table__th--code">Code</th>
+                <th class="ob-table__th">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (s of filteredStatuses(); track s.code) {
+            <tr class="ob-table__row">
+                <td class="ob-table__td ob-table__td--code">
+                    <code>{{ s.code }}</code>
+                </td>
+                <td class="ob-table__td">{{ s.description }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

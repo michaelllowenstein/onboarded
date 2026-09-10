@@ -2,8 +2,8 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '',          redirectTo: 'nav',     pathMatch: 'full' },
-//   { path: 'nav',       loadComponent: () => import('./features/nav').then(m => m.NavComponent) },
-//   { path: 'status',    loadComponent: () => import('./features/status').then(m => m.StatusComponent) },
+  { path: 'nav',       loadComponent: () => import('./features/nav').then(m => m.NavComponent) },
+  { path: 'status',    loadComponent: () => import('./features/status').then(m => m.StatusComponent) },
 //   { path: 'scan',      loadComponent: () => import('./features/scan').then(m => m.ScanComponent) },
 //   { path: 'glossary',  loadComponent: () => import('./features/glossary').then(m => m.GlossaryComponent) },
 //   { path: 'queues',    loadComponent: () => import('./features/queues').then(m => m.QueuesComponent) },

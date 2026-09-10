@@ -1,0 +1,57 @@
+<div class="ob-feature">
+    <div class="ob-feature__header">
+        <h1 class="ob-feature__title">Operations</h1>
+        <span class="ob-feature__count">{{ filteredOps().length }} operations</span>
+    </div>
+
+    <input class="ob-search" type="text" placeholder="Search operations, controllers, services…" [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)" />
+
+    <div class="ob-card-grid">
+        @for (entry of filteredOps(); track entry.id) {
+        <div class="ob-card" (click)="selectedOp.set(selectedOp() === entry.id ? null : entry.id)">
+            <div class="ob-card__header">
+                <code class="ob-card__id">{{ entry.id }}</code>
+                <span class="ob-card__label">{{ entry.op.label }}</span>
+            </div>
+
+            @if (selectedOp() === entry.id) {
+            <div class="ob-card__detail">
+                @if (entry.op.controllers.length) {
+                <div class="ob-card__section">
+                    <span class="ob-card__section-label">Controllers</span>
+                    @for (ctrl of entry.op.controllers; track ctrl) {
+                    <code class="ob-card__path">{{ ctrl }}</code>
+                    }
+                </div>
+                }
+                @if (entry.op.services.length) {
+                <div class="ob-card__section">
+                    <span class="ob-card__section-label">Services</span>
+                    @for (svc of entry.op.services; track svc) {
+                    <code class="ob-card__path">{{ svc }}</code>
+                    }
+                </div>
+                }
+                @if (entry.op.queues.length) {
+                <div class="ob-card__section">
+                    <span class="ob-card__section-label">Queues</span>
+                    @for (q of entry.op.queues; track q) {
+                    <code class="ob-card__path">{{ q }}</code>
+                    }
+                </div>
+                }
+                @if (entry.op.js.length) {
+                <div class="ob-card__section">
+                    <span class="ob-card__section-label">Client JS</span>
+                    @for (js of entry.op.js; track js) {
+                    <code class="ob-card__path">{{ js }}</code>
+                    }
+                </div>
+                }
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>

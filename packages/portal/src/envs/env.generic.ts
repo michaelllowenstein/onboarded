@@ -1,4 +1,5 @@
-import { TENANT_DOMAIN as GENERIC_DOMAIN } from '@onboarded/shared/tenants/generic';
+// import { TENANT_DOMAIN as MSI_DOMAIN } from '@onboarded/shared/tenants/msi';
+import { TENANT_DOMAIN as GENERIC_DOMAIN } from '../types/lib/tenants/generic';
 
 export const environment = {
   production: false,

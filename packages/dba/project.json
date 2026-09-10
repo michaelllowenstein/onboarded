@@ -1,0 +1,11 @@
+{
+  "name": "@onboarded/dba",
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "PYTHONPATH=packages/dba/src python3 -m pytest packages/dba/tests/ -v"
+      }
+    }
+  }
+}

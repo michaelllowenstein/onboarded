@@ -13,7 +13,8 @@
     "module": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@onboarded/shared": ["../../shared/src/index.ts"]
+      "@onboarded/shared": ["../../shared/src/index.ts"],
+      "@types": ["../types/index.ts"]
     }
   },
   "angularCompilerOptions": {
