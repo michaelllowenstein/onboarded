@@ -281,6 +281,26 @@
         "projectType": "library",
         "implicitDependencies": []
       }
+    },
+    "@onboarded/dba": {
+      "name": "@onboarded/dba",
+      "type": "lib",
+      "data": {
+        "root": "packages/dba",
+        "name": "@onboarded/dba",
+        "targets": {
+          "test": {
+            "executor": "nx:run-commands",
+            "options": {
+              "command": "PYTHONPATH=packages/dba/src python3 -m pytest packages/dba/tests/ -v"
+            },
+            "configurations": {},
+            "parallelism": true
+          }
+        },
+        "implicitDependencies": [],
+        "tags": []
+      }
     }
   },
   "externalNodes": {
@@ -13879,6 +13899,7 @@
     "@onboarded/shared": [],
     "@onboarded/core": [],
     "@onboarded/cli": [],
+    "@onboarded/dba": [],
     "npm:@algolia/abtesting": [
       {
         "source": "npm:@algolia/abtesting",
@@ -32665,5 +32686,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1786309214522
+  "computedAt": 1789568290152
 }

@@ -554,5 +554,35 @@
       "nx.json",
       "nx/target-defaults"
     ]
+  },
+  "packages/dba": {
+    "root": [
+      "packages/dba/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "packages/dba/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "packages/dba/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test": [
+      "packages/dba/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.executor": [
+      "packages/dba/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options": [
+      "packages/dba/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options.command": [
+      "packages/dba/project.json",
+      "nx/core/project-json"
+    ]
   }
 }
