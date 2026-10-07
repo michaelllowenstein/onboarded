@@ -21,7 +21,7 @@ ob_where() {
     local key="${1:-}"
     [[ -z "$key" ]] && { _ob_red "Usage: ${OB_CLI_NAME} where <operation>"; return 1; }
 
-    local val; val="$(_ob_get OPS "$key")"
+    local val=""; val="$(_ob_get OPS "$key")"
     if [[ -z "$val" ]]; then
         _ob_red "Operation '${key}' not found."
         return 1
@@ -51,7 +51,7 @@ ob_where() {
     fi
 
     # Show code path if GLOSSARY_XREFS has an entry for this operation
-    local xref; xref="$(_ob_get GLOSSARY_XREFS "$key" 2>/dev/null)"
+    local xref=""; xref="$(_ob_get GLOSSARY_XREFS "$key" 2>/dev/null)"
     if [[ -n "$xref" ]]; then
         _ob_section "Code path"
         printf '  \033[2m%s\033[0m\n' "$xref"
@@ -67,22 +67,22 @@ ob_status() {
         _ob_bold "Status codes — ${OB_CLI_NAME}"
         _ob_sep
         while IFS= read -r k; do
-            local v; v="$(_ob_get STATUS "$k")"
-            local trigger; trigger="$(_ob_get STATUS_TRIGGERS "$k" 2>/dev/null)"
+            local v=""; v="$(_ob_get STATUS "$k")"
+            local trigger=""; trigger="$(_ob_get STATUS_TRIGGERS "$k" 2>/dev/null)"
             printf '  \033[0;36m%-6s\033[0m  %-36s  \033[2m%s\033[0m\n' \
                 "$k" "$v" "${trigger:0:60}"
         done < <(_ob_keys STATUS)
         return 0
     fi
 
-    local desc; desc="$(_ob_get STATUS "$code")"
+    local desc=""; desc="$(_ob_get STATUS "$code")"
     if [[ -z "$desc" ]]; then
         _ob_red "Status code '${code}' not found."
         return 1
     fi
     printf '\n  \033[0;36m%-6s\033[0m  \033[1m%s\033[0m\n' "$code" "$desc"
 
-    local trigger; trigger="$(_ob_get STATUS_TRIGGERS "$code" 2>/dev/null)"
+    local trigger=""; trigger="$(_ob_get STATUS_TRIGGERS "$code" 2>/dev/null)"
     [[ -n "$trigger" ]] && printf '  \033[2m%-6s  %s\033[0m\n' "" "$trigger"
     printf '\n'
     return 0
@@ -95,14 +95,14 @@ ob_explain() {
         _ob_bold "Glossary — ${OB_CLI_NAME}"
         _ob_sep
         while IFS= read -r k; do
-            local v; v="$(_ob_get GLOSSARY "$k")"
+            local v=""; v="$(_ob_get GLOSSARY "$k")"
             local -a p; p=("${(@s:|:)v}")
             printf '  \033[0;36m%-22s\033[0m  %s\n' "$k" "${p[1]}"
         done < <(_ob_keys GLOSSARY)
         return 0
     fi
 
-    local val; val="$(_ob_get GLOSSARY "$term")"
+    local val=""; val="$(_ob_get GLOSSARY "$term")"
     if [[ -z "$val" ]]; then
         _ob_red "Term '${term}' not found."
         return 1
@@ -122,7 +122,7 @@ ob_explain() {
     fi
 
     # Show code path from GLOSSARY_XREFS if present
-    local xref; xref="$(_ob_get GLOSSARY_XREFS "$term" 2>/dev/null)"
+    local xref=""; xref="$(_ob_get GLOSSARY_XREFS "$term" 2>/dev/null)"
     if [[ -n "$xref" ]]; then
         printf '\n'
         _ob_kv_dim "Code path:" "$xref"
@@ -139,14 +139,14 @@ ob_product() {
         _ob_bold "Products — ${OB_CLI_NAME}"
         _ob_sep
         while IFS= read -r k; do
-            local v; v="$(_ob_get PRODUCTS "$k")"
+            local v=""; v="$(_ob_get PRODUCTS "$k")"
             local -a p; p=("${(@s:|:)v}")
             printf '  \033[0;36m%-20s\033[0m  [%-4s]  %s\n' "$k" "${p[2]}" "${p[1]}"
         done < <(_ob_keys PRODUCTS)
         return 0
     fi
 
-    local val; val="$(_ob_get PRODUCTS "$id")"
+    local val=""; val="$(_ob_get PRODUCTS "$id")"
     [[ -z "$val" ]] && { _ob_red "Product '${id}' not found."; return 1; }
 
     # Format: label|code|ctrl_semi|gen3_semi|js_semi|webjobs_semi
@@ -182,7 +182,7 @@ ob_portal() {
         _ob_bold "Portals — ${OB_CLI_NAME}"
         _ob_sep
         while IFS= read -r k; do
-            local v; v="$(_ob_get PORTALS "$k")"
+            local v=""; v="$(_ob_get PORTALS "$k")"
             local -a p; p=("${(@s:|:)v}")
             # p[1]=name  p[2]=REPO:path  p[3]=products_semi
             printf '  \033[0;36m%-24s\033[0m  %-18s  %s\n' "$k" "${p[1]}" "${p[2]}"
@@ -190,7 +190,7 @@ ob_portal() {
         return 0
     fi
 
-    local val; val="$(_ob_get PORTALS "$name")"
+    local val=""; val="$(_ob_get PORTALS "$name")"
     [[ -z "$val" ]] && { _ob_red "Portal '${name}' not found."; return 1; }
 
     # Format: name|REPO_ALIAS:rel/path|products_semi
@@ -224,7 +224,7 @@ ob_queue() {
         _ob_bold "Message queues — ${OB_CLI_NAME}"
         _ob_sep
         while IFS= read -r k; do
-            local v; v="$(_ob_get QUEUES "$k")"
+            local v=""; v="$(_ob_get QUEUES "$k")"
             local -a p; p=("${(@s:|:)v}")
             # p[1]=label  p[2]=consumer  p[3]=webjobs  p[4]=description
             printf '  \033[0;36m%-44s\033[0m  %s\n' "$k" "${p[1]}"
@@ -232,7 +232,7 @@ ob_queue() {
         return 0
     fi
 
-    local val; val="$(_ob_get QUEUES "$name")"
+    local val=""; val="$(_ob_get QUEUES "$name")"
     [[ -z "$val" ]] && { _ob_red "Queue '${name}' not found."; return 1; }
 
     # Format: label|consumer|webjobs|description
@@ -254,7 +254,7 @@ ob_list() {
             _ob_bold "Operations — ${OB_CLI_NAME}"
             _ob_sep
             while IFS= read -r k; do
-                local v; v="$(_ob_get OPS "$k")"
+                local v=""; v="$(_ob_get OPS "$k")"
                 # label is everything before the first ||
                 local label="${v%%||*}"
                 printf '  \033[0;36m%-28s\033[0m  %s\n' "$k" "$label"
@@ -263,7 +263,7 @@ ob_list() {
             _ob_bold "Scan rules — ${OB_CLI_NAME}"
             _ob_sep
             while IFS= read -r k; do
-                local v; v="$(_ob_get SCAN_RULES "$k")"
+                local v=""; v="$(_ob_get SCAN_RULES "$k")"
                 local -a p; p=("${(@s:|:)v}")
                 # p[1]=severity  p[2]=category  p[9]=label
                 printf '  \033[0;36m%-38s\033[0m  [\033[0;31m%-8s\033[0m]  %s  —  %s\n' \
@@ -347,7 +347,7 @@ ob_doctor() {
     _ob_section "Operation path check"
     local stale=0
     while IFS= read -r op; do
-        local val; val="$(_ob_get OPS "$op")"
+        local val=""; val="$(_ob_get OPS "$op")"
         local -a parts; parts=("${(@s:||:)val}")
         # Check controllers (parts[2]) and services (parts[3])
         for field_str in "${parts[2]}" "${parts[3]}"; do

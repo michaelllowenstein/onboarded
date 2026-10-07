@@ -1512,7 +1512,7 @@
   "scan_rules": {
     "hardcoded_secret": {
       "label": "Hardcoded credential",
-      "pattern": "password\\s*=\\s*['\"][^'\"]{4,}['\"]",
+      "pattern": "password['\"]?\\s*[:=]\\s*['\"][^'\"]{4,}['\"]",
       "severity": "critical",
       "category": "security",
       "scope": [

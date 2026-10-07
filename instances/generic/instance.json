@@ -1,0 +1,31 @@
+{
+  "slug": "generic",
+  "name": "Onboarded",
+  "industry": "reference",
+  "classification": "public",
+  "status": "derived",
+  "created": "2026-10-05T20:41:11Z",
+  "repos": [
+    {
+      "key": "REPO-A",
+      "url": null,
+      "ref": null,
+      "dir": "repo-a",
+      "commit": null
+    },
+    {
+      "key": "REPO-B",
+      "url": null,
+      "ref": null,
+      "dir": "repo-b",
+      "commit": null
+    }
+  ],
+  "db": {
+    "dialect": "postgres",
+    "name": "ob_generic",
+    "source": "deploy/local/db/sql/20_demo_schema.sql"
+  },
+  "notes": "Reference tenant. Database ob_generic holds the demo schema used by ticket 1001.",
+  "updated": "2026-10-05T20:41:11Z"
+}

@@ -28,15 +28,18 @@ typeset -g _OB_NAV_TICKET_LOADED=1
 # ── State directory ──────────────────────────────────────────────────────────
 _ob_ticket_state_dir() { print "${HOME}/.onboarded/${OB_NAV_SLUG:l}/tickets"; }
 _ob_ticket_path()      { print "$(_ob_ticket_state_dir)/${1}.json"; }
-_ob_ticket_ensure()    { local d; d="$(_ob_ticket_state_dir)"; [[ -d "$d" ]] || mkdir -p "$d"; }
+_ob_ticket_ensure()    { local d=""; d="$(_ob_ticket_state_dir)"; [[ -d "$d" ]] || mkdir -p "$d"; }
  
 # ── Scaffold templates directory ─────────────────────────────────────────────
 _ob_scaffold_dir() {
-    local dir; dir="$(_ob_get TICKET_CONFIG scaffold_dir 2>/dev/null)"
+    local dir=""; dir="$(_ob_get TICKET_CONFIG scaffold_dir 2>/dev/null)"
     if [[ -n "$dir" ]]; then
-        print "$dir"
+        # Relative scaffold_dir values (e.g. "templates/msi/scaffolds") are
+        # resolved against the repo root, not the caller's cwd.
+        dir="${dir/#\~/$HOME}"
+        [[ "$dir" == /* ]] && print "$dir" || print "${_OB_DB_REPO_ROOT}/${dir}"
     else
-        print "${_OB_DB_CLI_ROOT}/templates/${OB_NAV_SLUG:l}/scaffolds"
+        print "$(_ob_templates_dir)/scaffolds"
     fi
 }
  
@@ -60,7 +63,7 @@ ob_ticket() {
  
     local ticket_id="$sub"
     _ob_ticket_ensure
-    local tfile; tfile="$(_ob_ticket_path "$ticket_id")"
+    local tfile=""; tfile="$(_ob_ticket_path "$ticket_id")"
  
     if [[ -f "$tfile" ]]; then
         _ob_ticket_resume "$ticket_id" "$tfile"
@@ -105,8 +108,8 @@ TEOF
 # ── Resume an existing investigation ─────────────────────────────────────────
 _ob_ticket_resume() {
     local ticket_id="$1" tfile="$2"
-    local status; status="$(_ob_json_str "$tfile" status)"
-    local cluster; cluster="$(_ob_json_str "$tfile" cluster)"
+    local status=""; status="$(_ob_json_str "$tfile" status)"
+    local cluster=""; cluster="$(_ob_json_str "$tfile" cluster)"
  
     _ob_sep
     _ob_bold "  TICKET: ${ticket_id}  (resuming)"
@@ -132,7 +135,7 @@ _ob_ticket_resume() {
 # ── Classify error and update state ──────────────────────────────────────────
 _ob_ticket_classify() {
     local ticket_id="$1" err_input="$2"
-    local tfile; tfile="$(_ob_ticket_path "$ticket_id")"
+    local tfile=""; tfile="$(_ob_ticket_path "$ticket_id")"
     local input="${(L)err_input}"
  
     local matched_key="" matched_data=""
@@ -154,7 +157,7 @@ _ob_ticket_classify() {
     local fix="${rest%%|*}";           rest="${rest#*|}"
     local tmpl="${rest%%|*}"
  
-    local now; now=$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date +"%Y-%m-%dT%H:%M:%SZ")
+    local now=""; now=$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date +"%Y-%m-%dT%H:%M:%SZ")
  
     cat > "$tfile" << TEOF
 { "id": ${ticket_id}, "cluster": "${code}", "target_table": "${table}", "fix_mechanism": "${fix}", "template": "${tmpl}", "status": "classified", "classified": "${now}" }
@@ -179,16 +182,16 @@ _ob_ticket_fix() {
     local ticket_id="$1"
     [[ -z "$ticket_id" ]] && { _ob_red "Usage: ${OB_CLI_NAME:-ob} ticket fix <id>"; return 1; }
  
-    local tfile; tfile="$(_ob_ticket_path "$ticket_id")"
+    local tfile=""; tfile="$(_ob_ticket_path "$ticket_id")"
     [[ ! -f "$tfile" ]] && { _ob_red "No investigation for ${ticket_id}."; return 1; }
  
-    local cluster; cluster="$(_ob_json_str "$tfile" cluster)"
-    local table; table="$(_ob_json_str "$tfile" target_table)"
-    local fix_mech; fix_mech="$(_ob_json_str "$tfile" fix_mechanism)"
+    local cluster=""; cluster="$(_ob_json_str "$tfile" cluster)"
+    local table=""; table="$(_ob_json_str "$tfile" target_table)"
+    local fix_mech=""; fix_mech="$(_ob_json_str "$tfile" fix_mechanism)"
  
     # Read tenant-configurable package settings
-    local submission_email; submission_email="$(_ob_get TICKET_CONFIG submission_email 2>/dev/null)"
-    local package_files_str; package_files_str="$(_ob_get TICKET_CONFIG package_files 2>/dev/null)"
+    local submission_email=""; submission_email="$(_ob_get TICKET_CONFIG submission_email 2>/dev/null)"
+    local package_files_str=""; package_files_str="$(_ob_get TICKET_CONFIG package_files 2>/dev/null)"
     local author_name="${OB_AUTHOR_NAME:-Unknown}"
     local author_login="${OB_AUTHOR_LOGIN:-unknown@example.com}"
     local author_party_id="${OB_AUTHOR_PARTY_ID:-0}"
@@ -196,8 +199,8 @@ _ob_ticket_fix() {
     : "${submission_email:=support@example.com}"
     : "${package_files_str:=README.md;diagnostic.sql;dryrun.sql;fix.sql;rollback.sql}"
  
-    local scaffold_dir; scaffold_dir="$(_ob_scaffold_dir)"
-    local outdir; outdir="$(_ob_ticket_state_dir)/${ticket_id}-package"
+    local scaffold_dir=""; scaffold_dir="$(_ob_scaffold_dir)"
+    local outdir=""; outdir="$(_ob_ticket_state_dir)/${ticket_id}-package"
     mkdir -p "$outdir"
  
     # Token values available for scaffold substitution
@@ -218,8 +221,8 @@ _ob_ticket_fix() {
     _ob_sep
     print ""
  
-    local IFS=';'
-    local -a files=( $package_files_str )
+    # zsh does not word-split unquoted parameters, so split explicitly on ';'.
+    local -a files=( "${(@s:;:)package_files_str}" )
     for f in "${files[@]}"; do
         [[ -z "$f" ]] && continue
  
@@ -230,7 +233,7 @@ _ob_ticket_fix() {
         local scaffold_src="${scaffold_dir}/${f}"
         if [[ -f "$scaffold_src" ]]; then
             # Read scaffold template and substitute tokens
-            local content; content=$(< "$scaffold_src")
+            local content=""; content=$(< "$scaffold_src")
             for tk tv in "${(@kv)tokens}"; do
                 content="${content//\{\{${tk}\}\}/${tv}}"
             done
@@ -256,7 +259,7 @@ _ob_ticket_fix() {
 # ═══════════════════════════════════════════════════════════════════════════════
 _ob_ticket_list() {
     _ob_ticket_ensure
-    local state_dir; state_dir="$(_ob_ticket_state_dir)"
+    local state_dir=""; state_dir="$(_ob_ticket_state_dir)"
     local -a files=("${state_dir}"/*.json(N))
  
     (( ${#files} == 0 )) && { _ob_dim "No active investigations."; return 0; }
@@ -279,10 +282,10 @@ _ob_ticket_close() {
     local ticket_id="$1"
     [[ -z "$ticket_id" ]] && { _ob_red "Usage: ${OB_CLI_NAME:-ob} ticket close <id>"; return 1; }
  
-    local tfile; tfile="$(_ob_ticket_path "$ticket_id")"
+    local tfile=""; tfile="$(_ob_ticket_path "$ticket_id")"
     [[ ! -f "$tfile" ]] && { _ob_red "No investigation for ${ticket_id}."; return 1; }
  
-    local closed_dir; closed_dir="$(_ob_ticket_state_dir)/closed"
+    local closed_dir=""; closed_dir="$(_ob_ticket_state_dir)/closed"
     mkdir -p "$closed_dir"
     mv "$tfile" "${closed_dir}/${ticket_id}.json"
     _ob_green "  Ticket ${ticket_id} closed."

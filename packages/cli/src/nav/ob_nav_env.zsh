@@ -22,7 +22,7 @@ typeset -g _OB_NAV_ENV_LOADED=1
 
 # ── Read environment list from tenant config ─────────────────────────────────
 _ob_env_names() {
-    local names; names="$(_ob_get ENV_CONFIG env_names 2>/dev/null)"
+    local names=""; names="$(_ob_get ENV_CONFIG env_names 2>/dev/null)"
     : "${names:=dev;test;prod}"
     printf '%s' "$names"
 }
@@ -66,7 +66,7 @@ _ob_env_lookup() {
     fi
     [[ -z "$matched_key" ]] && { _ob_red "No config key matching: '${1}'"; return 1; }
 
-    local data; data="$(_ob_get CONFIG_KEYS "$matched_key")"
+    local data=""; data="$(_ob_get CONFIG_KEYS "$matched_key")"
     # Parse: key_path|type|category|val1|val2|val3|related|notes
     local key_path="${data%%|*}";  local rest="${data#*|}"
     local ktype="${rest%%|*}";     rest="${rest#*|}"
@@ -81,7 +81,7 @@ _ob_env_lookup() {
     local -a env_names; env_names=("${(@s:;:)$(_ob_env_names)}")
     for env_name in "${env_names[@]}"; do
         local val="${rest%%|*}"; rest="${rest#*|}"
-        local instance; instance="$(_ob_env_instance "$env_name")"
+        local instance=""; instance="$(_ob_env_instance "$env_name")"
         printf "  %-8s  %-14s  %s\n" "${env_name}:" "$val" "${instance:+(${instance})}"
     done
     print ""
@@ -101,7 +101,7 @@ _ob_env_list() {
     printf "  %-24s  %-40s  %-14s\n" "Slug" "Key Path" "Category"
     _ob_sep
     while IFS= read -r k; do
-        local data; data="$(_ob_get CONFIG_KEYS "$k")"
+        local data=""; data="$(_ob_get CONFIG_KEYS "$k")"
         local key_path="${data%%|*}"; local rest="${data#*|}"
         local ktype="${rest%%|*}"; rest="${rest#*|}"
         local category="${rest%%|*}"
@@ -134,7 +134,7 @@ _ob_env_diff() {
 
     local diff_count=0
     while IFS= read -r k; do
-        local data; data="$(_ob_get CONFIG_KEYS "$k")"
+        local data=""; data="$(_ob_get CONFIG_KEYS "$k")"
         local key_path="${data%%|*}"; local rest="${data#*|}"
         rest="${rest#*|}"; rest="${rest#*|}"  # skip type, category
 

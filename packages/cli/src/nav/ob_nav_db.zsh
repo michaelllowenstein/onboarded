@@ -15,7 +15,8 @@
 #     CLUSTERS        — error pattern → classification
 #     POLICY_CONFIG   — policy decomposition rules (regex, columns, etc.)
 #
-#   SQL templates live in templates/${OB_NAV_SLUG:l}/*.sql
+#   SQL templates live in templates/${OB_NAV_SLUG:l}/*.sql (repo root)
+#   Dialect: OB_DB_DIALECT = postgres (default) | mssql — set per instance.
 #   Token substitution uses {{TOKEN}} placeholders.
 #   Clipboard: xclip (Linux/WSL), pbcopy (macOS), wl-copy (Wayland).
 #
@@ -26,8 +27,16 @@
 typeset -g _OB_NAV_DB_LOADED=1
 
 # ── Resolve templates directory ──────────────────────────────────────────────
-_OB_DB_CLI_ROOT="${${(%):-%x}:h:h:h}"
-_ob_templates_dir() { print "${_OB_DB_CLI_ROOT}/templates/${OB_NAV_SLUG:l}"; }
+_OB_DB_CLI_ROOT="${${(%):-%x}:A:h:h:h}"          # packages/cli
+_OB_DB_REPO_ROOT="${_OB_DB_CLI_ROOT:h:h}"          # repo root (templates/ lives here)
+# OB_TEMPLATES_ROOT overrides; otherwise <repo>/templates, falling back to the
+# legacy packages/cli/templates layout described in PR-1_benchmark.md.
+_ob_templates_root() {
+    if [[ -n "${OB_TEMPLATES_ROOT:-}" ]]; then print "${OB_TEMPLATES_ROOT}"
+    elif [[ -d "${_OB_DB_REPO_ROOT}/templates" ]]; then print "${_OB_DB_REPO_ROOT}/templates"
+    else print "${_OB_DB_CLI_ROOT}/templates"; fi
+}
+_ob_templates_dir() { print "$(_ob_templates_root)/${OB_NAV_SLUG:l}"; }
 
 # ── Private: clipboard copy ─────────────────────────────────────────────────
 _ob_db_copy() {
@@ -44,13 +53,46 @@ _ob_db_copy() {
 }
 
 # ── Private: optional live execution ─────────────────────────────────────────
+_ob_db_dialect() { print "${${OB_DB_DIALECT:-postgres}:l}"; }
+
 _ob_db_exec() {
+    # Dialect: OB_DB_DIALECT = postgres (default) | mssql. Set per instance by
+    # `ob-instance use <slug>` (writes ~/.onboarded/instances/<slug>.env).
     local sql="$1"
-    local server="${OB_DB_READONLY_SERVER:-}"
-    [[ -z "$server" ]] && { _ob_yellow "  Live execution disabled. Set OB_DB_READONLY_SERVER."; return 1; }
-    command -v sqlcmd &>/dev/null || { _ob_yellow "  sqlcmd not in PATH."; return 1; }
-    _ob_cyan "  Executing against ${server} ..."
-    sqlcmd -S "$server" -d "${OB_DB_NAME:-MSI}" -G -Q "$sql"
+    case "$(_ob_db_dialect)" in
+    postgres)
+        command -v psql &>/dev/null || { _ob_yellow "  psql not in PATH (apt install postgresql-client)."; return 1; }
+        # OB_DB_* map onto libpq's PG* vars; anything unset falls back to PG* / ~/.pgpass.
+        local host="${OB_DB_HOST:-${PGHOST:-}}" db="${OB_DB_NAME:-${PGDATABASE:-}}"
+        [[ -z "$db" ]] && { _ob_yellow "  No database: set OB_DB_NAME or run: ob-instance use <slug>"; return 1; }
+        _ob_cyan "  Executing against ${host:-localhost}:${OB_DB_PORT:-${PGPORT:-5432}}/${db} ..."
+        PGHOST="${host:-localhost}" PGPORT="${OB_DB_PORT:-${PGPORT:-5432}}" PGDATABASE="$db" \
+        PGUSER="${OB_DB_USER:-${PGUSER:-$USER}}" PGPASSWORD="${OB_DB_PASSWORD:-${PGPASSWORD:-}}" \
+        PGAPPNAME="onboarded-cli" \
+            psql -X -v ON_ERROR_STOP=1 -P pager=off -c "$sql"
+        ;;
+    mssql)
+        local server="${OB_DB_HOST:-${OB_DB_SERVER:-${OB_DB_READONLY_SERVER:-}}}"
+        [[ -z "$server" ]] && { _ob_yellow "  Live execution disabled. Set OB_DB_HOST (and OB_DB_NAME)."; return 1; }
+        [[ -z "${OB_DB_NAME:-}" ]] && { _ob_yellow "  OB_DB_NAME not set — refusing to guess a database."; return 1; }
+        command -v sqlcmd &>/dev/null || { _ob_yellow "  sqlcmd not in PATH (install mssql-tools18)."; return 1; }
+        local -a args=(-S "$server" -d "$OB_DB_NAME" -b -W -s "|")
+        [[ "${OB_DB_TRUST_CERT:-0}" == (1|true|yes) ]] && args+=(-C)
+        local auth="${OB_DB_AUTH:-}"
+        [[ -z "$auth" ]] && { [[ -n "${OB_DB_USER:-}" ]] && auth=sql || auth=entra; }
+        case "$auth" in
+            sql)     [[ -z "${OB_DB_USER:-}" || -z "${OB_DB_PASSWORD:-}" ]] && {
+                         _ob_yellow "  OB_DB_AUTH=sql needs OB_DB_USER and OB_DB_PASSWORD."; return 1; }
+                     args+=(-U "$OB_DB_USER") ;;
+            windows) args+=(-E) ;;
+            entra)   args+=(-G) ;;
+            *) _ob_red "  Unknown OB_DB_AUTH '${auth}' (sql|windows|entra)"; return 1 ;;
+        esac
+        _ob_cyan "  Executing against ${server}/${OB_DB_NAME} (${auth}) ..."
+        SQLCMDPASSWORD="${OB_DB_PASSWORD:-}" sqlcmd "${args[@]}" -Q "$sql"
+        ;;
+    *) _ob_red "  Unknown OB_DB_DIALECT '$(_ob_db_dialect)' (postgres|mssql)"; return 1 ;;
+    esac
 }
 
 # ── Private: token substitution ──────────────────────────────────────────────
@@ -77,7 +119,7 @@ ob_schema() {
         _ob_bold "Cached Schema Profiles"
         _ob_sep
         while IFS= read -r k; do
-            local v; v="$(_ob_get SCHEMA "$k")"
+            local v=""; v="$(_ob_get SCHEMA "$k")"
             local col_count="${#${(@s:|:)v}}"
             printf "  %-52s  %d confirmed columns\n" "$k" "$col_count"
         done < <(_ob_keys SCHEMA)
@@ -104,7 +146,7 @@ ob_schema() {
     _ob_sep
 
     if [[ -n "$matched_key" ]]; then
-        local col_data; col_data="$(_ob_get SCHEMA "$matched_key")"
+        local col_data=""; col_data="$(_ob_get SCHEMA "$matched_key")"
         if [[ -n "$col_data" ]]; then
             _ob_yellow "  Cached column profile (confirmed from prior Q0):"
             print ""
@@ -124,9 +166,24 @@ ob_schema() {
         print ""
     fi
 
-    # Live Q0 probe — always emitted
+    # Live Q0 probe — always emitted, in the active dialect
     local q0_sql
-    read -r -d '' q0_sql << ENDSQL
+    if [[ "$(_ob_db_dialect)" == postgres ]]; then
+        local q_schema="public" q_table="$target"
+        [[ "$target" == *.* ]] && { q_schema="${target%%.*}"; q_table="${target#*.}"; }
+        read -r -d '' q0_sql << ENDSQL
+SELECT ordinal_position AS column_id,
+       column_name,
+       data_type,
+       character_maximum_length AS max_length,
+       is_nullable
+FROM   information_schema.columns
+WHERE  table_schema = '${q_schema}'
+  AND  table_name   = '${q_table}'
+ORDER  BY ordinal_position;
+ENDSQL
+    else
+        read -r -d '' q0_sql << ENDSQL
 SELECT
     c.column_id,
     c.name          AS ColumnName,
@@ -138,6 +195,7 @@ JOIN   sys.types   t ON t.user_type_id = c.user_type_id
 WHERE  c.object_id = OBJECT_ID(N'${target}')
 ORDER  BY c.column_id;
 ENDSQL
+    fi
 
     _ob_yellow "  Live Q0 probe:"
     print ""
@@ -158,7 +216,7 @@ ob_cluster() {
         _ob_bold "Cluster Classification — Error Pattern Registry"
         _ob_sep
         while IFS= read -r k; do
-            local data; data="$(_ob_get CLUSTERS "$k")"
+            local data=""; data="$(_ob_get CLUSTERS "$k")"
             local label="${data%%|*}"; local rest="${data#*|}"
             local code="${rest%%|*}"
             printf "  %-46s  %s\n" "$k" "${code}"
@@ -218,9 +276,9 @@ ob_sql() {
     if [[ -z "$key" ]]; then
         _ob_bold "SQL Template Library"
         _ob_sep
-        local tmpl_dir; tmpl_dir="$(_ob_templates_dir)"
+        local tmpl_dir=""; tmpl_dir="$(_ob_templates_dir)"
         while IFS= read -r k; do
-            local data; data="$(_ob_get SQL_TEMPLATES "$k")"
+            local data=""; data="$(_ob_get SQL_TEMPLATES "$k")"
             local desc="${data%%|*}" fname="${data##*|}"
             local marker="○"
             [[ -f "${tmpl_dir}/${fname}" ]] && marker="✔"
@@ -231,7 +289,7 @@ ob_sql() {
         return 0
     fi
 
-    local tmpl_data; tmpl_data="$(_ob_get SQL_TEMPLATES "$key")"
+    local tmpl_data=""; tmpl_data="$(_ob_get SQL_TEMPLATES "$key")"
     [[ -z "$tmpl_data" ]] && { _ob_red "Unknown template: '${key}'"; return 1; }
 
     local desc="${tmpl_data%%|*}" fname="${tmpl_data##*|}"
@@ -247,7 +305,7 @@ ob_sql() {
         clean_args+=("$arg")
     done
 
-    local sql; sql="$(_ob_db_fill_tokens "$raw_sql" "${clean_args[@]}")"
+    local sql=""; sql="$(_ob_db_fill_tokens "$raw_sql" "${clean_args[@]}")"
 
     _ob_sep
     _ob_bold "  SQL: ${key}"
@@ -276,18 +334,18 @@ ob_policy() {
 
     if [[ -z "$arg1" ]]; then
         # Read tenant-specific usage hint from POLICY_CONFIG
-        local hint; hint="$(_ob_get POLICY_CONFIG usage_hint 2>/dev/null)"
+        local hint=""; hint="$(_ob_get POLICY_CONFIG usage_hint 2>/dev/null)"
         _ob_red "Usage: ${OB_CLI_NAME:-ob} policy ${hint:-<identifier>}"
         return 1
     fi
 
     # Read decomposition pattern from tenant config
-    local decompose_regex; decompose_regex="$(_ob_get POLICY_CONFIG decompose_regex 2>/dev/null)"
-    local prefix_col; prefix_col="$(_ob_get POLICY_CONFIG prefix_column 2>/dev/null)"
-    local number_col; number_col="$(_ob_get POLICY_CONFIG number_column 2>/dev/null)"
-    local term_table; term_table="$(_ob_get POLICY_CONFIG term_table 2>/dev/null)"
-    local snap_table; snap_table="$(_ob_get POLICY_CONFIG snapshot_table 2>/dev/null)"
-    local snap_active_col; snap_active_col="$(_ob_get POLICY_CONFIG snapshot_active_column 2>/dev/null)"
+    local decompose_regex=""; decompose_regex="$(_ob_get POLICY_CONFIG decompose_regex 2>/dev/null)"
+    local prefix_col=""; prefix_col="$(_ob_get POLICY_CONFIG prefix_column 2>/dev/null)"
+    local number_col=""; number_col="$(_ob_get POLICY_CONFIG number_column 2>/dev/null)"
+    local term_table=""; term_table="$(_ob_get POLICY_CONFIG term_table 2>/dev/null)"
+    local snap_table=""; snap_table="$(_ob_get POLICY_CONFIG snapshot_table 2>/dev/null)"
+    local snap_active_col=""; snap_active_col="$(_ob_get POLICY_CONFIG snapshot_active_column 2>/dev/null)"
 
     # Defaults for unconfigured tenants
     : "${decompose_regex:=^([A-Z]+)([0-9]+)$}"
@@ -307,6 +365,8 @@ ob_policy() {
         return 1
     fi
 
+    # N'' is T-SQL only; Postgres string literals are plain ''.
+    local nq="N"; [[ "$(_ob_db_dialect)" == postgres ]] && nq=""
     local sql
     read -r -d '' sql << ENDSQL
 -- Policy lookup — ${prefix}${number}
@@ -323,7 +383,7 @@ SELECT
     pts.LastUpdateDate
 FROM   ${term_table}  pt
 JOIN   ${snap_table}  pts ON pts.PolicyTermID = pt.PolicyTermID
-WHERE  pt.${prefix_col}  = N'${prefix}'
+WHERE  pt.${prefix_col}  = ${nq}'${prefix}'
   AND  pt.${number_col}  = ${number}
 ORDER  BY pt.TermNumber ASC, pts.PolicyTermSnapshotID DESC;
 ENDSQL

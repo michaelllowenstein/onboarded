@@ -7,3 +7,9 @@ packages/shared/node_modules
 packages/portal/node_modules
 packages/portal/cert/
 packages/api/cert/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+packages/dba/.venv/

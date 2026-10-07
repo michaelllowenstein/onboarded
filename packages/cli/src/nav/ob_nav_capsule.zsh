@@ -25,16 +25,16 @@ typeset -g _OB_NAV_CAPSULE_LOADED=1
 
 # ── Config accessors ─────────────────────────────────────────────────────────
 _ob_capsule_root() {
-    local env_var; env_var="$(_ob_get CAPSULE_CONFIG root_env_var 2>/dev/null)"
+    local env_var=""; env_var="$(_ob_get CAPSULE_CONFIG root_env_var 2>/dev/null)"
     [[ -n "$env_var" ]] && [[ -n "${(P)env_var:-}" ]] && { print "${(P)env_var}"; return; }
-    local default; default="$(_ob_get CAPSULE_CONFIG root_dir 2>/dev/null)"
+    local default=""; default="$(_ob_get CAPSULE_CONFIG root_dir 2>/dev/null)"
     print "${default:-${HOME}/capsule-proxy}"
 }
 
 _ob_capsule_port() {
-    local env_var; env_var="$(_ob_get CAPSULE_CONFIG port_env_var 2>/dev/null)"
+    local env_var=""; env_var="$(_ob_get CAPSULE_CONFIG port_env_var 2>/dev/null)"
     [[ -n "$env_var" ]] && [[ -n "${(P)env_var:-}" ]] && { print "${(P)env_var}"; return; }
-    local default; default="$(_ob_get CAPSULE_CONFIG port 2>/dev/null)"
+    local default=""; default="$(_ob_get CAPSULE_CONFIG port 2>/dev/null)"
     print "${default:-5080}"
 }
 
@@ -57,7 +57,7 @@ _ob_capsule_list() {
     _ob_sep
 
     while IFS= read -r k; do
-        local data; data="$(_ob_get CAPSULES "$k")"
+        local data=""; data="$(_ob_get CAPSULES "$k")"
         local ref="${data%%|*}"; local rest="${data#*|}"
         local route="${rest%%|*}"; rest="${rest#*|}"
         local mig="${rest%%|*}"
@@ -65,7 +65,7 @@ _ob_capsule_list() {
     done < <(_ob_keys CAPSULES 2>/dev/null)
 
     _ob_sep
-    local root; root="$(_ob_capsule_root)"
+    local root=""; root="$(_ob_capsule_root)"
     [[ -d "$root" ]] && _ob_green "  Proxy root: ${root}" || _ob_dim "  Proxy not found: ${root}"
 }
 
@@ -73,7 +73,7 @@ _ob_capsule_new() {
     local key="${1:l}" ref="$2"
     [[ -z "$key" || -z "$ref" ]] && { _ob_red "Usage: ${OB_CLI_NAME:-ob} capsule new <key> <reference>"; return 1; }
 
-    local root; root="$(_ob_capsule_root)"
+    local root=""; root="$(_ob_capsule_root)"
     [[ -d "$root" ]] || { _ob_red "Proxy root not found: ${root}"; return 1; }
 
     # PascalCase: mortgage → Mortgage, stuck_cancel → StuckCancel
@@ -106,7 +106,7 @@ _ob_capsule_new() {
             [[ "$tmpl_name" == *migration* ]] && out_dir="${root}/src/Data/migrations/${key}"
             mkdir -p "$out_dir"
 
-            local content; content=$(< "$tmpl_file")
+            local content=""; content=$(< "$tmpl_file")
             for tk tv in "${(@kv)tokens}"; do
                 content="${content//\{\{${tk}\}\}/${tv}}"
             done
@@ -127,12 +127,12 @@ _ob_capsule_demo() {
     local key="${1:l}"
     [[ -z "$key" ]] && { _ob_red "Usage: ${OB_CLI_NAME:-ob} capsule demo <key>"; return 1; }
 
-    local data; data="$(_ob_get CAPSULES "$key" 2>/dev/null)"
+    local data=""; data="$(_ob_get CAPSULES "$key" 2>/dev/null)"
     [[ -z "$data" ]] && { _ob_red "Unknown capsule: '${key}'"; return 1; }
 
     local ref="${data%%|*}"
-    local port; port="$(_ob_capsule_port)"
-    local swagger_path; swagger_path="$(_ob_get CAPSULE_CONFIG swagger_path 2>/dev/null)"
+    local port=""; port="$(_ob_capsule_port)"
+    local swagger_path=""; swagger_path="$(_ob_get CAPSULE_CONFIG swagger_path 2>/dev/null)"
     : "${swagger_path:=/swagger/v1/swagger.json}"
 
     _ob_sep
@@ -177,9 +177,9 @@ _ob_capsule_demo() {
 }
 
 _ob_capsule_start() {
-    local root; root="$(_ob_capsule_root)"
+    local root=""; root="$(_ob_capsule_root)"
     [[ -d "$root" ]] || { _ob_red "Proxy not found: ${root}"; return 1; }
-    local port; port="$(_ob_capsule_port)"
+    local port=""; port="$(_ob_capsule_port)"
 
     _ob_cyan "Starting proxy..."
     (cd "$root" && docker compose up -d demo-sql 2>&1 | sed 's/^/    /')
@@ -187,6 +187,6 @@ _ob_capsule_start() {
     (cd "$root" && \
         ASPNETCORE_URLS="http://0.0.0.0:${port}" \
         ASPNETCORE_ENVIRONMENT=Development \
-        local proj; proj="$(_ob_get CAPSULE_CONFIG host_project 2>/dev/null)"
+        local proj=""; proj="$(_ob_get CAPSULE_CONFIG host_project 2>/dev/null)"
         dotnet run --project "${proj:-src/Host}" --no-launch-profile)
 }

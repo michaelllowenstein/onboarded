@@ -1,0 +1,25 @@
+# Local Postgres for the Onboarded DBA engine — one server, one database per instance.
+# Run with an explicit -f so the repo-root docker-compose.override.yml is NOT merged in:
+#   docker compose -f deploy/local/db/docker-compose.db.yml --env-file deploy/local/db/.env up -d
+name: onboarded-db
+services:
+  pg:
+    image: postgres:18
+    container_name: onboarded-pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/local/db/.env}"
+      POSTGRES_DB: postgres
+    ports:
+      # 55432 on the host so it never collides with another local Postgres (e.g. TokenLens on 5432)
+      - "127.0.0.1:${OB_DB_PORT:-55432}:5432"
+    volumes:
+      - onboarded_pg_data:/var/lib/postgresql      # postgres:18 keeps PGDATA in /var/lib/postgresql/18/docker
+      - ./sql:/bootstrap:ro                 # SQL only; .env is not mounted
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+volumes:
+  onboarded_pg_data:

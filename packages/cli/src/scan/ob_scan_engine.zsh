@@ -49,7 +49,7 @@ _ob_scan_run_rule() {
     local rule_id="$1"; shift
     local -a files=("$@")
 
-    local val; val="$(_ob_get SCAN_RULES "$rule_id")"
+    local val=""; val="$(_ob_get SCAN_RULES "$rule_id")"
     [[ -z "$val" ]] && return 0
 
     local -a p; p=("${(@s:|:)val}")
@@ -90,7 +90,7 @@ ob_scan() {
         return 1
     }
 
-    local val; val="$(_ob_get SCAN_RULES "$rule_id")"
+    local val=""; val="$(_ob_get SCAN_RULES "$rule_id")"
     if [[ -z "$val" ]]; then
         _ob_red "Rule '${rule_id}' not found."
         _ob_dim "  Run: ${OB_CLI_NAME} scan list"
@@ -140,7 +140,7 @@ ob_scan_list() {
     _ob_bold "Scan rules — ${OB_CLI_NAME}"
     _ob_sep
     while IFS= read -r k; do
-        local v; v="$(_ob_get SCAN_RULES "$k")"
+        local v=""; v="$(_ob_get SCAN_RULES "$k")"
         local -a p; p=("${(@s:|:)v}")
         printf '  \033[0;36m%-40s\033[0m  [\033[0;31m%-8s\033[0m]  %-14s  %s\n' \
             "$k" "${p[1]}" "${p[2]}" "${p[9]}"
@@ -160,7 +160,7 @@ ob_audit() {
     local max_sev="clean" max_rank=99
 
     while IFS= read -r rule_id; do
-        local val; val="$(_ob_get SCAN_RULES "$rule_id")"
+        local val=""; val="$(_ob_get SCAN_RULES "$rule_id")"
         local -a p; p=("${(@s:|:)v}")
         # Re-get cleanly (avoid local -a p collision with outer loop)
         local severity category scope label
@@ -211,7 +211,7 @@ ob_secrets() {
     local total=0
 
     while IFS= read -r rule_id; do
-        local val; val="$(_ob_get SCAN_RULES "$rule_id")"
+        local val=""; val="$(_ob_get SCAN_RULES "$rule_id")"
         local category scope label
         category="${${(@s:|:)val}[2]}"
         scope="${${(@s:|:)val}[3]}"

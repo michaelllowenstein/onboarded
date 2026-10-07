@@ -41,6 +41,7 @@ Exit codes:
 import argparse
 import base64
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -714,6 +715,22 @@ export const TENANT_DOMAIN: TenantDomain = {domain_ts} as unknown as TenantDomai
 # Main — now emits 6 files instead of 4
 # ═════════════════════════════════════════════════════════════════════════════
  
+_ZSH_ASSIGN = re.compile(r'^(?P<name>[A-Za-z_][A-Za-z0-9_]*)\["(?P<key>(?:[^"\\]|\\.)*)"\]=(?P<value>.*)$')
+
+
+def fix_zsh_assoc_keys(text: str) -> str:
+    """Rewrite  NAME["key"]=value  as  NAME+=( "key" value ).
+
+    zsh keeps the double quotes as part of the key in the first form, so
+    MSI_OPS["bind"] is stored under the key "bind" *with* quotes and
+    `_ob_get OPS bind` never finds it. The += pair form strips them.
+    """
+    return "\n".join(
+        (f'{m["name"]}+=( "{m["key"]}" {m["value"]} )' if (m := _ZSH_ASSIGN.match(line)) else line)
+        for line in text.split("\n")
+    )
+
+
 def generate_tenant(tenant: str, ts_only: bool = False, dry_run: bool = False) -> int:
     domain_path = TENANTS_DIR / tenant / "domain" / "domain.json"
     if not domain_path.exists():
@@ -733,12 +750,14 @@ def generate_tenant(tenant: str, ts_only: bool = False, dry_run: bool = False) -
     out_dir = GENERATED / tenant
     out_dir.mkdir(parents=True, exist_ok=True)
  
-    # v3 files (unchanged)
+    # v3 files — these were commented out, so new tenants never got a
+    # nav_maps.zsh and the loader refused to start. Output for msi/generic
+    # is identical to the committed files apart from the header timestamp.
     files = {
-        # out_dir / "nav_maps.zsh":    emit_nav_maps_zsh(domain, tenant),
-        # out_dir / "scan_rules.zsh":  emit_scan_rules_zsh(domain, tenant),
-        # out_dir / "nav_maps.ps1":    emit_nav_maps_ps1(domain, tenant),
-        # out_dir / "scan_rules.ps1":  emit_scan_rules_ps1(domain, tenant),
+        out_dir / "nav_maps.zsh":    emit_nav_maps_zsh(domain, tenant),
+        out_dir / "scan_rules.zsh":  emit_scan_rules_zsh(domain, tenant),
+        out_dir / "nav_maps.ps1":    emit_nav_maps_ps1(domain, tenant),
+        out_dir / "scan_rules.ps1":  emit_scan_rules_ps1(domain, tenant),
     }
  
     # v4 files (new)
@@ -765,6 +784,8 @@ def generate_tenant(tenant: str, ts_only: bool = False, dry_run: bool = False) -
         return 0
  
     for path, content in files.items():
+        if path.suffix == ".zsh":
+            content = fix_zsh_assoc_keys(content)
         path.write_text(content, encoding="utf-8")
         print(f"  wrote  {path.relative_to(REPO_ROOT)}")
  

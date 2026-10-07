@@ -32,7 +32,7 @@ if (( $+functions[ob_where] )); then
         [[ -z "$op" ]] && return $exit_code
  
         # ── Database Tables section ──────────────────────────────────────
-        local tables; tables="$(_ob_get OPS_TABLES "$op" 2>/dev/null)"
+        local tables=""; tables="$(_ob_get OPS_TABLES "$op" 2>/dev/null)"
         if [[ -n "$tables" ]]; then
             print ""
             _ob_dim "  ── Database Tables (write path) ──"
@@ -43,7 +43,7 @@ if (( $+functions[ob_where] )); then
         fi
  
         # ── Known Failure Clusters section ───────────────────────────────
-        local clusters; clusters="$(_ob_get OPS_CLUSTERS "$op" 2>/dev/null)"
+        local clusters=""; clusters="$(_ob_get OPS_CLUSTERS "$op" 2>/dev/null)"
         if [[ -n "$clusters" ]]; then
             print ""
             _ob_dim "  ── Known Failure Clusters ──"
@@ -52,7 +52,7 @@ if (( $+functions[ob_where] )); then
                 # Find label by scanning CLUSTERS entries for matching code
                 local found=0
                 while IFS= read -r ck; do
-                    local c_data; c_data="$(_ob_get CLUSTERS "$ck")"
+                    local c_data=""; c_data="$(_ob_get CLUSTERS "$ck")"
                     local c_rest="${c_data#*|}"
                     local c_code="${c_rest%%|*}"
                     if [[ "$c_code" == *"Cluster ${cluster_code}"* ]]; then

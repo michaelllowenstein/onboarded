@@ -15,26 +15,8 @@
   },
   "config": {
     "repos": {
-      "MSI-PAS": {
-        "env": "MSI_REPO_PAS",
-        "default": "MSI-PAS"
-      },
-      "MSI-PAS-CORE": {
-        "env": "MSI_REPO_CORE",
-        "default": "MSI-PAS-CORE"
-      },
-      "MSI-Widget": {
-        "env": "MSI_REPO_WIDGET",
-        "default": "MSI-Widget"
-      },
-      "MSI-QE": {
-        "env": "MSI_REPO_QE",
-        "default": "MSI-QE"
-      },
-      "PAS-APP-CONFIG": {
-        "env": "MSI_REPO_CONFIG",
-        "default": "PAS-APP-CONFIG"
-      }
+      "REPO-A": { "env": "GENERIC_REPO_A", "default": "repo-a" },
+      "REPO-B": { "env": "GENERIC_REPO_B", "default": "repo-b" }
     }
   },
   "operations": {
@@ -69,7 +51,7 @@
   "scan_rules": {
     "hardcoded_secret": {
       "label": "Hardcoded credential",
-      "pattern": "password\\s*=\\s*['\"][^'\"]{4,}['\"]",
+      "pattern": "password['\"]?\\s*[:=]\\s*['\"][^'\"]{4,}['\"]",
       "severity": "critical",
       "category": "security",
       "scope": [
@@ -151,5 +133,9 @@
       "reference": "internal",
       "fixHint": "Add CancellationToken ct = default as the last parameter."
     }
+  },
+  "db_schema": {
+    "dialect": "postgres",
+    "database": "ob_generic"
   }
 }

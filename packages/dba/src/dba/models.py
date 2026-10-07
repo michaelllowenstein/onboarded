@@ -1,4 +1,3 @@
-odels · PY
 """
 dba.models — Core data structures for ticket-based SQL scripts.
  
@@ -38,7 +37,13 @@ class Script:
             parts.append(f"{self.ticket_id}/")
         parts.append(self.name)
         return "".join(parts)
- 
+
+    @property
+    def is_destructive(self) -> bool:
+        """fix/rollback (and fix-*.sql / rollback-*.sql variants) need --yes."""
+        base = self.name.split("-", 1)[0].lower()
+        return base in DESTRUCTIVE_SCRIPTS
+
     def read(self) -> str:
         """Read the script content from disk."""
         return self.path.read_text(encoding="utf-8")
@@ -95,6 +100,10 @@ class ResultSet:
     rows_affected: int = 0
     error: Optional[str] = None
     batch_index: int = 0
+    # A single GO batch can emit several result sets (e.g. dryrun RS1..RS5).
+    result_index: int = 0
+    # PRINT / informational messages raised while producing this result.
+    messages: list[str] = field(default_factory=list)
  
     @property
     def ok(self) -> bool:

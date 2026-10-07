@@ -38,7 +38,7 @@ GENERIC_CAPSULE_CONFIG=( [root_dir]="${HOME}/capsule-proxy" [port]="5080" )
 typeset -gA GENERIC_TICKET_CONFIG
 GENERIC_TICKET_CONFIG=(
   [submission_email]=""
-  [package_files]="README.md;diagnostic.sql;fix.sql;rollback.sql"
+  [package_files]="README.md;diagnostic.sql;dryrun.sql;fix.sql;rollback.sql"
 )
 
 typeset -gA GENERIC_POLICY_CONFIG

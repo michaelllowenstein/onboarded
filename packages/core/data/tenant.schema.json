@@ -569,16 +569,58 @@
       "additionalProperties": {
         "type": "string"
       }
-    }
-  },
-  "db_schema": {
-    "type": "object",
-    "properties": {
-      "server":             { "type": "string" },
-      "database":           { "type": "string" },
-      "driver":             { "type": "string" },
-      "trusted_connection": { "type": "boolean" }
     },
-    "required": ["server", "database"]
+    "db_schema": {
+      "type": "object",
+      "description": "Optional: where the DBA engine connects. Machine-specific values (host, port) usually come from the instance env file instead. Never put credentials here — use OB_DB_USER / OB_DB_PASSWORD or ~/.pgpass.",
+      "properties": {
+        "dialect": {
+          "type": "string",
+          "enum": [
+            "postgres",
+            "mssql"
+          ],
+          "default": "postgres"
+        },
+        "host": {
+          "type": "string"
+        },
+        "server": {
+          "type": "string",
+          "description": "Legacy alias of host (mssql)"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "database": {
+          "type": "string"
+        },
+        "sslmode": {
+          "type": "string",
+          "enum": [
+            "disable",
+            "allow",
+            "prefer",
+            "require",
+            "verify-ca",
+            "verify-full"
+          ]
+        },
+        "driver": {
+          "type": "string",
+          "description": "mssql only: ODBC driver name"
+        },
+        "trusted_connection": {
+          "type": "boolean",
+          "description": "mssql only"
+        }
+      },
+      "required": [
+        "database"
+      ],
+      "additionalProperties": false
+    }
   }
 }

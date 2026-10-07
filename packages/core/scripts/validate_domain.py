@@ -154,7 +154,7 @@ def discover_tenants() -> list[str]:
         return []
     return sorted(
         d.name for d in TENANTS_DIR.iterdir()
-        if d.is_dir() and (d / "domain.json").exists()
+        if d.is_dir() and ((d / "domain" / "domain.json").exists() or (d / "domain.json").exists())
     )
 
 

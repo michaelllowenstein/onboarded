@@ -153,7 +153,8 @@ shell:
     @echo "  Commands: msi where bind  /  msi status 36  /  msi explain fnol"
     @echo "  Type 'exit' to return to your normal shell."
     @echo ""
-    @zsh --no-rcs -c '{{OB_SOURCE_BLOCK}}; echo "  ✔  onboarded ready"; exec zsh --no-rcs' || true
+    @# A fresh `exec zsh` would drop every sourced function, so load them from a throwaway ZDOTDIR instead.
+    @d="$(mktemp -d)"; printf '%s\n' '{{OB_SOURCE_BLOCK}}' 'echo "  ✔  onboarded ready"' > "$d/.zshrc"; ZDOTDIR="$d" zsh -i || true; rm -rf "$d"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SMOKE TESTS — four canonical commands, onboarded engine
@@ -419,3 +420,41 @@ _dispatcher-check:
             echo "  ✗  msi() NOT registered"; exit 1; \
         fi \
     '
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LOCAL DATABASE + DBA ENGINE  (see docs/development/local-db.md)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Start SQL Server in Docker and apply bootstrap + demo data (idempotent)
+db-init:
+    @{{ONBOARDED_DIR}}/deploy/local/db/init-local-db.sh
+
+db-up:
+    @docker compose -f {{ONBOARDED_DIR}}/deploy/local/db/docker-compose.db.yml --env-file {{ONBOARDED_DIR}}/deploy/local/db/.env up -d
+
+db-down:
+    @docker compose -f {{ONBOARDED_DIR}}/deploy/local/db/docker-compose.db.yml --env-file {{ONBOARDED_DIR}}/deploy/local/db/.env down
+
+# DANGER: deletes the local database volume
+db-reset:
+    @docker compose -f {{ONBOARDED_DIR}}/deploy/local/db/docker-compose.db.yml --env-file {{ONBOARDED_DIR}}/deploy/local/db/.env down -v
+    @just db-init
+
+# dba engine passthrough. Usage: just dba ping  /  just dba run 1001 dryrun
+dba *ARGS:
+    @cd {{ONBOARDED_DIR}} && OB_REPO_ROOT={{ONBOARDED_DIR}} PYTHONPATH=packages/dba/src \
+        $([ -x packages/dba/.venv/bin/python ] && echo packages/dba/.venv/bin/python || echo python3) \
+        -m dba --tenant {{OB_TENANT}} {{ARGS}}
+
+dba-test:
+    @cd {{ONBOARDED_DIR}}/packages/dba && \
+        $([ -x .venv/bin/python ] && echo .venv/bin/python || echo python3) -m pytest -q
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INSTANCES — one tenant + client repos + database + env (see docs/development/instances.md)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ob-instance passthrough. Usage: just i list  /  just i new fineract --name ... --repo URL
+i *ARGS:
+    @python3 {{ONBOARDED_DIR}}/packages/core/scripts/ob_instance.py {{ARGS}}

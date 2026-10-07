@@ -6,13 +6,13 @@ setup() {
     NAV_HELPER="${REPO_ROOT}/packages/cli/tests/helpers/ob_nav_helper.zsh"
 }
 
-@test "ob_where: exits 0 for known operation 'bind'" {
-    run zsh "$NAV_HELPER" generic ob_where bind
+@test "ob_where: exits 0 for known operation 'create'" {
+    run zsh "$NAV_HELPER" generic ob_where create
     [ "$status" -eq 0 ]
 }
 
 @test "ob_where: output contains controller path" {
-    run zsh "$NAV_HELPER" generic ob_where bind
+    run zsh "$NAV_HELPER" generic ob_where create
     [ "$status" -eq 0 ]
     [[ "$output" == *"Controller"* ]]
 }
@@ -28,10 +28,10 @@ setup() {
     [ -n "$output" ]
 }
 
-@test "ob_explain: exits 0 for 'fnol'" {
-    run zsh "$NAV_HELPER" generic ob_explain fnol
+@test "ob_explain: exits 0 for 'api'" {
+    run zsh "$NAV_HELPER" generic ob_explain api
     [ "$status" -eq 0 ]
-    [[ "$output" == *"FNOL"* ]]
+    [[ "$output" == *"API"* ]]
 }
 
 @test "ob_explain: exits non-zero for unknown term" {
@@ -42,7 +42,7 @@ setup() {
 @test "ob_list: exits 0 and includes known operations" {
     run zsh "$NAV_HELPER" generic ob_list ops
     [ "$status" -eq 0 ]
-    [[ "$output" == *"bind"* ]]
+    [[ "$output" == *"create"* ]]
 }
 
 @test "ob_list: exits 0 for rules" {

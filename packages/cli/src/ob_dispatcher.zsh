@@ -21,6 +21,11 @@ _ob_bootstrap() {
 
     source "${base}/core/ob_core_display.zsh" || { print -u2 "onboarded: display load failed"; return 1; }
     source "${base}/core/ob_core_loader.zsh"  || { print -u2 "onboarded: loader failed"; return 1; }
+    # Instances: if no tenant was chosen explicitly, apply the active instance's env.
+    source "${base}/ob_instance.zsh"
+    if [[ -z "${OB_TENANT:-}" && -f "${HOME}/.onboarded/active" ]]; then
+        _ob_instance_env "$(<"${HOME}/.onboarded/active")" 2>/dev/null
+    fi
     _ob_load_tenant || return 1
 
     source "${base}/nav/ob_nav_engine.zsh"    || { print -u2 "onboarded: nav engine failed"; return 1; }
@@ -40,6 +45,15 @@ _ob_bootstrap() {
     done
 
     return 0
+}
+
+# packages/dba runner — tenant comes from the active onboarded tenant.
+_ob_dba() {
+    local repo_root="${_OB_DISPATCHER_DIR:A:h:h:h}"
+    local py="${OB_DBA_PYTHON:-${repo_root}/packages/dba/.venv/bin/python}"
+    [[ -x "$py" ]] || py="python3"
+    OB_REPO_ROOT="$repo_root" PYTHONPATH="${repo_root}/packages/dba/src${PYTHONPATH:+:$PYTHONPATH}" \
+        "$py" -m dba --tenant "${OB_NAV_SLUG:l}" "$@"
 }
 
 _ob_bootstrap || { print -u2 "onboarded: bootstrap failed"; return 1; }
@@ -68,6 +82,7 @@ _ob_help() {
         printf '  %-38s  %s\n' "${cli} sql <template> [args]"   "filled diagnostic SQL"
         printf '  %-38s  %s\n' "${cli} cluster <error>"         "classify error → cluster"
         printf '  %-38s  %s\n' "${cli} policy <identifier>"     "policy lookup SQL"
+        printf '  %-38s  %s\n' "${cli} dba <cmd>"               "run ticket SQL (packages/dba)"
         printf '\n'
     fi
 
@@ -132,6 +147,7 @@ onboarded() {
         sql)              ob_sql "$@" ;;
         cluster|cls)      ob_cluster "$@" ;;
         policy|pol)       ob_policy "$@" ;;
+        dba)              _ob_dba "$@" ;;
 
         # Workflow
         ticket|t)         ob_ticket "$@" ;;
