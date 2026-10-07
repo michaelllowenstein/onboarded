@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# release.manifest — what ships from the dev repo to the running copy
+#
+# This is an ALLOWLIST. Nothing reaches ~/onboarded unless a line below
+# includes it, so docs/, tests, node_modules, .git, .nx, the patent drafts,
+# the msi-nav harness (Makefile/justfile) and anything new you add to the
+# repo stay behind by default.
+#
+#   include <glob>     ship matching files
+#   exclude <glob>     never ship (checked after includes, always wins)
+#
+# Globs are relative to the repo root, use "/" separators, and support
+#   *   anything except "/"        **  any number of directories
+#   ?   one character              {tenant}  expands to each TENANTS entry
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── CLI engine (dispatcher, core, nav, scan) ─────────────────────────────────
+include packages/cli/src/**
+
+# ── Tenant adapters + domain data ────────────────────────────────────────────
+# Adapters are generated in dev (`npm run generate`) and shipped pre-built.
+include packages/core/generated/{tenant}/*.zsh
+include packages/core/tenants/{tenant}/domain/domain.json
+include packages/core/tenants/{tenant}/schema.json
+include packages/core/data/tenant.schema.json
+
+# Validator/generator, so the loader's "run generate_adapters.py" hint works
+include packages/core/scripts/*.py
+include packages/core/scripts/bootstrap.sh
+
+# ── SQL / capsule scaffolds read by `ticket fix`, `sql`, `capsule` ───────────
+include templates/{tenant}/**
+
+# ── Feedback loop (telemetry, learn, suggest) ────────────────────────────────
+include packages/feedback/shell/*.zsh
+include packages/feedback/src/**
+
+# ── Not yet: uncomment when ready ────────────────────────────────────────────
+# include packages/dba/src/**                    # dba package (incomplete)
+# include packages/core/generated/{tenant}/*.ps1 # Windows / PowerShell clients
+# include dist/packages/portal/**                # built portal (npm run portal:build:msi)
+
+# ── Never ship ───────────────────────────────────────────────────────────────
+exclude **/__pycache__/**
+exclude **/*.pyc
+exclude **/.gitkeep
+exclude **/.DS_Store
+exclude **/*Zone.Identifier
+exclude **/*.endpointdlp
+exclude **/*.swp
