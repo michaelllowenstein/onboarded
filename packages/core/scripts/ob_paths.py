@@ -57,6 +57,24 @@ ROOT_LINK = OBH / "root"
 CONF = OBH / "paths.conf"
 BACKUPS = OBH / "backups"
 REPO = Path(__file__).resolve().parents[3]
+DEFAULT_WORKSPACE = HOME / "onboarded"            # instance workspaces (clones, runs, overlays)
+LEGACY_WORKSPACE = HOME / "onboarded-workspace"   # name used before 2026-10; still recognised
+
+def workspace_conflict(ws: Path, repo: Path = REPO) -> str | None:
+    """The workspace must sit beside the checkout, never on it, in it, or around it."""
+    w, r = Path(ws).expanduser().resolve(), repo.resolve()
+    if w == r:
+        return f"{tilde(w)} is this checkout — the workspace must be a different folder"
+    if r in w.parents:
+        return f"{tilde(w)} is inside this checkout — client clones would land in the onboarded repo"
+    if w in r.parents:
+        return f"this checkout is inside {tilde(w)} — move the checkout or pick another workspace"
+    return None
+
+def suggest_workspace() -> str:
+    """~/onboarded unless that is (or holds) the checkout; then ~/onboarded-instances."""
+    return "~/onboarded" if not workspace_conflict(DEFAULT_WORKSPACE) else "~/onboarded-instances"
+ 
 PROFILE_REL = "packages/cli/src/ob_profile.zsh"
 DISPATCHER_REL = "packages/cli/src/ob_dispatcher.zsh"
 
@@ -139,18 +157,20 @@ def instance_manifests() -> dict[str, dict]:
 
 
 def workspace_now(conf: dict) -> Path:
-    return (conf_path(conf, "OB_WORKSPACE") or Path(os.environ.get("OB_WORKSPACE") or HOME / "onboarded-workspace")).expanduser()
+    return (conf_path(conf, "OB_WORKSPACE") or Path(os.environ.get("OB_WORKSPACE") or DEFAULT_WORKSPACE)).expanduser()
 
 
 def msi_nav_candidates() -> list[Path]:
     """Bounded search for an msi-nav checkout under $HOME (depth ≤ 4)."""
     hits = []
+    skip = {DEFAULT_WORKSPACE, LEGACY_WORKSPACE, workspace_now(read_conf())}   # client clones, not msi-nav
     for base in (HOME, HOME / "develop", HOME / "src", HOME / "code", HOME / "repos", HOME / "work"):
         if not base.is_dir():
             continue
         for root, dirs, _ in os.walk(base):
             depth = Path(root).relative_to(base).parts
-            dirs[:] = [d for d in dirs if not d.startswith(".") and d not in ("node_modules", "onboarded-workspace")]
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d != "node_modules"
+                       and Path(root, d) not in skip]
             if len(depth) >= 4:
                 dirs[:] = []
             for d in list(dirs):
@@ -314,6 +334,15 @@ def scan(report: Report | None = None) -> Report:
               slug + ("" if slug in mans else " (no such instance here)"))
     if mans and not ws.is_dir():
         r.add("instance", "warn", "OB_WORKSPACE", f"{tilde(ws)} does not exist (clone/new will create it)")
+
+    if (why := workspace_conflict(ws)):
+        r.add("instance", "stale", "OB_WORKSPACE", why + f"; fix with: obpaths fix --workspace {suggest_workspace()} --apply")
+    elif ws.resolve() == LEGACY_WORKSPACE.resolve():
+        r.add("instance", "warn", "OB_WORKSPACE",
+              f"{tilde(ws)} is the old default name; to rename: obpaths move-workspace {suggest_workspace()} --apply")
+    elif LEGACY_WORKSPACE.is_dir() and any(LEGACY_WORKSPACE.iterdir()):
+        r.add("instance", "warn", "OB_WORKSPACE",
+              f"{tilde(LEGACY_WORKSPACE)} still exists and is not in use (move what you need into {tilde(ws)}, then delete it)")
 
     # 6. confidential overlays
     for kind, base in (("instance", REPO / "instances"), ("tenant", REPO / "packages/core/tenants"),
@@ -520,12 +549,17 @@ def cmd_fix(a) -> int:
     if a.workspace:
         new["OB_WORKSPACE"] = str(Path(a.workspace).expanduser().resolve())
     elif not conf_path(conf, "OB_WORKSPACE") or not conf_path(conf, "OB_WORKSPACE").is_dir():
-        for cand in (os.environ.get("OB_WORKSPACE"), str(HOME / "onboarded-workspace")):
-            if cand and Path(cand).expanduser().is_dir():
+        # an existing folder with data beats creating a new empty one; the old name keeps
+        # working until you run move-workspace
+        for cand in (os.environ.get("OB_WORKSPACE"), str(DEFAULT_WORKSPACE), str(LEGACY_WORKSPACE)):
+            if cand and Path(cand).expanduser().is_dir() and not workspace_conflict(Path(cand)):
                 new["OB_WORKSPACE"] = str(Path(cand).expanduser())
                 break
         else:
-            new.setdefault("OB_WORKSPACE", str(HOME / "onboarded-workspace"))
+            new["OB_WORKSPACE"] = str(DEFAULT_WORKSPACE)
+    if (why := workspace_conflict(Path(new["OB_WORKSPACE"]))):
+        raise SystemExit(f"✖ OB_WORKSPACE: {why}.\n  Pick another folder: --workspace {suggest_workspace()} "
+                         f"(or move this checkout, e.g. to ~/develop/onboarded)")
     old_msi = conf_path(conf, "MSI_NAV_DIR") or Path(os.environ.get("MSI_NAV_DIR") or HOME / "msi-nav")
     msi_wanted = bool(conf.get("MSI_NAV_DIR") or os.environ.get("MSI_NAV_DIR") or before.old_msi)
     if getattr(a, "no_msi_nav", False):
@@ -670,8 +704,13 @@ def cmd_move_workspace(a) -> int:
     conf = read_conf()
     old = workspace_now(conf)
     newp = Path(a.new).expanduser().resolve()
-    if newp.exists():
-        raise SystemExit(f"✖ {newp} already exists")
+    if (why := workspace_conflict(newp)):
+        raise SystemExit(f"✖ {why}")
+    if newp.exists() and newp.is_dir() and not any(newp.iterdir()):
+        if a.apply:
+            newp.rmdir()                                  # an empty folder is fine to move onto
+    elif newp.exists():
+        raise SystemExit(f"✖ {tilde(newp)} already exists and is not empty — move its contents aside first")
     if not old.is_dir():
         raise SystemExit(f"✖ current workspace {old} does not exist; use: fix --workspace {newp}")
     print(f"move  {tilde(old)} → {tilde(newp)}")

@@ -17,7 +17,7 @@ Where things live
         templates/<slug>/                      sql templates + scaffolds
         packages/core/generated/<slug>/        (generated)
         packages/shared/src/lib/tenants/<slug>.ts   (generated)
-    workspace  ($OB_WORKSPACE, default ~/onboarded-workspace — never committed)
+    workspace  ($OB_WORKSPACE, default ~/onboarded — never committed; must not be the checkout itself)
         <slug>/repos/<dir>/                    client clones
         <slug>/runs/  <slug>/notes/  <slug>/dumps/
         <slug>/overlay/{instance,tenant,templates}/   CONFIDENTIAL instances only;
@@ -76,7 +76,14 @@ def _repo_root() -> Path:
 
 REPO_ROOT = _repo_root()
 WORKSPACE = Path(os.environ.get("OB_WORKSPACE") or _paths_conf().get("OB_WORKSPACE")
-                 or Path.home() / "onboarded-workspace").expanduser()
+                 or Path.home() / "onboarded").expanduser()
+
+def _workspace_guard() -> None:
+    """Refuse to create instance folders on, inside, or around this checkout."""
+    w, r = WORKSPACE.resolve(), REPO_ROOT.resolve()
+    if w == r or r in w.parents or w in r.parents:
+        die(f"workspace {w} overlaps this checkout {r}. Set a folder beside the checkout: obpaths fix --workspace <folder> --apply")
+
 ENV_DIR = Path.home() / ".onboarded" / "instances"
 ACTIVE_FILE = Path.home() / ".onboarded" / "active"
 DB_SQL_DIR = REPO_ROOT / "deploy" / "local" / "db" / "sql"
@@ -737,6 +744,8 @@ def main(argv=None) -> int:
     st = sub.add_parser("status"); st.add_argument("slug"); st.add_argument("state", choices=STATES)
 
     a = p.parse_args(argv)
+    if a.cmd in ("new", "adopt", "overlay", "clone", "env", "db-load"):
+        _workspace_guard()
     fn = {"new": cmd_new, "adopt": cmd_adopt, "overlay": cmd_overlay, "list": cmd_list, "show": cmd_show,
           "clone": cmd_clone, "pin": cmd_pin, "env": cmd_env, "use": cmd_use, "pgpass": cmd_pgpass,
           "db-create": cmd_db_create, "db-drop": cmd_db_drop, "db-load": cmd_db_load,

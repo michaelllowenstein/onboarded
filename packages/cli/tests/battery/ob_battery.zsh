@@ -283,6 +283,10 @@ if (( WANT_INST )); then
     check I03 0 'resolve'    -- $OBI check-paths "$SLUG"
     check I04 0 'healthy'    -- $OBI doctor "$SLUG"
     check I05 0 '\.env'      -- $OBI env "$SLUG"
+    local OBP=(python3 "$REPO/packages/core/scripts/ob_paths.py")
+    check I06 0 'OB_WORKSPACE' -- $OBP where
+    check I07 '!0' 'overlaps'     -- env OB_WORKSPACE="$REPO" $OBI new battery-guard-probe   # workspace = checkout is refused
+    check I08 '!0' 'overlaps'     -- env OB_WORKSPACE="$REPO/instances" $OBI new battery-guard-probe
 fi
 
 # ── Summary ──────────────────────────────────────────────────────────────────
