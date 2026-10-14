@@ -96,11 +96,12 @@ def _cross_validate(domain: dict, tenant: str) -> list[str]:
                 f"qe_tests[{op_key}] has no matching entry in operations"
             )
 
-    # glossary_xrefs keys should correspond to known glossary terms
+    # glossary_xrefs keys are shown by `explain <term>` and `where <operation>`,
+    # so each key must be a glossary term or an operation
     for term in domain.get("glossary_xrefs", {}):
-        if term not in gloss:
+        if term not in gloss and term not in domain.get("operations", {}):
             warnings.append(
-                f"glossary_xrefs[{term}] has no matching entry in glossary"
+                f"glossary_xrefs[{term}] matches no glossary term or operation"
             )
 
     # status_triggers keys should correspond to known status codes

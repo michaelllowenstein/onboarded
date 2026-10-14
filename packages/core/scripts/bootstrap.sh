@@ -74,33 +74,13 @@ d = json.loads(pathlib.Path('${MONO_ROOT}/packages/core/tenants/${TENANT}/domain
 print(d['tenant']['cli_name'])
 ")"
 
-PROFILE_FILE="${ZDOTDIR:-$HOME}/.zshrc"
-[[ -f "${HOME}/.bashrc" && ! -f "${HOME}/.zshrc" ]] && PROFILE_FILE="${HOME}/.bashrc"
-
-BLOCK_START="# ── Onboarded (${TENANT}) ──"
-BLOCK_END="# ── /Onboarded ──"
-
-INJECT_BLOCK="${BLOCK_START}
-export OB_ROOT=\"${OB_ROOT_VALUE}\"
-export OB_TENANT=\"${TENANT}\"
-export OB_EDITOR=\"\${OB_EDITOR:-code}\"
-source \"${REPO_ROOT}/src/ob_dispatcher.zsh\"
-${BLOCK_END}"
-
-print "\n  Profile block to inject into ${PROFILE_FILE}:"
-print "  ─────────────────────────────────────────────"
-print "$INJECT_BLOCK"
-print "  ─────────────────────────────────────────────"
-
-# Check if already injected
-if grep -q "$BLOCK_START" "$PROFILE_FILE" 2>/dev/null; then
-    print "  ⚠  Block already present in ${PROFILE_FILE} — skipping injection"
-    print "  ✔  Update complete. Reload shell: source ${PROFILE_FILE}"
-else
-    printf '\n%s\n' "$INJECT_BLOCK" >> "$PROFILE_FILE"
-    print "  ✔  Injected into ${PROFILE_FILE}"
-    print "     Reload: source ${PROFILE_FILE}"
-fi
+# Profile wiring is delegated to ob_paths.py: it writes ~/.onboarded/paths.conf,
+# points ~/.onboarded/root at this checkout and adds ONE managed block to
+# ~/.zshrc that never contains a hard-coded repo path. (The old inline block
+# sourced "${REPO_ROOT}/src/ob_dispatcher.zsh", which does not exist.)
+"$PYTHON" "${MONO_ROOT}/packages/core/scripts/ob_paths.py" fix --apply \
+    --default-tenant "$TENANT" --repos-root "$OB_ROOT_VALUE"
+print "  Reload: exec zsh"
 
 print ""
 print "  Installation complete."

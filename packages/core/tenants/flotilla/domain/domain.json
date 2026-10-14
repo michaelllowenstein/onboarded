@@ -1,0 +1,1028 @@
+{
+  "$schema": "../../data/tenant.schema.json",
+  "version": "1.0.0",
+  "tenant": {
+    "slug": "flotilla",
+    "brand_name": "Equinor Flotilla + ISAR",
+    "cli_name": "ob",
+    "terminology": {
+      "operations": "operations",
+      "statuses": "mission / task / robot statuses",
+      "products": "robot types",
+      "queues": "MQTT topics",
+      "portals": "installations"
+    }
+  },
+  "config": {
+    "repos": {
+      "flotilla": {
+        "env": "FLOTILLA_REPO_FLOTILLA",
+        "default": "flotilla"
+      },
+      "isar": {
+        "env": "FLOTILLA_REPO_ISAR",
+        "default": "isar"
+      }
+    }
+  },
+  "operations": {
+    "schedule_mission": {
+      "label": "Schedule a mission run from a mission definition",
+      "controllers": [
+        "flotilla:backend/api/Controllers/MissionSchedulingController.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionSchedulingService.cs",
+        "flotilla:backend/api/Services/MissionRunService.cs"
+      ],
+      "queues": [],
+      "js": [],
+      "tables": [
+        "public.MissionRuns",
+        "public.MissionDefinitions"
+      ],
+      "clusters": [
+        "F-BUSY"
+      ]
+    },
+    "rerun_mission": {
+      "label": "Re-run an existing mission run",
+      "controllers": [
+        "flotilla:backend/api/Controllers/MissionSchedulingController.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionRunService.cs"
+      ],
+      "queues": [],
+      "js": [],
+      "tables": [
+        "public.MissionRuns"
+      ]
+    },
+    "start_next_mission": {
+      "label": "Start the next queued mission when the robot is free",
+      "controllers": [
+        "flotilla:backend/api/EventHandlers/MissionEventHandler.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionSchedulingService.cs",
+        "isar:src/isar/state_machine/state_machine.py"
+      ],
+      "queues": [],
+      "js": [],
+      "tables": [
+        "public.MissionRuns",
+        "public.Robots"
+      ],
+      "clusters": [
+        "F-BUSY",
+        "F-STUCK"
+      ]
+    },
+    "mission_status_update": {
+      "label": "ISAR reports mission progress; Flotilla updates the run",
+      "controllers": [
+        "flotilla:backend/api/EventHandlers/MqttEventHandler.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionRunService.cs",
+        "isar:src/isar/state_machine/states/monitor.py"
+      ],
+      "queues": [
+        "isar/+/mission/+"
+      ],
+      "js": [],
+      "tables": [
+        "public.MissionRuns"
+      ],
+      "clusters": [
+        "F-STUCK",
+        "F-NOMISSION"
+      ]
+    },
+    "task_status_update": {
+      "label": "ISAR reports task progress; Flotilla updates the task",
+      "controllers": [
+        "flotilla:backend/api/EventHandlers/MqttEventHandler.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionTaskService.cs"
+      ],
+      "queues": [
+        "isar/+/task/+"
+      ],
+      "js": [],
+      "tables": [
+        "public.MissionTasks"
+      ]
+    },
+    "abort_mission": {
+      "label": "Abort a mission run (ISAR reports aborted mission)",
+      "controllers": [
+        "flotilla:backend/api/EventHandlers/MqttEventHandler.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionSchedulingService.cs"
+      ],
+      "queues": [
+        "isar/+/aborted_mission"
+      ],
+      "js": [],
+      "tables": [
+        "public.MissionRuns",
+        "public.Robots"
+      ]
+    },
+    "robot_status": {
+      "label": "Robot status and availability",
+      "controllers": [
+        "flotilla:backend/api/Controllers/RobotController.cs",
+        "flotilla:backend/api/EventHandlers/MqttEventHandler.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/RobotService.cs",
+        "isar:src/isar/state_machine/state_machine.py"
+      ],
+      "queues": [
+        "isar/+/status",
+        "isar/+/robot_info"
+      ],
+      "js": [],
+      "tables": [
+        "public.Robots"
+      ],
+      "clusters": [
+        "F-OFFLINE",
+        "F-NOROBOT"
+      ]
+    },
+    "return_home": {
+      "label": "Send a robot back to its home position",
+      "controllers": [
+        "flotilla:backend/api/Controllers/ReturnToHomeController.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionSchedulingService.cs",
+        "isar:src/isar/state_machine/states/returning_home.py"
+      ],
+      "queues": [],
+      "js": [],
+      "tables": [
+        "public.Robots"
+      ]
+    },
+    "emergency_lockdown": {
+      "label": "Lock down all robots on an installation",
+      "controllers": [
+        "flotilla:backend/api/Controllers/EmergencyActionController.cs"
+      ],
+      "services": [
+        "isar:src/isar/state_machine/states/lockdown.py"
+      ],
+      "queues": [],
+      "js": [],
+      "tables": [
+        "public.Robots"
+      ]
+    },
+    "access_control": {
+      "label": "Installation access roles",
+      "controllers": [
+        "flotilla:backend/api/Controllers/AccessRoleController.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/AccessRoleService.cs"
+      ],
+      "queues": [],
+      "js": []
+    },
+    "inspection_areas": {
+      "label": "Inspection areas on a plant",
+      "controllers": [
+        "flotilla:backend/api/Controllers/InspectionAreaController.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/InspectionAreaService.cs"
+      ],
+      "queues": [],
+      "js": [],
+      "tables": [
+        "public.InspectionAreas"
+      ]
+    },
+    "mission_definitions": {
+      "label": "Create and edit mission definitions",
+      "controllers": [
+        "flotilla:backend/api/Controllers/MissionDefinitionController.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/MissionDefinitionService.cs"
+      ],
+      "queues": [],
+      "js": [],
+      "tables": [
+        "public.MissionDefinitions"
+      ]
+    },
+    "auto_schedule": {
+      "label": "Automatically scheduled missions",
+      "controllers": [
+        "flotilla:backend/api/Controllers/MissionDefinitionController.cs"
+      ],
+      "services": [
+        "flotilla:backend/api/Services/AutoScheduleService.cs"
+      ],
+      "queues": [],
+      "js": []
+    }
+  },
+  "statuses": {
+    "Pending": "MissionStatus — created, not yet sent to the robot",
+    "Queued": "MissionStatus — waiting for the robot to become available",
+    "Ongoing": "MissionStatus — robot executing; StartTime is set on entry (MissionRun.cs:36)",
+    "Paused": "MissionStatus — paused by operator or robot",
+    "Aborted": "MissionStatus — aborted (isar/+/aborted_mission)",
+    "Cancelled": "MissionStatus — cancelled before completion",
+    "Failed": "MissionStatus — ISAR reported failed",
+    "Successful": "MissionStatus — all tasks succeeded",
+    "PartiallySuccessful": "MissionStatus — some tasks failed",
+    "task:Successful": "TaskStatus — Successful",
+    "task:PartiallySuccessful": "TaskStatus — PartiallySuccessful",
+    "task:NotStarted": "TaskStatus — NotStarted",
+    "task:InProgress": "TaskStatus — InProgress",
+    "task:Failed": "TaskStatus — Failed",
+    "task:Cancelled": "TaskStatus — Cancelled",
+    "task:Paused": "TaskStatus — Paused",
+    "robot:Available": "RobotStatus — Available",
+    "robot:Busy": "RobotStatus — Busy",
+    "robot:Home": "RobotStatus — Home",
+    "robot:Offline": "RobotStatus — Offline",
+    "robot:BlockedProtectiveStop": "RobotStatus — BlockedProtectiveStop",
+    "robot:ReturningHome": "RobotStatus — ReturningHome",
+    "robot:ReturnHomePaused": "RobotStatus — ReturnHomePaused",
+    "robot:Paused": "RobotStatus — Paused",
+    "robot:UnknownStatus": "RobotStatus — UnknownStatus",
+    "robot:InterventionNeeded": "RobotStatus — InterventionNeeded",
+    "robot:Recharging": "RobotStatus — Recharging",
+    "robot:RechargingWithMission": "RobotStatus — RechargingWithMission",
+    "robot:Lockdown": "RobotStatus — Lockdown",
+    "robot:GoingToLockdown": "RobotStatus — GoingToLockdown",
+    "robot:GoingToRecharging": "RobotStatus — GoingToRecharging",
+    "robot:GoingToRechargingWithMission": "RobotStatus — GoingToRechargingWithMission",
+    "robot:Maintenance": "RobotStatus — Maintenance",
+    "robot:Pausing": "RobotStatus — Pausing",
+    "robot:PausingReturnHome": "RobotStatus — PausingReturnHome",
+    "robot:Stopping": "RobotStatus — Stopping",
+    "robot:StoppingReturnHome": "RobotStatus — StoppingReturnHome"
+  },
+  "status_triggers": {
+    "Ongoing": "ISAR 'in_progress' -> MissionRun.GetMissionStatusFromString (MissionRun.cs:101) -> Status setter sets StartTime",
+    "Aborted": "MqttEventHandler.OnIsarMissionAborted <- isar/+/aborted_mission",
+    "Queued": "MissionSchedulingController schedule/{missionDefinitionId} when the robot is busy"
+  },
+  "products": {},
+  "portals": {},
+  "queues": {
+    "isar/+/status": {
+      "label": "Robot status",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarStatus",
+      "description": "ISAR state machine status -> Robots.Status"
+    },
+    "isar/+/robot_info": {
+      "label": "Robot info",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarRobotInfo",
+      "description": "Robot registration and capabilities"
+    },
+    "isar/+/mission/+": {
+      "label": "Mission progress",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarMissionUpdate",
+      "description": "Mission status per run -> MissionRuns.Status"
+    },
+    "isar/+/task/+": {
+      "label": "Task progress",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarTaskUpdate",
+      "description": "Task status -> MissionTasks.Status"
+    },
+    "isar/+/aborted_mission": {
+      "label": "Mission aborted",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarMissionAborted",
+      "description": "Robot aborted a mission"
+    },
+    "isar/+/startup": {
+      "label": "ISAR startup",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarStartup",
+      "description": "Robot (re)started"
+    },
+    "isar/+/intervention_needed": {
+      "label": "Intervention needed",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarInterventionNeededUpdate",
+      "description": "Robot needs an operator"
+    },
+    "isar/+/battery": {
+      "label": "Battery",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarBatteryUpdate",
+      "description": "Battery level"
+    },
+    "isar/+/pose": {
+      "label": "Pose",
+      "consumer": "flotilla:backend/api/EventHandlers/MqttEventHandler.cs",
+      "webjobs": "OnIsarPoseUpdate",
+      "description": "Robot pose"
+    }
+  },
+  "qe_tests": {
+    "schedule_mission": {
+      "paths": [
+        "flotilla:backend/api.test/Controllers/MissionSchedulingControllerTests.cs",
+        "flotilla:backend/api.test/Services/MissionSchedulingService.cs"
+      ]
+    },
+    "robot_status": {
+      "paths": [
+        "flotilla:backend/api.test/Services/RobotService.cs"
+      ]
+    },
+    "access_control": {
+      "paths": [
+        "flotilla:backend/api.test/Services/AccessRoleService.cs"
+      ]
+    },
+    "mission_status_update": {
+      "paths": [
+        "flotilla:backend/api.test/EventHandlers/TestMissionEventHandler.cs",
+        "isar:tests/isar/state_machine/test_integration_test_for_states.py",
+        "isar:tests/isar/services/service_connections/test_mqtt_client.py"
+      ]
+    }
+  },
+  "glossary": {
+    "flotilla": {
+      "label": "Flotilla",
+      "definition": "Fleet management backend (ASP.NET Core + Postgres) that schedules robot missions and tracks robots.",
+      "see_also": [
+        "isar",
+        "mission_run"
+      ]
+    },
+    "isar": {
+      "label": "ISAR",
+      "definition": "Integration and Supervision of Autonomous Robots: Python service on/next to each robot, runs a state machine and talks to Flotilla over MQTT.",
+      "see_also": [
+        "flotilla",
+        "mqtt"
+      ]
+    },
+    "mqtt": {
+      "label": "MQTT",
+      "definition": "Message bus between ISAR and Flotilla; topics isar/<isar_id>/<topic>.",
+      "see_also": [
+        "isar"
+      ]
+    },
+    "installation": {
+      "label": "Installation",
+      "definition": "A site (e.g. an offshore platform or onshore plant) identified by InstallationCode; access roles are per installation.",
+      "see_also": [
+        "plant",
+        "access_role"
+      ]
+    },
+    "plant": {
+      "label": "Plant",
+      "definition": "A plant within an installation (Plants table).",
+      "see_also": [
+        "installation",
+        "inspection_area"
+      ]
+    },
+    "inspection_area": {
+      "label": "Inspection area",
+      "definition": "Area of a plant a robot inspects; missions and robots are tied to one.",
+      "see_also": [
+        "plant",
+        "mission_definition"
+      ]
+    },
+    "mission_definition": {
+      "label": "Mission definition",
+      "definition": "Reusable mission template (tasks, inspection area, optional auto-schedule).",
+      "see_also": [
+        "mission_run",
+        "auto_schedule"
+      ]
+    },
+    "mission_run": {
+      "label": "Mission run",
+      "definition": "One execution of a mission definition by a robot (MissionRuns table).",
+      "see_also": [
+        "mission_definition",
+        "task"
+      ]
+    },
+    "task": {
+      "label": "Task",
+      "definition": "One inspection step of a mission run (MissionTasks table).",
+      "see_also": [
+        "mission_run"
+      ]
+    },
+    "return_home": {
+      "label": "Return home",
+      "definition": "Robot drives back to its home pose; ISAR states returning_home / return_home_paused.",
+      "see_also": []
+    },
+    "lockdown": {
+      "label": "Lockdown",
+      "definition": "Emergency action that stops robots and sends them to a safe position.",
+      "see_also": [
+        "return_home"
+      ]
+    },
+    "access_role": {
+      "label": "Access role",
+      "definition": "Maps an installation to a role (AccessRoles table) used to filter what a user can see.",
+      "see_also": [
+        "installation"
+      ]
+    },
+    "auto_schedule": {
+      "label": "Auto-schedule",
+      "definition": "Recurring schedule on a mission definition; AutoScheduleService creates runs.",
+      "see_also": [
+        "mission_definition"
+      ]
+    }
+  },
+  "glossary_xrefs": {
+    "mission_status_update": "isar states/monitor.py:21 mqtt_queue.publish_mission_status (models/mqtt_queue.py:107) -> MQTT isar/<id>/mission/<run> -> MqttService.SubscribeToTopics -> MqttEventHandler.OnIsarMissionUpdate -> MissionRunService",
+    "start_next_mission": "MissionSchedulingService.StartNextMissionRunIfSystemIsAvailable (MissionSchedulingService.cs:32)",
+    "mission_run": "isar states/monitor.py:21 mqtt_queue.publish_mission_status (models/mqtt_queue.py:107) -> MQTT isar/<id>/mission/<run> -> MqttService.SubscribeToTopics -> MqttEventHandler.OnIsarMissionUpdate -> MissionRunService"
+  },
+  "scan_rules": {
+    "hardcoded_secret": {
+      "label": "Hardcoded credential",
+      "pattern": "password['\"]?\\s*[:=]\\s*['\"][^'\"]{4,}['\"]",
+      "severity": "critical",
+      "category": "security",
+      "scope": [
+        "*.cs",
+        "*.py",
+        "*.json",
+        "*.ts"
+      ],
+      "repos": [],
+      "exclude": [
+        "**/tests/**",
+        "**/api.test/**"
+      ],
+      "reference": "OWASP A02:2021",
+      "fixHint": "Move to environment variables or Key Vault."
+    },
+    "console_log": {
+      "label": "console.log in frontend code",
+      "pattern": "console\\.log\\(",
+      "severity": "warning",
+      "category": "convention",
+      "scope": [
+        "*.ts",
+        "*.tsx"
+      ],
+      "repos": [
+        "flotilla"
+      ],
+      "exclude": [
+        "**/tests/**"
+      ],
+      "reference": "internal",
+      "fixHint": "Use the app logger."
+    },
+    "todo_comment": {
+      "label": "TODO without issue reference",
+      "pattern": "TODO(?!.*#\\d+)",
+      "severity": "info",
+      "category": "convention",
+      "scope": [
+        "*.cs",
+        "*.py",
+        "*.ts",
+        "*.tsx"
+      ],
+      "repos": [],
+      "exclude": [],
+      "reference": "internal",
+      "fixHint": "Reference an issue: TODO #123"
+    },
+    "blocking_async": {
+      "label": "Blocking wait on async work",
+      "pattern": "\\.Wait\\(\\)|\\.Result\\b",
+      "severity": "warning",
+      "category": "architecture",
+      "scope": [
+        "*.cs"
+      ],
+      "repos": [
+        "flotilla"
+      ],
+      "exclude": [
+        "**/api.test/**"
+      ],
+      "reference": "Microsoft async guidance",
+      "fixHint": "await the task instead of .Wait()/.Result."
+    },
+    "async_void": {
+      "label": "async void method",
+      "pattern": "async void ",
+      "severity": "warning",
+      "category": "architecture",
+      "scope": [
+        "*.cs"
+      ],
+      "repos": [
+        "flotilla"
+      ],
+      "exclude": [
+        "**/api.test/**"
+      ],
+      "reference": "Microsoft async guidance",
+      "fixHint": "Return Task; async void exceptions crash the process."
+    }
+  },
+  "schema": {
+    "public.InspectionAreas": [
+      {
+        "name": "Id",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "InstallationId",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "IsDeprecated",
+        "type": "boolean",
+        "nullable": false
+      },
+      {
+        "name": "Name",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "PlantId",
+        "type": "text",
+        "nullable": false
+      }
+    ],
+    "public.Installations": [
+      {
+        "name": "Id",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "InstallationCode",
+        "type": "character varying(10)",
+        "nullable": false
+      },
+      {
+        "name": "Name",
+        "type": "character varying(200)",
+        "nullable": false
+      }
+    ],
+    "public.MissionDefinitions": [
+      {
+        "name": "Id",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "Comment",
+        "type": "character varying(1000)",
+        "nullable": true
+      },
+      {
+        "name": "InspectionAreaId",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "InstallationCode",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "IsAdHoc",
+        "type": "boolean",
+        "nullable": false
+      },
+      {
+        "name": "IsDeprecated",
+        "type": "boolean",
+        "nullable": false
+      },
+      {
+        "name": "LastSuccessfulRunId",
+        "type": "text",
+        "nullable": true
+      },
+      {
+        "name": "Name",
+        "type": "character varying(200)",
+        "nullable": false
+      }
+    ],
+    "public.MissionRuns": [
+      {
+        "name": "Id",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "Comment",
+        "type": "character varying(1000)",
+        "nullable": true
+      },
+      {
+        "name": "CreationTime",
+        "type": "timestamp with time zone",
+        "nullable": false
+      },
+      {
+        "name": "Description",
+        "type": "character varying(450)",
+        "nullable": true
+      },
+      {
+        "name": "EndTime",
+        "type": "timestamp with time zone",
+        "nullable": true
+      },
+      {
+        "name": "EstimatedTaskDuration",
+        "type": "bigint",
+        "nullable": true
+      },
+      {
+        "name": "InspectionAreaId",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "InstallationCode",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "IsDeprecated",
+        "type": "boolean",
+        "nullable": false
+      },
+      {
+        "name": "MissionId",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "Name",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "RobotId",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "StartTime",
+        "type": "timestamp with time zone",
+        "nullable": true
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "StatusReason",
+        "type": "character varying(450)",
+        "nullable": true
+      }
+    ],
+    "public.MissionTasks": [
+      {
+        "name": "Id",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "Description",
+        "type": "character varying(500)",
+        "nullable": true
+      },
+      {
+        "name": "EndTime",
+        "type": "timestamp with time zone",
+        "nullable": true
+      },
+      {
+        "name": "ErrorDescription",
+        "type": "text",
+        "nullable": true
+      },
+      {
+        "name": "MissionRunId",
+        "type": "text",
+        "nullable": true
+      },
+      {
+        "name": "SensorType",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "StartTime",
+        "type": "timestamp with time zone",
+        "nullable": true
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "TagId",
+        "type": "character varying(200)",
+        "nullable": true
+      },
+      {
+        "name": "TaskOrder",
+        "type": "integer",
+        "nullable": false
+      },
+      {
+        "name": "VideoDuration",
+        "type": "real",
+        "nullable": true
+      }
+    ],
+    "public.Plants": [
+      {
+        "name": "Id",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "InstallationId",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "Name",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "PlantCode",
+        "type": "character varying(10)",
+        "nullable": false
+      }
+    ],
+    "public.Robots": [
+      {
+        "name": "Id",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "AverageDurationPerTag",
+        "type": "real",
+        "nullable": true
+      },
+      {
+        "name": "CurrentInspectionAreaId",
+        "type": "text",
+        "nullable": true
+      },
+      {
+        "name": "CurrentInstallationId",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "CurrentMissionId",
+        "type": "text",
+        "nullable": true
+      },
+      {
+        "name": "Deprecated",
+        "type": "boolean",
+        "nullable": false
+      },
+      {
+        "name": "Host",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "IsarId",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "Name",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "Port",
+        "type": "integer",
+        "nullable": false
+      },
+      {
+        "name": "SerialNumber",
+        "type": "character varying(200)",
+        "nullable": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "nullable": false
+      },
+      {
+        "name": "Type",
+        "type": "text",
+        "nullable": false
+      }
+    ]
+  },
+  "sql_templates": {
+    "schema_probe": {
+      "description": "Column listing for any table (schema, table)",
+      "file": "schema_probe.sql"
+    },
+    "mission_run": {
+      "description": "One mission run with robot and tasks, by run Id",
+      "file": "mission_run.sql"
+    },
+    "stuck_missions": {
+      "description": "Ongoing runs with no StartTime, or Ongoing longer than N hours",
+      "file": "stuck_missions.sql"
+    },
+    "robot_missions": {
+      "description": "A robot's status, current mission and recent runs, by robot Name",
+      "file": "robot_missions.sql"
+    }
+  },
+  "clusters": {
+    "is offline": {
+      "label": "Robot offline when a mission was requested",
+      "code": "F-OFFLINE",
+      "target_table": "public.Robots",
+      "fix_mechanism": "Not a data fix: restore ISAR connectivity; Robots.Status follows isar/+/status",
+      "template": "robot_missions",
+      "variant_check": "RobotService.cs:108. Check the robot's last status update and ISAR health."
+    },
+    "could not be found": {
+      "label": "Robot Id unknown to Flotilla",
+      "code": "F-NOROBOT",
+      "target_table": "public.Robots",
+      "fix_mechanism": "Robot must register via isar/+/robot_info",
+      "template": "robot_missions",
+      "variant_check": "RobotService.cs:101 (or MissionSchedulingService.cs:233 'was not found in the database')."
+    },
+    "robot was not available when starting mission": {
+      "label": "Robot busy: another run still holds it",
+      "code": "F-BUSY",
+      "target_table": "public.MissionRuns",
+      "fix_mechanism": "If a run is stuck Ongoing, close it (ticket 2001 pattern)",
+      "template": "stuck_missions",
+      "variant_check": "Thrown at IsarService.cs:74 and :135 (RobotBusyException), caught in MissionSchedulingService.cs:221. Look for an Ongoing run with no StartTime."
+    },
+    "isar mission id": {
+      "label": "MQTT update for a mission Flotilla does not know",
+      "code": "F-NOMISSION",
+      "target_table": "public.MissionRuns",
+      "fix_mechanism": "Usually a run deleted while the robot still executes it; abort on the robot side",
+      "template": "mission_run",
+      "variant_check": "MissionRunService.cs:492."
+    },
+    "could not reach isar": {
+      "label": "Flotilla cannot reach the robot's ISAR API",
+      "code": "F-ISARDOWN",
+      "target_table": "public.Robots",
+      "fix_mechanism": "Network / ISAR process; no data fix",
+      "template": "robot_missions",
+      "variant_check": "MissionSchedulingService.cs:312 (\"Could not reach ISAR at {robot.IsarUri}\")."
+    },
+    "stuck ongoing": {
+      "label": "Mission run stuck Ongoing without StartTime",
+      "code": "F-STUCK",
+      "target_table": "public.MissionRuns",
+      "fix_mechanism": "UPDATE Status to Aborted with StatusReason and EndTime (ticket 2001)",
+      "template": "stuck_missions",
+      "variant_check": "Invariant from MissionRun.cs:36 — Ongoing always has StartTime when set through the model."
+    }
+  },
+  "config_keys": {
+    "use_in_memory_db": {
+      "key": "Database:UseInMemoryDatabase",
+      "type": "bool",
+      "category": "connection",
+      "environments": {
+        "local": "true",
+        "development": "false",
+        "staging": "false",
+        "production": "false"
+      },
+      "related": [
+        "Database:InitializeInMemDb"
+      ],
+      "notes": "Local runs on an in-memory DB; every other environment on Postgres."
+    },
+    "db_server": {
+      "key": "Database:Server",
+      "type": "string",
+      "category": "connection",
+      "environments": {
+        "local": "(in-memory)",
+        "development": "robotics-dev-psql-server",
+        "staging": "robotics-staging-psql-server",
+        "production": "robotics-prod-psql-server"
+      },
+      "related": [
+        "Database:PostgresDatabase",
+        "Database:User"
+      ],
+      "notes": "From appsettings.<Environment>.json."
+    },
+    "otel_enabled": {
+      "key": "OpenTelemetry:Enabled",
+      "type": "bool",
+      "category": "observability",
+      "environments": {
+        "local": "true",
+        "development": "true",
+        "staging": "(not set)",
+        "production": "(not set)"
+      },
+      "related": [
+        "OpenTelemetry:OtelExporterOtlpEndpoint"
+      ],
+      "notes": "Unset in Staging/Production appsettings."
+    },
+    "mqtt_host": {
+      "key": "Mqtt:Host",
+      "type": "string",
+      "category": "connection",
+      "environments": {
+        "local": "localhost",
+        "development": "localhost",
+        "staging": "localhost",
+        "production": "localhost"
+      },
+      "related": [
+        "Mqtt:Port",
+        "Mqtt:Topics"
+      ],
+      "notes": "Base appsettings.json; docker compose overrides with Mqtt__Host=broker."
+    }
+  },
+  "env_config": {
+    "env_names": [
+      "local",
+      "development",
+      "staging",
+      "production"
+    ],
+    "instances": {
+      "local": "appsettings.Local.json",
+      "development": "appsettings.Development.json",
+      "staging": "appsettings.Staging.json",
+      "production": "appsettings.Production.json"
+    }
+  },
+  "ticket_config": {
+    "submission_email": "",
+    "package_files": "README.md;diagnostic.sql;dryrun.sql;fix.sql;rollback.sql",
+    "scaffold_dir": "templates/flotilla/scaffolds"
+  },
+  "trace_config": {
+    "delimiter": "--->",
+    "skip_types": "TypeLoadException;ReflectionTypeLoadException"
+  },
+  "db_schema": {
+    "dialect": "postgres",
+    "database": "ob_flotilla"
+  }
+}

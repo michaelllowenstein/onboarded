@@ -50,8 +50,8 @@ STATE_FILE = ".onboarded-release.json"            # lives in DEST
 
 DEFAULTS = {
     "DEST": "~/onboarded",
-    "TENANTS": "msi",
-    "SMOKE_TENANT": "msi",
+    "TENANTS": "generic",
+    "SMOKE_TENANT": "generic",
     "VALIDATE": "1",
     "SMOKE": "1",
     "KEEP_BACKUPS": "5",

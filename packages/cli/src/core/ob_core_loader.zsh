@@ -6,7 +6,7 @@
 typeset -g _OB_LOADER_LOADED=1
 
 _ob_load_tenant() {
-    local tenant="${OB_TENANT:-msi}"
+    local tenant="${OB_TENANT:-generic}"
     local slug_upper="${tenant:u}"          # msi → MSI, generic → GENERIC
 
     # OB_NAV_SLUG is the prefix for every generated array name.
@@ -16,7 +16,16 @@ _ob_load_tenant() {
     # Resolve repo root from this file's absolute path.
     # Chain: ob_core_loader.zsh → core/ → src/ → cli/ → packages/ → repo root
     local loader_path="${${(%):-%x}:A}"
-    local repo_root="${ONBOARDED_DIR:-${loader_path:h:h:h:h:h}}"
+    # The loader's own location wins. ONBOARDED_DIR is only honoured when it
+    # points at a real onboarded checkout, so a stale export can't break loading.
+    local repo_root="${loader_path:h:h:h:h:h}"
+    if [[ -n "${ONBOARDED_DIR:-}" && "${ONBOARDED_DIR:A}" != "$repo_root" ]]; then
+        if [[ -f "${ONBOARDED_DIR}/packages/cli/src/ob_dispatcher.zsh" ]]; then
+            repo_root="${ONBOARDED_DIR:A}"
+        else
+            printf >&2 '\033[0;33monboarded:\033[0m ignoring stale ONBOARDED_DIR=%s (using %s). Run: obpaths check\n' "$ONBOARDED_DIR" "$repo_root"
+        fi
+    fi
 
     local nav_maps="${repo_root}/packages/core/generated/${tenant}/nav_maps.zsh"
     local scan_rules="${repo_root}/packages/core/generated/${tenant}/scan_rules.zsh"

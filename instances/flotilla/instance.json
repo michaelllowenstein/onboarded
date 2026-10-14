@@ -1,0 +1,31 @@
+{
+  "slug": "flotilla",
+  "name": "Equinor Flotilla + ISAR",
+  "industry": "energy-oil-gas",
+  "classification": "public",
+  "status": "cloned",
+  "created": "2026-10-09T19:13:07Z",
+  "repos": [
+    {
+      "key": "flotilla",
+      "url": "https://github.com/equinor/flotilla.git",
+      "ref": "main",
+      "dir": "flotilla",
+      "commit": "fdab8b1d5db384285e2cb910a3f2191c81b8379f"
+    },
+    {
+      "key": "isar",
+      "url": "https://github.com/equinor/isar.git",
+      "ref": "main",
+      "dir": "isar",
+      "commit": "8e6407021b74e6ca0c92a27e6f8f0d277a5b8af9"
+    }
+  ],
+  "db": {
+    "dialect": "postgres",
+    "name": "ob_flotilla",
+    "source": ""
+  },
+  "notes": "Baseline v1 \u2014 pinned commits; see benchmarks/baseline-v1/",
+  "updated": "2026-10-13T18:02:52Z"
+}

@@ -56,7 +56,19 @@ _ob_dba() {
         "$py" -m dba --tenant "${OB_NAV_SLUG:l}" "$@"
 }
 
-_ob_bootstrap || { print -u2 "onboarded: bootstrap failed"; return 1; }
+# Never return before `onboarded` / `ob` are defined (below). A tenant that
+# fails to load falls back to `generic`; if even that fails the commands still
+# exist and explain what to run, instead of "command not found".
+typeset -g _OB_DEGRADED=""
+if ! _ob_bootstrap; then
+    if [[ "${OB_TENANT:-generic}" != generic ]]; then
+        print -u2 "onboarded: tenant '${OB_TENANT}' failed to load — using 'generic'. Fix: obi generate ${OB_TENANT}   (or: obpaths check)"
+        export OB_TENANT=generic OB_NAV_SLUG=GENERIC
+        _ob_bootstrap || _OB_DEGRADED="generic tenant failed to load"
+    else
+        _OB_DEGRADED="generic tenant failed to load"
+    fi
+fi
 
 # ── Help ─────────────────────────────────────────────────────────────────────
 _ob_help() {
@@ -68,8 +80,8 @@ _ob_help() {
 
     _ob_cyan "  NAVIGATION"
     printf '  %-38s  %s\n' "${cli} where <operation>"     "code + data + clusters for an operation"
-    printf '  %-38s  %s\n' "${cli} product [key]"          "product line profile"
-    printf '  %-38s  %s\n' "${cli} status [code]"          "policy status code"
+    printf '  %-38s  %s\n' "${cli} product [key]"          "product / component profile"
+    printf '  %-38s  %s\n' "${cli} status [code]"          "status / state code"
     printf '  %-38s  %s\n' "${cli} explain [term]"         "domain glossary"
     printf '  %-38s  %s\n' "${cli} portal [key]"           "portal directory"
     printf '  %-38s  %s\n' "${cli} queue [partial]"        "message queue cross-reference"
@@ -81,7 +93,7 @@ _ob_help() {
         printf '  %-38s  %s\n' "${cli} schema <table>"          "cached columns + Q0 probe"
         printf '  %-38s  %s\n' "${cli} sql <template> [args]"   "filled diagnostic SQL"
         printf '  %-38s  %s\n' "${cli} cluster <error>"         "classify error → cluster"
-        printf '  %-38s  %s\n' "${cli} policy <identifier>"     "policy lookup SQL"
+        printf '  %-38s  %s\n' "${cli} policy <identifier>"     "entity lookup SQL (tenant-configured)"
         printf '  %-38s  %s\n' "${cli} dba <cmd>"               "run ticket SQL (packages/dba)"
         printf '\n'
     fi
@@ -128,6 +140,12 @@ _ob_help() {
 
 # ── Main dispatcher ──────────────────────────────────────────────────────────
 onboarded() {
+    if [[ -n "$_OB_DEGRADED" ]]; then
+        print -u2 "onboarded: not usable — ${_OB_DEGRADED}."
+        print -u2 "  1. python3 \"${_OB_DISPATCHER_DIR:A:h:h:h}/packages/core/scripts/generate_adapters.py\" --all"
+        print -u2 "  2. \"${_OB_DISPATCHER_DIR:A:h:h:h}/install.sh\" --check"
+        return 2
+    fi
     local cmd="${1:l}"; shift 2>/dev/null
 
     case "$cmd" in

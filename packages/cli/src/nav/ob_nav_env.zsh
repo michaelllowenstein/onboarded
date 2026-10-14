@@ -89,7 +89,7 @@ _ob_env_lookup() {
 
     local related="${rest%%|*}"; rest="${rest#*|}"
     local notes="${rest%%|*}"
-    [[ -n "$related" && "$related" != "-" ]] && { print ""; _ob_yellow "  Related:"; printf "    %s\n" "${related//,/$'\n    '}"; }
+    [[ -n "$related" && "$related" != "-" ]] && { print ""; _ob_yellow "  Related:"; printf "    %s\n" "${(@s:,:)related}"; }
     [[ -n "$notes" && "$notes" != "-" ]] && { print ""; _ob_dim "  Note: ${notes}"; }
     _ob_sep
 }

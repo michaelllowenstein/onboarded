@@ -1,0 +1,41 @@
+<div class="ob-shell" [class.sidebar-collapsed]="sidebarCollapsed()">
+    <!-- Sidebar -->
+    <aside class="ob-sidebar">
+        <div class="ob-sidebar__header">
+            <div class="ob-brand">
+                <span class="ob-brand__icon">◆</span>
+                <span class="ob-brand__text" *ngIf="!sidebarCollapsed()">
+                    {{ domain.brandName }}
+                </span>
+            </div>
+            <button class="ob-sidebar__toggle" (click)="sidebarCollapsed.set(!sidebarCollapsed())"
+                [attr.aria-label]="sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+                {{ sidebarCollapsed() ? '▸' : '◂' }}
+            </button>
+        </div>
+
+        <nav class="ob-sidebar__nav">
+            @for (item of navItems; track item.path) {
+            <a class="ob-nav-link" [routerLink]="item.path" routerLinkActive="ob-nav-link--active">
+                <span class="ob-nav-link__icon">{{ item.icon }}</span>
+                @if (!sidebarCollapsed()) {
+                <span class="ob-nav-link__label">{{ item.label }}</span>
+                }
+            </a>
+            }
+        </nav>
+
+        <div class="ob-sidebar__footer">
+            <span class="ob-sidebar__meta">
+                @if (!sidebarCollapsed()) {
+                {{ domain.cliName }} · v4.0.0
+                }
+            </span>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="ob-main">
+        <router-outlet />
+    </main>
+</div>

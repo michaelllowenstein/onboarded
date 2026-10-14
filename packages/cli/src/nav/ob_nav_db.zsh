@@ -155,7 +155,7 @@ ob_schema() {
                 (( col_id++ ))
                 local cname="${col_entry%%:*}"; local crest="${col_entry#*:}"
                 local ctype="${crest%%:*}";     local cnull="${crest##*:}"
-                local null_label; [[ "$cnull" == "1" ]] && null_label="NULL    " || null_label="NOT NULL"
+                local null_label=""; [[ "$cnull" == "1" ]] && null_label="NULL    " || null_label="NOT NULL"
                 printf "    %3d  %-38s  %-16s  %s\n" "$col_id" "$cname" "$ctype" "$null_label"
             done
             print ""
@@ -367,7 +367,7 @@ ob_policy() {
 
     # N'' is T-SQL only; Postgres string literals are plain ''.
     local nq="N"; [[ "$(_ob_db_dialect)" == postgres ]] && nq=""
-    local sql
+    local sql=""
     read -r -d '' sql << ENDSQL
 -- Policy lookup — ${prefix}${number}
 SELECT

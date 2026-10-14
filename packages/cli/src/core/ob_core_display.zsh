@@ -30,7 +30,7 @@ _ob_print_path() {
     if [[ "$entry" == *:* ]]; then
         local repo="${entry%%:*}"
         local rel="${entry#*:}"
-        local root
+        local root=""
         eval "root=\"\${${repos_arr}[${repo}]}\""
         if [[ -z "$root" ]]; then
             printf '  \033[2m○\033[0m  \033[2m%s\033[0m  \033[0;33m(repo not mapped)\033[0m\n' "$entry"

@@ -290,7 +290,7 @@ ob_grep() {
     local found=0
     for alias root in "${(@kv)repos}"; do
         [[ -d "$root" ]] || continue
-        local hits
+        local hits=""
         if command -v rg &>/dev/null; then
             hits=$(rg --color=never -l "$pattern" "$root" 2>/dev/null)
         else
@@ -356,7 +356,7 @@ ob_doctor() {
             for p in "${paths[@]}"; do
                 [[ -z "$p" || "$p" != *:* ]] && continue
                 local repo="${p%%:*}" rel="${p#*:}"
-                local root; eval "root=\"\${${repos_arr}[$repo]}\""
+                local root=""; eval "root=\"\${${repos_arr}[$repo]}\""
                 [[ -z "$root" ]] && continue
                 [[ ! -e "${root}/${rel}" ]] && {
                     printf '  \033[2m○\033[0m  %-18s  \033[0;31m%s\033[0m  (stale)\n' "$op" "$p"

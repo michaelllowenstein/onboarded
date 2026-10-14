@@ -241,6 +241,13 @@ def emit_nav_maps_zsh(domain: dict, tenant: str) -> str:
             lines.append(f'{slug}_GLOSSARY["{zsh_safe(term_id)}"]=' + f'"{zsh_safe(value)}"')
         lines.append("")
 
+    # Glossary cross-references: code path shown by `explain <term>` / `where <op>`
+    if domain.get("glossary_xrefs"):
+        lines += [f"typeset -gA {slug}_GLOSSARY_XREFS"]
+        for k, v in domain["glossary_xrefs"].items():
+            lines.append(f'{slug}_GLOSSARY_XREFS["{zsh_safe(k)}"]=' + f'"{zsh_safe(v)}"')
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -387,6 +394,11 @@ def emit_nav_maps_ps1(domain: dict, tenant: str) -> str:
             see_also   = ";".join(term.get("see_also", []))
             value      = f"{label}|{definition}|{see_also}"
             lines.append(f"$global:{slug}_GLOSSARY['{ps1_safe(term_id)}'] = '{ps1_safe(value)}'")
+
+    if domain.get("glossary_xrefs"):
+        lines += ["", f"$global:{slug}_GLOSSARY_XREFS = @{{}}"]
+        for k, v in domain["glossary_xrefs"].items():
+            lines.append(f"$global:{slug}_GLOSSARY_XREFS['{ps1_safe(k)}'] = '{ps1_safe(v)}'")
 
     lines.append("")
     return "\n".join(lines)

@@ -1,432 +1,116 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# justfile — msi-nav ↔ onboarded swap harness + PR gate runner
-# https://github.com/casey/just   (install: brew install just)
+# justfile — onboarded task runner           https://github.com/casey/just
 #
-# WHAT IS .bats?
-# ──────────────
-# .bats files are test scripts written in the Bash Automated Testing System
-# (bats-core). Each @test block is an independent test case. bats runs them
-# in isolation — each test gets a clean subshell — and reports pass/fail in
-# TAP (Test Anything Protocol) format.
+#   just                 list recipes
+#   just install         clean install (idempotent): paths, shell wiring, launchers, adapters, self-test
+#   just status          what is installed, which tenant/instance is active, is it healthy
+#   just smoke           quick battery against the default tenant
+#   just baseline        record a Baseline run (Flotilla + ISAR) with full provenance
 #
-# The anatomy of a bats test:
-#
-#   @test "msi where bind: exits 0" {
-#       run ob_where bind          # `run` captures stdout, stderr, exit code
-#       [ "$status" -eq 0 ]        # assert exit code
-#       [[ "$output" == *"BasePolicyController"* ]]   # assert output content
-#   }
-#
-# Key bats variables (set by `run`):
-#   $status  — exit code of the last `run` command
-#   $output  — combined stdout+stderr of the last `run` command
-#   $lines   — $output split into an array by newline
-#
-# Why bats for shell CLI tests?
-#   Shell functions cannot be tested with Jest or pytest because they live in
-#   the shell's runtime, not in a process with a stable stdin/stdout. bats is
-#   the standard tool for this: it sources your shell files and asserts on
-#   the output and exit codes of your functions, exactly as a user would
-#   experience them. The `setup()` function runs before each test — it sources
-#   the adapters and engine files so each test gets a clean, fully-loaded
-#   engine without carrying state from previous tests.
-#
-# Our three bats suites:
-#   test_nav_generic.bats  — engine correctness against the 10-op generic tenant
-#   test_nav_msi.bats      — engine correctness against the full MSI domain
-#   test_scan_msi.bats     — scan engine field extraction, rule loading, b64 decode
-#
+# Nothing here hard-codes a path. ONBOARDED_DIR is this file's directory; the
+# paths outside the repo come from ~/.onboarded/paths.conf (see docs/development/paths.md).
+# msi-nav is no longer part of the workflow; its swap/diff harness survives only
+# as the optional `legacy-*` recipes at the bottom.
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ── Configurable paths ────────────────────────────────────────────────────────
-MSI_NAV_DIR   := env_var_or_default("MSI_NAV_DIR",   home_directory() + "/msi-nav")
-ONBOARDED_DIR := env_var_or_default("ONBOARDED_DIR", home_directory() + "/develop/integrations/onboarded")
-OB_TENANT     := env_var_or_default("OB_TENANT",     "msi")
-SNAPSHOT_FILE := ONBOARDED_DIR + "/.msi-nav-snapshot.sha"
-BATS          := env_var_or_default("BATS", `which bats 2>/dev/null || echo bats`)
+set shell := ["bash", "-uc"]
 
-# ── Derived paths ─────────────────────────────────────────────────────────────
+ONBOARDED_DIR := justfile_directory()
+CONF          := env_var("HOME") + "/.onboarded/paths.conf"
+# Default tenant: $OB_TENANT → paths.conf OB_DEFAULT_TENANT → flotilla (if generated) → generic
+OB_TENANT     := `sh -c '[ -r "$HOME/.onboarded/paths.conf" ] && . "$HOME/.onboarded/paths.conf"; t="${OB_TENANT:-${OB_DEFAULT_TENANT:-}}"; [ -z "$t" ] && { [ -f packages/core/generated/flotilla/nav_maps.zsh ] && t=flotilla || t=generic; }; printf %s "$t"'`
+MSI_NAV_DIR   := `sh -c '[ -r "$HOME/.onboarded/paths.conf" ] && . "$HOME/.onboarded/paths.conf"; printf %s "${MSI_NAV_DIR:-}"'`
+BATS          := env_var_or_default("BATS", `command -v bats 2>/dev/null || echo bats`)
+PROFILE       := ONBOARDED_DIR + "/packages/cli/src/ob_profile.zsh"
 OB_GENERATED  := ONBOARDED_DIR + "/packages/core/generated/" + OB_TENANT
-OB_DISPATCHER := ONBOARDED_DIR + "/packages/cli/src/ob_dispatcher.zsh"
-OB_VALIDATE   := ONBOARDED_DIR + "/packages/core/scripts/validate_domain.py"
-OB_GENERATE   := ONBOARDED_DIR + "/packages/core/scripts/generate_adapters.py"
+PY            := "python3"
 
-# ── Shared zsh source block used by every CLI invocation ─────────────────────
-# Written as a variable so it's maintained in one place.
-OB_SOURCE_BLOCK := 'export OB_TENANT=' + OB_TENANT + ' OB_NAV_SLUG=' + uppercase(OB_TENANT) + '; \
-    source "' + ONBOARDED_DIR + '/packages/core/generated/' + OB_TENANT + '/nav_maps.zsh"; \
-    source "' + ONBOARDED_DIR + '/packages/core/generated/' + OB_TENANT + '/scan_rules.zsh"; \
-    source "' + ONBOARDED_DIR + '/packages/cli/src/core/ob_core_display.zsh"; \
-    source "' + ONBOARDED_DIR + '/packages/cli/src/core/ob_core_loader.zsh"; \
-    source "' + ONBOARDED_DIR + '/packages/cli/src/nav/ob_nav_engine.zsh"; \
-    source "' + ONBOARDED_DIR + '/packages/cli/src/scan/ob_scan_engine.zsh"; \
-    source "' + ONBOARDED_DIR + '/packages/cli/src/ob_dispatcher.zsh" 2>/dev/null'
+# One non-interactive zsh with onboarded loaded for OB_TENANT (no ~/.zshrc involved).
+OB_ZSH := 'OB_TENANT=' + OB_TENANT + ' zsh -f -c'
 
-# ─────────────────────────────────────────────────────────────────────────────
 default:
     @just --list --unsorted
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STATUS
+# INSTALL
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Clean, idempotent install. Options pass through, e.g. just install --tenant flotilla
+install *ARGS:
+    @{{ONBOARDED_DIR}}/install.sh {{ARGS}}
+
+# Verify an install without changing anything
+install-check:
+    @{{ONBOARDED_DIR}}/install.sh --check
+
+# Remove shell wiring and launchers (keeps instances, databases and workspace)
+uninstall *ARGS:
+    @{{ONBOARDED_DIR}}/install.sh --uninstall {{ARGS}}
+
+# Foundational paths: check | where | fix --apply | restore <id> --apply
+paths *ARGS:
+    @{{PY}} {{ONBOARDED_DIR}}/packages/core/scripts/ob_paths.py {{ARGS}}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STATUS / GENERATION / SHELL
 # ─────────────────────────────────────────────────────────────────────────────
 
 status:
     @echo ""
-    @echo "  ── msi-nav (stable) ──────────────────────────────────────────────"
-    @echo "  Path:   {{MSI_NAV_DIR}}"
-    @if [ -d "{{MSI_NAV_DIR}}/.git" ]; then \
-        echo "  Branch: $(git -C {{MSI_NAV_DIR}} branch --show-current 2>/dev/null)"; \
-        echo "  Commit: $(git -C {{MSI_NAV_DIR}} log -1 --format='%h %s' 2>/dev/null)"; \
-        echo "  Dirty:  $(git -C {{MSI_NAV_DIR}} status --short 2>/dev/null | wc -l | tr -d ' ') file(s) changed"; \
-    fi
-    @echo ""
-    @echo "  ── onboarded (in progress) ───────────────────────────────────────"
-    @echo "  Path:   {{ONBOARDED_DIR}}"
-    @if [ -d "{{ONBOARDED_DIR}}/.git" ]; then \
-        echo "  Branch: $(git -C {{ONBOARDED_DIR}} branch --show-current 2>/dev/null)"; \
-        echo "  Commit: $(git -C {{ONBOARDED_DIR}} log -1 --format='%h %s' 2>/dev/null)"; \
-    fi
-    @echo "  Tenant: {{OB_TENANT}}"
-    @[ -f "{{OB_GENERATED}}/nav_maps.zsh" ] \
-        && echo "  Adapters: ✔ generated" \
-        || echo "  Adapters: ✗ missing — run: just generate"
+    @echo "  ── onboarded ─────────────────────────────────────────────────────"
+    @echo "  Path:     {{ONBOARDED_DIR}}"
+    @[ -d "{{ONBOARDED_DIR}}/.git" ] && echo "  Commit:   $(git -C {{ONBOARDED_DIR}} log -1 --format='%h %s' 2>/dev/null)" || true
+    @echo "  Tenant:   {{OB_TENANT}}   (active instance: $(cat ~/.onboarded/active 2>/dev/null || echo none))"
+    @[ -f "{{OB_GENERATED}}/nav_maps.zsh" ] && echo "  Adapters: ✔ generated" || echo "  Adapters: ✗ missing — run: just generate"
+    @command -v onboarded >/dev/null 2>&1 && echo "  Launcher: ✔ $(command -v onboarded)" || echo "  Launcher: ✗ not on PATH — run: just install"
+    @{{PY}} {{ONBOARDED_DIR}}/packages/core/scripts/ob_paths.py check 2>/dev/null | tail -2 | sed 's/^/  /'
     @echo ""
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STABLE STATE — snapshot + verify msi-nav has not changed
-# ─────────────────────────────────────────────────────────────────────────────
-
-snapshot:
-    @echo "  Snapshotting msi-nav → {{SNAPSHOT_FILE}}"
-    @find {{MSI_NAV_DIR}} -type f \( -name "*.zsh" -o -name "*.sh" -o -name "*.py" -o -name "*.json" \) \
-        | sort | xargs sha256sum > {{SNAPSHOT_FILE}}
-    @echo "  ✔  $(wc -l < {{SNAPSHOT_FILE}} | tr -d ' ') files recorded"
-    @[ -d "{{MSI_NAV_DIR}}/.git" ] \
-        && echo "  At commit: $(git -C {{MSI_NAV_DIR}} log -1 --format='%h %s')" || true
-
-verify-stable:
-    @[ -f "{{SNAPSHOT_FILE}}" ] || { echo "  No snapshot. Run: just snapshot"; exit 1; }
-    @find {{MSI_NAV_DIR}} -type f \( -name "*.zsh" -o -name "*.sh" -o -name "*.py" -o -name "*.json" \) \
-        | sort | xargs sha256sum > /tmp/ob_msinav_check.sha
-    @diff -q {{SNAPSHOT_FILE}} /tmp/ob_msinav_check.sha > /dev/null 2>&1 \
-        && echo "  ✔  msi-nav STABLE — no changes since snapshot" \
-        || { echo "  ✗  msi-nav has changed:"; diff {{SNAPSHOT_FILE}} /tmp/ob_msinav_check.sha | grep '^[<>]' | head -20; exit 1; }
-
-verify-zshrc:
-    @echo "  Checking ~/.zshrc for msi-nav …"
-    @grep -n "msi-nav\|msi_nav\|msi_domain" ~/.zshrc 2>/dev/null \
-        && echo "  ✔  msi-nav wired into ~/.zshrc" \
-        || echo "  ✗  msi-nav not found in ~/.zshrc"
-
-check: verify-stable verify-zshrc status
-
-which-msi:
-    @echo "  In your current login shell, 'msi' resolves to:"
-    @zsh -i -c 'type msi 2>/dev/null || echo "(not found)"'
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GENERATION
-# ─────────────────────────────────────────────────────────────────────────────
-
-generate:
-    @echo "  Validating {{OB_TENANT}} domain.json …"
-    @cd {{ONBOARDED_DIR}} && python3 {{OB_VALIDATE}} --tenant {{OB_TENANT}}
-    @echo "  Generating adapters …"
-    @cd {{ONBOARDED_DIR}} && python3 {{OB_GENERATE}} --tenant {{OB_TENANT}}
-    @echo "  ✔  {{OB_GENERATED}}/"
-    @ls -1 {{OB_GENERATED}}/
+# Validate + generate adapters for one tenant (default: the current tenant)
+generate TENANT=OB_TENANT:
+    @cd {{ONBOARDED_DIR}} && {{PY}} packages/core/scripts/validate_domain.py --tenant {{TENANT}}
+    @cd {{ONBOARDED_DIR}} && {{PY}} packages/core/scripts/generate_adapters.py --tenant {{TENANT}}
 
 generate-all:
-    @cd {{ONBOARDED_DIR}} && python3 {{OB_VALIDATE}} --all
-    @cd {{ONBOARDED_DIR}} && python3 {{OB_GENERATE}} --all
-    @echo "  ✔  All tenants generated"
+    @cd {{ONBOARDED_DIR}} && {{PY}} packages/core/scripts/validate_domain.py --all
+    @cd {{ONBOARDED_DIR}} && {{PY}} packages/core/scripts/generate_adapters.py --all
 
-# ─────────────────────────────────────────────────────────────────────────────
-# INTERACTIVE SHELL — onboarded active, msi-nav inactive
-# ─────────────────────────────────────────────────────────────────────────────
-
+# Interactive zsh with onboarded loaded and nothing from your ~/.zshrc
 shell:
-    @just _check-generated
-    @echo ""
-    @echo "  ── Onboarded shell (tenant: {{OB_TENANT}}) ───────────────────────"
-    @echo "  msi-nav is NOT active in this session."
-    @echo "  Commands: msi where bind  /  msi status 36  /  msi explain fnol"
-    @echo "  Type 'exit' to return to your normal shell."
-    @echo ""
-    @# A fresh `exec zsh` would drop every sourced function, so load them from a throwaway ZDOTDIR instead.
-    @d="$(mktemp -d)"; printf '%s\n' '{{OB_SOURCE_BLOCK}}' 'echo "  ✔  onboarded ready"' > "$d/.zshrc"; ZDOTDIR="$d" zsh -i || true; rm -rf "$d"
+    @d="$(mktemp -d)"; printf 'export OB_TENANT=%s\nsource "%s"\necho "  ✔ onboarded ready (tenant %s)"\n' "{{OB_TENANT}}" "{{PROFILE}}" "{{OB_TENANT}}" > "$d/.zshrc"; ZDOTDIR="$d" zsh -i || true; rm -rf "$d"
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SMOKE TESTS — four canonical commands, onboarded engine
-# ─────────────────────────────────────────────────────────────────────────────
-
-smoke:
-    @just _check-generated
-    @echo ""
-    @echo "  ── Smoke: {{OB_TENANT}} tenant ───────────────────────────────────"
-    @just _run-cmd "onboarded where bind"
-    @just _run-cmd "onboarded status 36"
-    @just _run-cmd "onboarded explain fnol"
-    @just _run-cmd "onboarded product renters"
-    @echo "  ── Smoke complete ────────────────────────────────────────────────"
-
-# Run a single command through onboarded. Usage: just run "onboarded where bind"
-# Note: use 'onboarded' not 'msi' — the msi alias only works in your login shell
+# Run one command through onboarded. Usage: just run "onboarded where schedule_mission"
 run CMD:
-    @just _check-generated
-    @just _run-cmd "{{CMD}}"
+    @{{OB_ZSH}} 'source "{{PROFILE}}"; {{CMD}}'
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BATS TEST SUITES
+# TESTS
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Run all three bats suites
+# Quick battery (3 items per map) against the current tenant
+smoke:
+    @zsh {{ONBOARDED_DIR}}/packages/cli/tests/battery/ob_battery.zsh --tenant {{OB_TENANT}} --max 3 --quiet
+
+# Shell suites + DBA unit tests
 test:
-    @just _check-generated
-    @echo ""
-    @echo "  ── bats: test_nav_generic ────────────────────────────────────────"
     @{{BATS}} {{ONBOARDED_DIR}}/packages/cli/tests/bats/nav/test_nav_generic.bats --formatter tap
-    @echo ""
-    @echo "  ── bats: test_nav_msi ────────────────────────────────────────────"
     @{{BATS}} {{ONBOARDED_DIR}}/packages/cli/tests/bats/nav/test_nav_msi.bats --formatter tap
-    @echo ""
-    @echo "  ── bats: test_scan_msi ───────────────────────────────────────────"
     @{{BATS}} {{ONBOARDED_DIR}}/packages/cli/tests/bats/scan/test_scan_msi.bats --formatter tap
+    @just dba-test
 
-test-nav:
-    @just _check-generated
-    @{{BATS}} {{ONBOARDED_DIR}}/packages/cli/tests/bats/nav/test_nav_msi.bats --formatter tap
+# Full command battery. Usage: just battery --tenant flotilla --db --dba --instance
+battery *ARGS:
+    @zsh {{ONBOARDED_DIR}}/packages/cli/tests/battery/ob_battery.zsh {{ARGS}}
 
-test-generic:
-    @just _check-generated
-    @{{BATS}} {{ONBOARDED_DIR}}/packages/cli/tests/bats/nav/test_nav_generic.bats --formatter tap
-
-test-scan:
-    @just _check-generated
-    @{{BATS}} {{ONBOARDED_DIR}}/packages/cli/tests/bats/scan/test_scan_msi.bats --formatter tap
+# Record a Baseline run with provenance. Usage: just baseline   (or: just baseline --no-db)
+baseline *ARGS:
+    @{{ONBOARDED_DIR}}/benchmarks/baseline-v1/record.sh {{ARGS}}
 
 # ─────────────────────────────────────────────────────────────────────────────
-# DIFF — onboarded output vs msi-nav output
+# LOCAL DATABASE + DBA ENGINE  (docs/development/local-db.md)
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Usage: just diff "msi where bind"
-diff CMD:
-    @just _check-generated
-    @echo "  Capturing msi-nav …"
-    @zsh --no-rcs -c ' \
-        source "{{MSI_NAV_DIR}}/msi_domain.zsh" 2>/dev/null; \
-        source "{{MSI_NAV_DIR}}/msi_nav.zsh" 2>/dev/null; \
-        {{CMD}} \
-    ' > /tmp/ob_diff_a.txt 2>&1 || true
-    @echo "  Capturing onboarded …"
-    @zsh --no-rcs -c '{{OB_SOURCE_BLOCK}}; {{CMD}}' > /tmp/ob_diff_b.txt 2>&1 || true
-    @echo ""
-    @echo "  ── diff msi-nav (a) vs onboarded (b): {{CMD}} ───────────────────"
-    @if command -v delta > /dev/null 2>&1; then \
-        diff /tmp/ob_diff_a.txt /tmp/ob_diff_b.txt | delta --no-gitconfig --side-by-side 2>/dev/null \
-            || diff -u /tmp/ob_diff_a.txt /tmp/ob_diff_b.txt || true; \
-    else \
-        diff -u /tmp/ob_diff_a.txt /tmp/ob_diff_b.txt || true; \
-    fi
-
-diff-suite:
-    @just diff "msi where bind"
-    @just diff "msi status 36"
-    @just diff "msi explain fnol"
-    @just diff "msi product renters"
-    @just diff "msi portal avalon"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# PORTAL — Nx-managed Angular application
-# ─────────────────────────────────────────────────────────────────────────────
-
-portal-start:
-    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal
-
-portal-start-prod:
-    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal --configuration=production
-
-portal-start-generic:
-    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal --configuration=generic
-
-portal-build:
-    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal
-
-portal-build-prod:
-    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal --configuration=production
-
-portal-build-msi:
-    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal --configuration=msi
-
-portal-test:
-    @cd {{ONBOARDED_DIR}} && npx nx test @onboarded/portal
-
-portal-lint:
-    @cd {{ONBOARDED_DIR}} && npx nx lint @onboarded/portal
-
-portal-typecheck:
-    @cd {{ONBOARDED_DIR}} && npx nx typecheck @onboarded/portal
-
-portal-graph:
-    @cd {{ONBOARDED_DIR}} && npx nx graph --focus=@onboarded/portal
-
-# ─────────────────────────────────────────────────────────────────────────────
-# NX WORKSPACE — cross-project targets
-# ─────────────────────────────────────────────────────────────────────────────
-
-nx-build:
-    @cd {{ONBOARDED_DIR}} && npx nx run-many -t build
-
-nx-test:
-    @cd {{ONBOARDED_DIR}} && npx nx run-many -t test
-
-nx-lint:
-    @cd {{ONBOARDED_DIR}} && npx nx run-many -t lint
-
-nx-typecheck:
-    @cd {{ONBOARDED_DIR}} && npx nx run-many -t typecheck
-
-nx-affected:
-    @cd {{ONBOARDED_DIR}} && npx nx affected -t build test lint typecheck
-
-nx-graph:
-    @cd {{ONBOARDED_DIR}} && npx nx graph
-
-nx-report:
-    @cd {{ONBOARDED_DIR}} && npx nx report
-
-nx-format-check:
-    @cd {{ONBOARDED_DIR}} && npx nx format:check
-
-nx-format-write:
-    @cd {{ONBOARDED_DIR}} && npx nx format:write
-
-nx-reset:
-    @cd {{ONBOARDED_DIR}} && npx nx reset
-
-# ─────────────────────────────────────────────────────────────────────────────
-# PR-3 CHECKPOINT — the full gate that must pass before moving to PR-4
-# ─────────────────────────────────────────────────────────────────────────────
-#
-# What this checks:
-#   1. msi-nav is still untouched (snapshot diff)
-#   2. Adapters generate cleanly from valid domain.json
-#   3. Four canonical smoke commands produce output without error
-#   4. All three bats suites pass
-#   5. onboarded dispatcher registers msi() correctly
-#   6. diff-suite shows onboarded output is a superset of msi-nav output
-#
-# Usage: just checkpoint-pr3
-
-checkpoint-pr3:
-    @echo ""
-    @echo "══════════════════════════════════════════════════════════════════"
-    @echo "  PR-3 CHECKPOINT"
-    @echo "══════════════════════════════════════════════════════════════════"
-    @echo ""
-
-    @echo "  [1/6] Verifying msi-nav is stable …"
-    @just verify-stable
-    @echo ""
-
-    @echo "  [2/6] Generate + validate adapters …"
-    @just generate
-    @echo ""
-
-    @echo "  [3/6] Smoke test — four canonical commands …"
-    @just smoke
-    @echo ""
-
-    @echo "  [4/6] bats test suites …"
-    @just test
-    @echo ""
-
-    @echo "  [5/6] Dispatcher registration check …"
-    @just _dispatcher-check
-    @echo ""
-
-    @echo "  [6/6] Diff suite — onboarded output vs msi-nav …"
-    @just diff-suite
-    @echo ""
-
-    @echo "══════════════════════════════════════════════════════════════════"
-    @echo "  PR-3 CHECKPOINT COMPLETE"
-    @echo "  If all 6 steps show ✔ or clean output → merge feat/cli-engines"
-    @echo "  Then: git checkout main && git merge feat/cli-engines"
-    @echo "  Then: git checkout -b feat/portal"
-    @echo "══════════════════════════════════════════════════════════════════"
-    @echo ""
-
-# ─────────────────────────────────────────────────────────────────────────────
-# PR GATES — one command per PR
-# ─────────────────────────────────────────────────────────────────────────────
-
-pr3: checkpoint-pr3
-
-pr4:
-    @just generate
-    @just smoke
-    @echo "  Running pytest …"
-    @cd {{ONBOARDED_DIR}}/packages/api && pytest --tb=short -q
-
-pr5:
-    @just generate
-    @echo ""
-    @echo "  ── PR-5 Gate: portal typecheck + build + test ────────────────────"
-    @echo ""
-    @echo "  [1/4] Nx workspace typecheck …"
-    @cd {{ONBOARDED_DIR}} && npx nx run-many -t typecheck
-    @echo ""
-    @echo "  [2/4] Portal unit tests …"
-    @cd {{ONBOARDED_DIR}} && npx nx test @onboarded/portal
-    @echo ""
-    @echo "  [3/4] Portal lint …"
-    @cd {{ONBOARDED_DIR}} && npx nx lint @onboarded/portal
-    @echo ""
-    @echo "  [4/4] Portal production build …"
-    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal --configuration=production
-    @echo ""
-    @echo "  ✔  PR-5 gate passed"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# INTERNAL HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
-
-_check-generated:
-    @[ -f "{{OB_GENERATED}}/nav_maps.zsh" ] || { \
-        echo "  ✗  Adapters missing for tenant '{{OB_TENANT}}'. Run: just generate"; \
-        exit 1; \
-    }
-
-_run-cmd CMD:
-    @echo "  \$ {{CMD}}"
-    @zsh --no-rcs -c '{{OB_SOURCE_BLOCK}}; {{CMD}}' || true
-    @echo ""
-
-_dispatcher-check:
-    @zsh --no-rcs -c ' \
-        export OB_TENANT={{OB_TENANT}} OB_NAV_SLUG={{uppercase(OB_TENANT)}}; \
-        source "{{OB_GENERATED}}/nav_maps.zsh"; \
-        source "{{OB_GENERATED}}/scan_rules.zsh"; \
-        source "{{OB_DISPATCHER}}" 2>/dev/null; \
-        if functions onboarded | grep -q onboarded; then \
-            echo "  ✔  onboarded() registered"; \
-        else \
-            echo "  ✗  onboarded() NOT registered"; exit 1; \
-        fi; \
-        if functions msi | grep -q msi; then \
-            echo "  ✔  msi() alias registered"; \
-        else \
-            echo "  ✗  msi() NOT registered"; exit 1; \
-        fi \
-    '
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# LOCAL DATABASE + DBA ENGINE  (see docs/development/local-db.md)
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Start SQL Server in Docker and apply bootstrap + demo data (idempotent)
+# Start Postgres in Docker; roles, ob_generic, demo data (idempotent)
 db-init:
     @{{ONBOARDED_DIR}}/deploy/local/db/init-local-db.sh
 
@@ -441,7 +125,7 @@ db-reset:
     @docker compose -f {{ONBOARDED_DIR}}/deploy/local/db/docker-compose.db.yml --env-file {{ONBOARDED_DIR}}/deploy/local/db/.env down -v
     @just db-init
 
-# dba engine passthrough. Usage: just dba ping  /  just dba run 1001 dryrun
+# DBA engine passthrough. Usage: just dba ping  /  just dba run 2001 dryrun
 dba *ARGS:
     @cd {{ONBOARDED_DIR}} && OB_REPO_ROOT={{ONBOARDED_DIR}} PYTHONPATH=packages/dba/src \
         $([ -x packages/dba/.venv/bin/python ] && echo packages/dba/.venv/bin/python || echo python3) \
@@ -452,9 +136,78 @@ dba-test:
         $([ -x .venv/bin/python ] && echo .venv/bin/python || echo python3) -m pytest -q
 
 # ─────────────────────────────────────────────────────────────────────────────
-# INSTANCES — one tenant + client repos + database + env (see docs/development/instances.md)
+# INSTANCES  (docs/development/instances.md)
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ob-instance passthrough. Usage: just i list  /  just i new fineract --name ... --repo URL
+# ob-instance passthrough. Usage: just i list  /  just i doctor flotilla
 i *ARGS:
-    @python3 {{ONBOARDED_DIR}}/packages/core/scripts/ob_instance.py {{ARGS}}
+    @{{PY}} {{ONBOARDED_DIR}}/packages/core/scripts/ob_instance.py {{ARGS}}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PORTAL / NX
+# ─────────────────────────────────────────────────────────────────────────────
+
+portal-start:
+    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal
+
+portal-start-generic:
+    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal --configuration=generic
+
+portal-build:
+    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal
+
+portal-build-prod:
+    @cd {{ONBOARDED_DIR}} && npx nx build @onboarded/portal --configuration=production
+
+portal-test:
+    @cd {{ONBOARDED_DIR}} && npx nx test @onboarded/portal
+
+portal-lint:
+    @cd {{ONBOARDED_DIR}} && npx nx lint @onboarded/portal
+
+portal-typecheck:
+    @cd {{ONBOARDED_DIR}} && npx nx typecheck @onboarded/portal
+
+nx-build:
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t build
+
+nx-test:
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t test
+
+nx-lint:
+    @cd {{ONBOARDED_DIR}} && npx nx run-many -t lint
+
+nx-affected:
+    @cd {{ONBOARDED_DIR}} && npx nx affected -t build test lint typecheck
+
+nx-graph:
+    @cd {{ONBOARDED_DIR}} && npx nx graph
+
+nx-reset:
+    @cd {{ONBOARDED_DIR}} && npx nx reset
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LEGACY — msi-nav reference only. Not part of the build, tests or baseline.
+# Needs MSI_NAV_DIR in ~/.onboarded/paths.conf (obpaths fix --msi-nav PATH --apply).
+# ─────────────────────────────────────────────────────────────────────────────
+
+_need-msi-nav:
+    @[ -n "{{MSI_NAV_DIR}}" ] && [ -d "{{MSI_NAV_DIR}}" ] || { echo "  legacy recipes need MSI_NAV_DIR (obpaths fix --msi-nav PATH --apply)"; exit 1; }
+
+# Snapshot msi-nav file hashes (reference only)
+legacy-snapshot: _need-msi-nav
+    @find {{MSI_NAV_DIR}} -type f \( -name "*.zsh" -o -name "*.sh" -o -name "*.py" -o -name "*.json" \) \
+        | sort | xargs sha256sum > {{ONBOARDED_DIR}}/.msi-nav-snapshot.sha
+    @echo "  ✔  $(wc -l < {{ONBOARDED_DIR}}/.msi-nav-snapshot.sha | tr -d ' ') files recorded"
+
+# Confirm msi-nav has not changed since the snapshot
+legacy-verify: _need-msi-nav
+    @find {{MSI_NAV_DIR}} -type f \( -name "*.zsh" -o -name "*.sh" -o -name "*.py" -o -name "*.json" \) \
+        | sort | xargs sha256sum | diff -q {{ONBOARDED_DIR}}/.msi-nav-snapshot.sha - >/dev/null \
+        && echo "  ✔  msi-nav unchanged" || echo "  ✗  msi-nav changed since snapshot"
+
+# Compare one command between msi-nav and onboarded (msi tenant). Usage: just legacy-diff "msi where bind"
+legacy-diff CMD: _need-msi-nav
+    @zsh -f -c 'source "{{MSI_NAV_DIR}}/msi_domain.zsh" 2>/dev/null; source "{{MSI_NAV_DIR}}/msi_nav.zsh" 2>/dev/null; {{CMD}}' > /tmp/ob_diff_a.txt 2>&1 || true
+    @OB_TENANT=msi zsh -f -c 'source "{{PROFILE}}"; {{CMD}}' > /tmp/ob_diff_b.txt 2>&1 || true
+    @diff -u /tmp/ob_diff_a.txt /tmp/ob_diff_b.txt || true

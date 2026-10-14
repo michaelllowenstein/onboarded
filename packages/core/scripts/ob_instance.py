@@ -54,8 +54,29 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(os.environ.get("ONBOARDED_DIR") or Path(__file__).resolve().parents[3])
-WORKSPACE = Path(os.environ.get("OB_WORKSPACE") or Path.home() / "onboarded-workspace").expanduser()
+def _paths_conf() -> dict:
+    """~/.onboarded/paths.conf (KEY=value lines), maintained by ob_paths.py."""
+    p = Path.home() / ".onboarded" / "paths.conf"
+    out = {}
+    if p.is_file():
+        for line in p.read_text().splitlines():
+            if "=" in line and not line.lstrip().startswith("#"):
+                k, v = line.split("=", 1)
+                out[k.strip()] = os.path.expandvars(os.path.expanduser(v.strip().strip('"').strip("'")))
+    return out
+
+
+def _repo_root() -> Path:
+    """This file's own checkout wins; ONBOARDED_DIR only if it is a real checkout."""
+    env = os.environ.get("ONBOARDED_DIR")
+    if env and (Path(env).expanduser() / "packages" / "core" / "scripts" / "ob_instance.py").is_file():
+        return Path(env).expanduser().resolve()
+    return Path(__file__).resolve().parents[3]
+
+
+REPO_ROOT = _repo_root()
+WORKSPACE = Path(os.environ.get("OB_WORKSPACE") or _paths_conf().get("OB_WORKSPACE")
+                 or Path.home() / "onboarded-workspace").expanduser()
 ENV_DIR = Path.home() / ".onboarded" / "instances"
 ACTIVE_FILE = Path.home() / ".onboarded" / "active"
 DB_SQL_DIR = REPO_ROOT / "deploy" / "local" / "db" / "sql"

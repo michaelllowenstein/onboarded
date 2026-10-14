@@ -97,7 +97,7 @@ TEOF
     _ob_cyan "  Step 1 — Classify the error"
     _ob_dim  "  Paste the exception message:"
     print -n "  > "
-    local err_input; read -r err_input
+    local err_input=""; read -r err_input
  
     [[ -z "$err_input" ]] && { _ob_yellow "  Saved as unclassified."; _ob_sep; return 0; }
  
@@ -126,7 +126,7 @@ _ob_ticket_resume() {
         _ob_cyan "  Step 1 — Classify the error"
         _ob_dim  "  Paste the exception message:"
         print -n "  > "
-        local err_input; read -r err_input
+        local err_input=""; read -r err_input
         [[ -n "$err_input" ]] && _ob_ticket_classify "$ticket_id" "$err_input"
     fi
     _ob_sep

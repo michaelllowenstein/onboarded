@@ -57,7 +57,7 @@ _ob_scan_run_rule() {
     local pattern_b64="${p[6]}"
     local fix_hint="${p[8]}"
 
-    local pattern
+    local pattern=""
     pattern="$(_ob_scan_decode "$pattern_b64")"
     [[ -z "$pattern" ]] && return 0
 

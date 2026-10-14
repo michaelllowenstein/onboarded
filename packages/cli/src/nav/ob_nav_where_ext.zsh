@@ -22,7 +22,10 @@ typeset -g _OB_NAV_WHERE_EXT_LOADED=1
  
 if (( $+functions[ob_where] )); then
     # Save original
-    functions[_ob_where_original]="${functions[ob_where]}"
+    # (functions -c, not functions[x]=…: zsh 5.8 double-metafies non-ASCII text on that assignment)
+    if ! functions -c ob_where _ob_where_original 2>/dev/null; then
+        eval "_ob_where_original() { ${functions[ob_where]} }"
+    fi
  
     ob_where() {
         _ob_where_original "$@"
@@ -36,8 +39,7 @@ if (( $+functions[ob_where] )); then
         if [[ -n "$tables" ]]; then
             print ""
             _ob_dim "  ── Database Tables (write path) ──"
-            local IFS='|'
-            for tbl in $tables; do
+            for tbl in "${(@s:|:)tables}"; do
                 printf "    %s\n" "$tbl"
             done
         fi
@@ -47,15 +49,14 @@ if (( $+functions[ob_where] )); then
         if [[ -n "$clusters" ]]; then
             print ""
             _ob_dim "  ── Known Failure Clusters ──"
-            local IFS='|'
-            for cluster_code in $clusters; do
+            for cluster_code in "${(@s:|:)clusters}"; do
                 # Find label by scanning CLUSTERS entries for matching code
                 local found=0
                 while IFS= read -r ck; do
                     local c_data=""; c_data="$(_ob_get CLUSTERS "$ck")"
                     local c_rest="${c_data#*|}"
                     local c_code="${c_rest%%|*}"
-                    if [[ "$c_code" == *"Cluster ${cluster_code}"* ]]; then
+                    if [[ "$c_code" == "$cluster_code" || "$c_code" == *"Cluster ${cluster_code}"* ]]; then
                         local c_label="${c_data%%|*}"
                         printf "    Cluster %s — %s\n" "$cluster_code" "${c_label:0:60}"
                         _ob_dim   "      ${OB_CLI_NAME:-ob} cluster '${ck}'"

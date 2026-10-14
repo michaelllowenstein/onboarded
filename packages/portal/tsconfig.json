@@ -14,7 +14,9 @@
     "baseUrl": "./",
     "paths": {
       "@onboarded/shared": ["../../shared/src/index.ts"],
-      "@types": ["../types/index.ts"]
+      "@types": ["../types/index.ts"],
+      "@services/*": ["./src/core/services/*"],
+      "@features/*": ["./src/core/features/*"],
     }
   },
   "angularCompilerOptions": {

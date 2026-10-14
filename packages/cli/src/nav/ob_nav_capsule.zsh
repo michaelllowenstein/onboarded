@@ -143,7 +143,7 @@ _ob_capsule_demo() {
     # Try live Swagger
     local live=0
     if command -v curl &>/dev/null && command -v jq &>/dev/null; then
-        local swagger_json
+        local swagger_json=""
         swagger_json=$(curl -sf --max-time 2 "http://localhost:${port}${swagger_path}" 2>/dev/null)
         [[ $? -eq 0 && -n "$swagger_json" ]] && live=1
 
