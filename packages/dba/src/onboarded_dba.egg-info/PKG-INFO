@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: onboarded-dba
+Version: 1.0.0
+Summary: Onboarded DBA engine — tenant-aware SQL ticket runner
+Requires-Python: >=3.10
+Provides-Extra: postgres
+Requires-Dist: psycopg[binary]>=3.1; extra == "postgres"
+Provides-Extra: mssql
+Requires-Dist: pyodbc>=5.1; extra == "mssql"
+Provides-Extra: test
+Requires-Dist: pytest>=8; extra == "test"

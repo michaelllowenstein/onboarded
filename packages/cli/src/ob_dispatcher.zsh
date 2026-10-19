@@ -196,7 +196,9 @@ _ob_register_alias() {
     local cli="${OB_CLI_NAME:-onboarded}"
     [[ "$cli" == "onboarded" ]] && return
 
-    eval "${cli}() { onboarded \"\$@\"; }"
+    unalias "$cli" 2>/dev/null
+    eval "function ${cli} { onboarded \"\$@\"; }"
+    
     local -a suffixes=(w s a sec sch sql cls pol t tr env cap)
     local -a commands=(where status audit secrets schema sql cluster policy ticket trace env capsule)
     local i
@@ -205,11 +207,3 @@ _ob_register_alias() {
     done
 }
 _ob_register_alias
-
-alias ob='onboarded'
-alias obw='onboarded where'; alias obs='onboarded status'
-alias oba='onboarded audit'; alias obsec='onboarded secrets'
-alias obsch='onboarded schema'; alias obsql='onboarded sql'
-alias obcls='onboarded cluster'; alias obpol='onboarded policy'
-alias obt='onboarded ticket'; alias obtr='onboarded trace'
-alias obenv='onboarded env'; alias obcap='onboarded capsule'

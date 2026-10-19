@@ -159,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
         if a.cmd == "tenants":
             reg = TenantRegistry(tenants_root())
             for s in reg.auto_discover():
-                print(f"{s:16} {reg.get_registry(s).count} ticket(s)")
+                print(f"{s:16} {reg.get_registry(s).count} ticket(s)") # pyright: ignore[reportOptionalMemberAccess]
             return 0
         if a.cmd == "tickets":
             for t in _registry(slug).all_tickets():
@@ -172,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"No ticket '{a.ticket}' for tenant '{slug}'", file=sys.stderr); return 2
             for n in t.script_names:
                 s = t.get_script(n)
-                print(f"  {'⚠' if s.is_destructive else '·'} {s.qualified_label}")
+                print(f"  {'⚠' if s.is_destructive else '·'} {s.qualified_label}") # pyright: ignore[reportOptionalMemberAccess]
             if t.has_runbook:
                 print("\n" + (t.path / "runbook.md").read_text(encoding="utf-8"))
             return 0
@@ -229,6 +229,13 @@ def main(argv: list[str] | None = None) -> int:
     except ImportError as e:
         print(f"✖ {e}. Install the driver: pip install -e 'packages/dba[postgres]' "
               f"(or [mssql] for SQL Server tenants).", file=sys.stderr); return 4
+    except Exception as e:                      # psycopg / pyodbc imported late, so match by name
+        if type(e).__name__ in ("OperationalError", "InterfaceError"):
+            print(f"✖ cannot reach the database: {str(e).splitlines()[0]}\n"
+                  f"  Is it running?  docker ps --filter name=onboarded-pg   then: just db-up",
+                  file=sys.stderr)
+            return 5
+        raise
     return 0
 
 
