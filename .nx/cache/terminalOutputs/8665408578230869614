@@ -1,0 +1,10 @@
+> tsc -p packages/portal/tsconfig.app.json --noEmit
+
+[96mpackages/portal/tsconfig.app.json[0m:[93m4[0m:[93m27[0m - [91merror[0m[90m TS5103: [0mInvalid value for '--ignoreDeprecations'.
+
+[7m4[0m     "ignoreDeprecations": "6.0",
+[7m [0m [91m                          ~~~~~[0m
+
+
+Found 1 error in packages/portal/tsconfig.app.json[90m:4[0m
+

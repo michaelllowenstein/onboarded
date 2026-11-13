@@ -4,12 +4,23 @@
   "title": "MSI Nav Domain Schema",
   "description": "Validates msi/domain.json — the single source of truth for the MSI codebase navigation tool. v4.0.0 adds DB extension, workflow, environment, and capsule sections.",
   "type": "object",
-  "required": ["version", "tenant", "config", "operations", "products", "statuses", "portals", "queues", "qe_tests", "glossary"],
+  "required": [
+    "version",
+    "tenant",
+    "config",
+    "operations",
+    "products",
+    "statuses",
+    "portals",
+    "queues",
+    "qe_tests",
+    "glossary"
+  ],
   "additionalProperties": true,
 
   "properties": {
-    "$schema":   { "type": "string" },
-    "version":   { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "$schema": { "type": "string" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
     "generated": { "type": "string" },
 
     "tenant": {
@@ -17,19 +28,19 @@
       "required": ["slug", "brand_name", "cli_name", "terminology"],
       "additionalProperties": false,
       "properties": {
-        "slug":       { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+        "slug": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
         "brand_name": { "type": "string" },
-        "cli_name":   { "type": "string" },
+        "cli_name": { "type": "string" },
         "terminology": {
           "type": "object",
           "required": ["operations", "statuses", "products"],
           "additionalProperties": false,
           "properties": {
             "operations": { "type": "string" },
-            "statuses":   { "type": "string" },
-            "products":   { "type": "string" },
-            "queues":     { "type": "string" },
-            "portals":    { "type": "string" }
+            "statuses": { "type": "string" },
+            "products": { "type": "string" },
+            "queues": { "type": "string" },
+            "portals": { "type": "string" }
           }
         }
       }
@@ -47,7 +58,7 @@
             "required": ["env", "default"],
             "additionalProperties": false,
             "properties": {
-              "env":     { "type": "string" },
+              "env": { "type": "string" },
               "default": { "type": "string" }
             }
           }
@@ -62,11 +73,14 @@
         "required": ["label", "controllers", "services", "queues", "js"],
         "additionalProperties": false,
         "properties": {
-          "label":       { "type": "string", "minLength": 1 },
-          "controllers": { "type": "array", "items": { "type": "string", "pattern": "^[A-Za-z0-9_-]+:.+" } },
-          "services":    { "type": "array", "items": { "type": "string" } },
-          "queues":      { "type": "array", "items": { "type": "string" } },
-          "js":          { "type": "array", "items": { "type": "string" } },
+          "label": { "type": "string", "minLength": 1 },
+          "controllers": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Za-z0-9_-]+:.+" }
+          },
+          "services": { "type": "array", "items": { "type": "string" } },
+          "queues": { "type": "array", "items": { "type": "string" } },
+          "js": { "type": "array", "items": { "type": "string" } },
           "tables": {
             "type": "array",
             "items": { "type": "string", "pattern": "^[a-z]+\\.[A-Za-z]+$" },
@@ -86,12 +100,12 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "code":        { "type": "integer" },
-          "label":       { "type": "string", "minLength": 1 },
+          "code": { "type": "integer" },
+          "label": { "type": "string", "minLength": 1 },
           "controllers": { "type": "array", "items": { "type": "string" } },
-          "gen3":        { "type": "array", "items": { "type": "string" } },
-          "js":          { "type": "array", "items": { "type": "string" } },
-          "webjobs":     { "type": "array", "items": { "type": "string" } }
+          "gen3": { "type": "array", "items": { "type": "string" } },
+          "js": { "type": "array", "items": { "type": "string" } },
+          "webjobs": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
@@ -108,9 +122,13 @@
         "required": ["name", "path", "products"],
         "additionalProperties": false,
         "properties": {
-          "name":     { "type": "string", "minLength": 1 },
-          "path":     { "type": "string", "pattern": "^[A-Za-z0-9_-]+:.+" },
-          "products": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          "name": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "pattern": "^[A-Za-z0-9_-]+:.+" },
+          "products": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          }
         }
       }
     },
@@ -121,9 +139,9 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "label":       { "type": "string" },
-          "webjobs":     { "type": "array", "items": { "type": "string" } },
-          "consumer":    { "type": "string" },
+          "label": { "type": "string" },
+          "webjobs": { "type": "array", "items": { "type": "string" } },
+          "consumer": { "type": "string" },
           "description": { "type": "string" }
         }
       }
@@ -147,9 +165,9 @@
         "required": ["label", "definition"],
         "additionalProperties": false,
         "properties": {
-          "label":      { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
           "definition": { "type": "string", "minLength": 10 },
-          "see_also":   {
+          "see_also": {
             "type": "array",
             "items": { "type": "string" },
             "uniqueItems": true
@@ -175,15 +193,27 @@
         "required": ["label", "pattern", "severity", "scope"],
         "additionalProperties": false,
         "properties": {
-          "label":     { "type": "string", "minLength": 1 },
-          "pattern":   { "type": "string", "minLength": 1 },
-          "severity":  { "enum": ["critical", "error", "warning", "info"] },
-          "category":  { "enum": ["security", "convention", "architecture", "dependency", "observability"] },
-          "scope":     { "type": "array", "items": { "type": "string" }, "minItems": 1 },
-          "repos":     { "type": "array", "items": { "type": "string" } },
-          "exclude":   { "type": "array", "items": { "type": "string" } },
+          "label": { "type": "string", "minLength": 1 },
+          "pattern": { "type": "string", "minLength": 1 },
+          "severity": { "enum": ["critical", "error", "warning", "info"] },
+          "category": {
+            "enum": [
+              "security",
+              "convention",
+              "architecture",
+              "dependency",
+              "observability"
+            ]
+          },
+          "scope": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "repos": { "type": "array", "items": { "type": "string" } },
+          "exclude": { "type": "array", "items": { "type": "string" } },
           "reference": { "type": "string" },
-          "fixHint":   { "type": "string" }
+          "fixHint": { "type": "string" }
         }
       }
     },
@@ -198,8 +228,8 @@
           "required": ["name", "type"],
           "additionalProperties": false,
           "properties": {
-            "name":     { "type": "string", "minLength": 1 },
-            "type":     { "type": "string", "minLength": 1 },
+            "name": { "type": "string", "minLength": 1 },
+            "type": { "type": "string", "minLength": 1 },
             "nullable": { "type": "boolean", "default": false }
           }
         },
@@ -216,7 +246,7 @@
         "additionalProperties": false,
         "properties": {
           "description": { "type": "string", "minLength": 1 },
-          "file":        { "type": "string", "pattern": "^[a-z0-9_]+\\.sql$" }
+          "file": { "type": "string", "pattern": "^[a-z0-9_]+\\.sql$" }
         }
       }
     },
@@ -229,11 +259,11 @@
         "required": ["label", "code", "target_table", "fix_mechanism"],
         "additionalProperties": false,
         "properties": {
-          "label":         { "type": "string", "minLength": 1 },
-          "code":          { "type": "string", "minLength": 1 },
-          "target_table":  { "type": "string" },
+          "label": { "type": "string", "minLength": 1 },
+          "code": { "type": "string", "minLength": 1 },
+          "target_table": { "type": "string" },
           "fix_mechanism": { "type": "string" },
-          "template":      { "type": "string" },
+          "template": { "type": "string" },
           "variant_check": { "type": "string" }
         }
       }
@@ -247,15 +277,21 @@
         "required": ["key", "type", "category", "environments"],
         "additionalProperties": false,
         "properties": {
-          "key":          { "type": "string", "minLength": 1 },
-          "type":         { "type": "string", "enum": ["bool", "string", "int", "keyvault"] },
-          "category":     { "type": "string", "enum": ["connection", "feature_flag", "observability", "sentinel"] },
+          "key": { "type": "string", "minLength": 1 },
+          "type": {
+            "type": "string",
+            "enum": ["bool", "string", "int", "keyvault"]
+          },
+          "category": {
+            "type": "string",
+            "enum": ["connection", "feature_flag", "observability", "sentinel"]
+          },
           "environments": {
             "type": "object",
             "additionalProperties": { "type": "string" }
           },
           "related": { "type": "array", "items": { "type": "string" } },
-          "notes":   { "type": "string" }
+          "notes": { "type": "string" }
         }
       }
     },
@@ -285,9 +321,9 @@
         "required": ["reference", "route", "migrations", "display_name"],
         "additionalProperties": false,
         "properties": {
-          "reference":    { "type": "string" },
-          "route":        { "type": "string" },
-          "migrations":   { "type": "integer", "minimum": 0 },
+          "reference": { "type": "string" },
+          "route": { "type": "string" },
+          "migrations": { "type": "integer", "minimum": 0 },
           "display_name": { "type": "string" }
         }
       }

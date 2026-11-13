@@ -1,18 +1,29 @@
 {
   "run": {
-    "command": "nx typecheck @onboarded/shared",
-    "startTime": "2026-08-09T20:59:57.510Z",
-    "endTime": "2026-08-09T21:00:01.131Z",
+    "command": "nx run-many -t typecheck",
+    "startTime": "2026-11-13T06:21:33.592Z",
+    "endTime": "2026-11-13T06:21:37.501Z",
     "inner": false
   },
   "tasks": [
     {
+      "taskId": "@onboarded/portal:typecheck",
+      "target": "typecheck",
+      "projectName": "@onboarded/portal",
+      "hash": "8665408578230869614",
+      "startTime": "2026-11-13T06:21:33.603Z",
+      "endTime": "2026-11-13T06:21:35.132Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 1
+    },
+    {
       "taskId": "@onboarded/shared:typecheck",
       "target": "typecheck",
       "projectName": "@onboarded/shared",
-      "hash": "16939420740026069301",
-      "startTime": "2026-08-09T20:59:57.523Z",
-      "endTime": "2026-08-09T21:00:01.121Z",
+      "hash": "15439870986182504442",
+      "startTime": "2026-11-13T06:21:33.603Z",
+      "endTime": "2026-11-13T06:21:37.496Z",
       "params": "",
       "cacheStatus": "cache-miss",
       "status": 0

@@ -27,12 +27,7 @@
     },
     "tenant": {
       "type": "object",
-      "required": [
-        "slug",
-        "brand_name",
-        "cli_name",
-        "terminology"
-      ],
+      "required": ["slug", "brand_name", "cli_name", "terminology"],
       "additionalProperties": false,
       "properties": {
         "slug": {
@@ -47,11 +42,7 @@
         },
         "terminology": {
           "type": "object",
-          "required": [
-            "operations",
-            "statuses",
-            "products"
-          ],
+          "required": ["operations", "statuses", "products"],
           "additionalProperties": false,
           "properties": {
             "operations": {
@@ -75,19 +66,14 @@
     },
     "config": {
       "type": "object",
-      "required": [
-        "repos"
-      ],
+      "required": ["repos"],
       "additionalProperties": false,
       "properties": {
         "repos": {
           "type": "object",
           "additionalProperties": {
             "type": "object",
-            "required": [
-              "env",
-              "default"
-            ],
+            "required": ["env", "default"],
             "additionalProperties": false,
             "properties": {
               "env": {
@@ -105,12 +91,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "label",
-          "controllers",
-          "services",
-          "queues"
-        ],
+        "required": ["label", "controllers", "services", "queues"],
         "additionalProperties": false,
         "properties": {
           "label": {
@@ -208,11 +189,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "name",
-          "path",
-          "products"
-        ],
+        "required": ["name", "path", "products"],
         "additionalProperties": false,
         "properties": {
           "name": {
@@ -258,9 +235,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "paths"
-        ],
+        "required": ["paths"],
         "additionalProperties": false,
         "properties": {
           "paths": {
@@ -277,10 +252,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "label",
-          "definition"
-        ],
+        "required": ["label", "definition"],
         "additionalProperties": false,
         "properties": {
           "label": {
@@ -319,12 +291,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "label",
-          "pattern",
-          "severity",
-          "scope"
-        ],
+        "required": ["label", "pattern", "severity", "scope"],
         "additionalProperties": false,
         "properties": {
           "label": {
@@ -336,12 +303,7 @@
             "minLength": 1
           },
           "severity": {
-            "enum": [
-              "critical",
-              "error",
-              "warning",
-              "info"
-            ]
+            "enum": ["critical", "error", "warning", "info"]
           },
           "category": {
             "enum": [
@@ -387,10 +349,7 @@
         "type": "array",
         "items": {
           "type": "object",
-          "required": [
-            "name",
-            "type"
-          ],
+          "required": ["name", "type"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -414,10 +373,7 @@
       "description": "v4.0.0: Named SQL template files.",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "description",
-          "file"
-        ],
+        "required": ["description", "file"],
         "additionalProperties": false,
         "properties": {
           "description": {
@@ -434,12 +390,7 @@
       "description": "v4.0.0: Error pattern classification.",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "label",
-          "code",
-          "target_table",
-          "fix_mechanism"
-        ],
+        "required": ["label", "code", "target_table", "fix_mechanism"],
         "additionalProperties": false,
         "properties": {
           "label": {
@@ -468,12 +419,7 @@
       "description": "v4.0.0: Environment configuration keys.",
       "additionalProperties": {
         "type": "object",
-        "required": [
-          "key",
-          "type",
-          "category",
-          "environments"
-        ],
+        "required": ["key", "type", "category", "environments"],
         "additionalProperties": false,
         "properties": {
           "key": {
@@ -576,10 +522,7 @@
       "properties": {
         "dialect": {
           "type": "string",
-          "enum": [
-            "postgres",
-            "mssql"
-          ],
+          "enum": ["postgres", "mssql"],
           "default": "postgres"
         },
         "host": {
@@ -617,9 +560,7 @@
           "description": "mssql only"
         }
       },
-      "required": [
-        "database"
-      ],
+      "required": ["database"],
       "additionalProperties": false
     }
   }

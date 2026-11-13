@@ -16,7 +16,7 @@
       "@onboarded/shared": ["../../shared/src/index.ts"],
       "@types": ["../types/index.ts"],
       "@services/*": ["./src/core/services/*"],
-      "@features/*": ["./src/core/features/*"],
+      "@features/*": ["./src/core/features/*"]
     }
   },
   "angularCompilerOptions": {
@@ -27,8 +27,5 @@
     "strictTemplates": true
   },
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.spec.json" }
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }]
 }

@@ -68,24 +68,24 @@ msi explain          # full glossary list
 
 Change directory into a well-known repo or subdirectory.
 
-| Target | Destination |
-|---|---|
-| `pas` / `gen1` | MSI-PAS root |
-| `core` / `gen2` / `gen3` | MSI-PAS-CORE root |
-| `widget` | MSI-Widget root |
-| `qe` | MSI-QE root |
-| `config` | PAS-APP-CONFIG root |
-| `root` | `$MSI_ROOT` |
-| `admin` | Portal.Admin |
-| `customer` | Portal.Customer |
-| `apis` / `api` | MSI.Core.Apis |
-| `flood_api` | Integration/Flood |
-| `renters_api` | Integration/GroupRenters |
-| `ho_api` | Integration/Homeowners |
-| `webjobs` | MSI.Core.WebJobs |
-| `services` | MSI.Core.BusinessService |
-| `framework` | MSI.Core.Framework |
-| `tests` | MSI.Core.Tests |
+| Target                   | Destination              |
+| ------------------------ | ------------------------ |
+| `pas` / `gen1`           | MSI-PAS root             |
+| `core` / `gen2` / `gen3` | MSI-PAS-CORE root        |
+| `widget`                 | MSI-Widget root          |
+| `qe`                     | MSI-QE root              |
+| `config`                 | PAS-APP-CONFIG root      |
+| `root`                   | `$MSI_ROOT`              |
+| `admin`                  | Portal.Admin             |
+| `customer`               | Portal.Customer          |
+| `apis` / `api`           | MSI.Core.Apis            |
+| `flood_api`              | Integration/Flood        |
+| `renters_api`            | Integration/GroupRenters |
+| `ho_api`                 | Integration/Homeowners   |
+| `webjobs`                | MSI.Core.WebJobs         |
+| `services`               | MSI.Core.BusinessService |
+| `framework`              | MSI.Core.Framework       |
+| `tests`                  | MSI.Core.Tests           |
 
 ### `msi open <key>` / `msi o <key>`
 
@@ -177,18 +177,18 @@ Prints all resolved environment variables.
 
 ## Command Aliases Reference
 
-| Full command | Short alias | Standalone alias |
-|---|---|---|
-| `msi where` | `msi w` | `mwhere` |
-| `msi product` | `msi p` | `mprod` |
-| `msi status` | `msi s` | `mstatus` |
-| `msi grep` | `msi g` | `mgrep` |
-| `msi open` | `msi o` | `mopen` |
-| `msi qe` | `msi q` | `mqe` |
-| `msi queue` | `msi qu` | `mqueue` |
-| `msi list` | `msi l` | `mlist` |
-| `msi explain` | `msi e` | `mexplain` |
-| `msi bug` | `msi b` | `mbug` |
-| `msi cd` | — | `mcd` |
-| `msi doctor` | — | `mdoctor` |
-| `msi config` | — | `mconfig` |
+| Full command  | Short alias | Standalone alias |
+| ------------- | ----------- | ---------------- |
+| `msi where`   | `msi w`     | `mwhere`         |
+| `msi product` | `msi p`     | `mprod`          |
+| `msi status`  | `msi s`     | `mstatus`        |
+| `msi grep`    | `msi g`     | `mgrep`          |
+| `msi open`    | `msi o`     | `mopen`          |
+| `msi qe`      | `msi q`     | `mqe`            |
+| `msi queue`   | `msi qu`    | `mqueue`         |
+| `msi list`    | `msi l`     | `mlist`          |
+| `msi explain` | `msi e`     | `mexplain`       |
+| `msi bug`     | `msi b`     | `mbug`           |
+| `msi cd`      | —           | `mcd`            |
+| `msi doctor`  | —           | `mdoctor`        |
+| `msi config`  | —           | `mconfig`        |

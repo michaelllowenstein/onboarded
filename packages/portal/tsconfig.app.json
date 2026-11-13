@@ -17,7 +17,7 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "types": ["node"],
-    "baseUrl": "./",
+    "baseUrl": "./"
   },
   "files": ["src/main.ts"],
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.tsx"],

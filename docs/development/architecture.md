@@ -65,11 +65,11 @@ This is intentional. It keeps the generated files human-readable and directly co
 
 `msi_nav.ps1` dot-sources three lib files rather than being a monolith:
 
-| File | Responsibility |
-|---|---|
+| File             | Responsibility                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
 | `lib/Output.ps1` | `Write-Cyan`, `Write-MsiGreen`, `Write-PathList`, `Write-BulletList` — all colour + formatting |
-| `lib/Paths.ps1` | `Resolve-MsiPath`, `Get-MsiRepoDir`, `$script:MSI_CD_TARGETS` ordered hashtable |
-| `lib/Search.ps1` | `Invoke-MsiSearch` — rg with `Select-String` fallback, cached `$script:MSI_SEARCH_HAS_RG` |
+| `lib/Paths.ps1`  | `Resolve-MsiPath`, `Get-MsiRepoDir`, `$script:MSI_CD_TARGETS` ordered hashtable                |
+| `lib/Search.ps1` | `Invoke-MsiSearch` — rg with `Select-String` fallback, cached `$script:MSI_SEARCH_HAS_RG`      |
 
 This decomposition:
 

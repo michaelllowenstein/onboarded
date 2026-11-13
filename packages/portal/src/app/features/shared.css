@@ -1,6 +1,8 @@
 /* ── Shared feature component styles ──────────────────────────────────────── */
 
-.ob-feature { max-width: 960px; }
+.ob-feature {
+  max-width: 960px;
+}
 
 .ob-feature__header {
   display: flex;
@@ -205,10 +207,22 @@
   letter-spacing: 0.5px;
 }
 
-.ob-badge--critical { background: #3d1b1b; color: #e5534b; }
-.ob-badge--error    { background: #3d2e0e; color: #d29922; }
-.ob-badge--warning  { background: #1b2c3d; color: #6cb6ff; }
-.ob-badge--info     { background: #1e2030; color: #8b949e; }
+.ob-badge--critical {
+  background: #3d1b1b;
+  color: #e5534b;
+}
+.ob-badge--error {
+  background: #3d2e0e;
+  color: #d29922;
+}
+.ob-badge--warning {
+  background: #1b2c3d;
+  color: #6cb6ff;
+}
+.ob-badge--info {
+  background: #1e2030;
+  color: #8b949e;
+}
 
 /* ── Link button ───────────────────────────────────────────────────────────── */
 
@@ -245,7 +259,9 @@
   border-bottom: 1px solid var(--ob-border, #1e2030);
 }
 
-.ob-table__th--code { width: 80px; }
+.ob-table__th--code {
+  width: 80px;
+}
 
 .ob-table__row {
   transition: background 0.1s;

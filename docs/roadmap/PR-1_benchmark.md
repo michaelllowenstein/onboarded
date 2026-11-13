@@ -56,16 +56,16 @@ packages/cli/
 
 **v1 (previous attempt) violations → v2 (this attempt) corrections:**
 
-| Violation | v1 | v2 |
-|---|---|---|
-| Map names in engine | `MSI_SCHEMA` hardcoded | `_ob_get SCHEMA "$key"` |
-| Phalanx SQL in engine | `ERR.DB_EXCEPTION_TANK` hardcoded | Scaffold .sql files in `templates/msi/scaffolds/` |
-| Author identity in engine | `1779900450` hardcoded | `OB_AUTHOR_PARTY_ID` env var |
-| Policy decomposition in engine | `PWB` regex hardcoded | `POLICY_CONFIG` map (prefix_column, decompose_regex) |
-| Data declared in engine | `MSI_OPS_TABLES` in where_ext.zsh | `_ob_get OPS_TABLES "$op"` → populated by adapter |
-| Exception delimiter in engine | `--->` hardcoded | `TRACE_CONFIG[delimiter]` |
-| Env instance names in engine | `msi-core-dev` hardcoded | `ENV_CONFIG[env_dev_instance]` |
-| Capsule root in engine | `~/develop/work/msi/MsiCatProxy` hardcoded | `CAPSULE_CONFIG[root_dir]` + `root_env_var` |
+| Violation                      | v1                                         | v2                                                   |
+| ------------------------------ | ------------------------------------------ | ---------------------------------------------------- |
+| Map names in engine            | `MSI_SCHEMA` hardcoded                     | `_ob_get SCHEMA "$key"`                              |
+| Phalanx SQL in engine          | `ERR.DB_EXCEPTION_TANK` hardcoded          | Scaffold .sql files in `templates/msi/scaffolds/`    |
+| Author identity in engine      | `1779900450` hardcoded                     | `OB_AUTHOR_PARTY_ID` env var                         |
+| Policy decomposition in engine | `PWB` regex hardcoded                      | `POLICY_CONFIG` map (prefix_column, decompose_regex) |
+| Data declared in engine        | `MSI_OPS_TABLES` in where_ext.zsh          | `_ob_get OPS_TABLES "$op"` → populated by adapter    |
+| Exception delimiter in engine  | `--->` hardcoded                           | `TRACE_CONFIG[delimiter]`                            |
+| Env instance names in engine   | `msi-core-dev` hardcoded                   | `ENV_CONFIG[env_dev_instance]`                       |
+| Capsule root in engine         | `~/develop/work/msi/MsiCatProxy` hardcoded | `CAPSULE_CONFIG[root_dir]` + `root_env_var`          |
 
 **Test:** The generic tenant adapter (`generated/generic/nav_maps_db.zsh`) populates
 all 12 map suffixes with empty/default values. Every engine module functions with
@@ -78,20 +78,20 @@ by any engine module, because no MSI-specific code path exists.
 
 All accessed via `_ob_get SUFFIX key` and `_ob_keys SUFFIX`:
 
-| Suffix | Purpose | MSI entries | Generic entries |
-|---|---|---|---|
-| SCHEMA | Column profiles | 6 tables | 0 |
-| SQL_TEMPLATES | Template key → desc\|file | 7 | 1 |
-| CLUSTERS | Error pattern → classification | 9 | 0 |
-| OPS_TABLES | Operation → write-path tables | 7 | 0 |
-| OPS_CLUSTERS | Operation → cluster codes | 5 | 0 |
-| CONFIG_KEYS | Config key → per-env values | 6 | 0 |
-| ENV_CONFIG | Environment metadata | 4 | 1 |
-| CAPSULES | Capsule registry | 2 | 0 |
-| CAPSULE_CONFIG | Proxy settings | 5 | 2 |
-| TICKET_CONFIG | Fix package conventions | 3 | 2 |
-| POLICY_CONFIG | Policy decomposition rules | 7 | 2 |
-| TRACE_CONFIG | Exception parsing settings | 2 | 2 |
+| Suffix         | Purpose                        | MSI entries | Generic entries |
+| -------------- | ------------------------------ | ----------- | --------------- |
+| SCHEMA         | Column profiles                | 6 tables    | 0               |
+| SQL_TEMPLATES  | Template key → desc\|file      | 7           | 1               |
+| CLUSTERS       | Error pattern → classification | 9           | 0               |
+| OPS_TABLES     | Operation → write-path tables  | 7           | 0               |
+| OPS_CLUSTERS   | Operation → cluster codes      | 5           | 0               |
+| CONFIG_KEYS    | Config key → per-env values    | 6           | 0               |
+| ENV_CONFIG     | Environment metadata           | 4           | 1               |
+| CAPSULES       | Capsule registry               | 2           | 0               |
+| CAPSULE_CONFIG | Proxy settings                 | 5           | 2               |
+| TICKET_CONFIG  | Fix package conventions        | 3           | 2               |
+| POLICY_CONFIG  | Policy decomposition rules     | 7           | 2               |
+| TRACE_CONFIG   | Exception parsing settings     | 2           | 2               |
 
 ---
 

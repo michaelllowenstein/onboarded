@@ -3,8 +3,13 @@
 // //              api (at startup via domain_loader.py-generated dicts)
 // //              admin-cli (for typed API client request/response models)
 
-export type Severity = 'critical' | 'error' | 'warning' | 'info';
-export type Category = 'security' | 'convention' | 'architecture' | 'dependency' | 'observability';
+export type Severity = "critical" | "error" | "warning" | "info";
+export type Category =
+  | "security"
+  | "convention"
+  | "architecture"
+  | "dependency"
+  | "observability";
 
 export interface RepoConfig {
   env: string;

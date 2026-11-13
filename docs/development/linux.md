@@ -2,13 +2,13 @@
 
 ## Requirements
 
-| Dependency | Required | Notes |
-|---|---|---|
-| zsh ≥ 5.8 | Yes | macOS ships it; `apt install zsh` on Ubuntu |
-| python3 ≥ 3.10 | Recommended | For `generate_adapters.py`, `validate_domain.py` |
-| ripgrep (`rg`) | Optional | `brew install ripgrep` / `apt install ripgrep`; `grep` fallback used if absent |
-| jq | Optional | For raw JSON inspection; not required by the tool |
-| bats-core | Dev only | For running the test suite |
+| Dependency     | Required    | Notes                                                                          |
+| -------------- | ----------- | ------------------------------------------------------------------------------ |
+| zsh ≥ 5.8      | Yes         | macOS ships it; `apt install zsh` on Ubuntu                                    |
+| python3 ≥ 3.10 | Recommended | For `generate_adapters.py`, `validate_domain.py`                               |
+| ripgrep (`rg`) | Optional    | `brew install ripgrep` / `apt install ripgrep`; `grep` fallback used if absent |
+| jq             | Optional    | For raw JSON inspection; not required by the tool                              |
+| bats-core      | Dev only    | For running the test suite                                                     |
 
 ---
 
@@ -24,6 +24,7 @@ msi doctor
 ```
 
 The installer:
+
 1. Creates `~/.local/bin/msi` and `~/.local/bin/msi-nav` symlinks
 2. Runs `generate_adapters.py` to build `msi_domain.zsh` and `msi_domain.ps1` from JSON
 3. Appends a `source` line to `~/.zshrc`
@@ -51,6 +52,7 @@ source "$MSI_NAV_HOME/src/zsh/msi_nav.zsh"
 ```
 
 Then generate the domain adapters once:
+
 ```zsh
 python3 ~/msi-nav/src/python/generate_adapters.py
 source ~/.zshrc
@@ -101,11 +103,13 @@ bats tests/linux/msi-nav.bats
 
 **`msi: command not found`**
 Ensure `~/.local/bin` is in your `PATH`:
+
 ```zsh
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
 ```
 
 **Domain not loaded (`No domain data found`)**
+
 ```zsh
 python3 ~/msi-nav/src/python/generate_adapters.py
 source ~/.zshrc
@@ -113,6 +117,7 @@ source ~/.zshrc
 
 **`msi doctor` shows repos not cloned**
 Clone the repos under `$MSI_ROOT`:
+
 ```zsh
 cd $MSI_ROOT
 git clone <MSI-PAS-url>

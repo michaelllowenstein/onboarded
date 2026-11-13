@@ -14,10 +14,18 @@ import type { TenantDomain, Operation, ScanRule, GlossaryTerm } from '@onboarded
 export class DomainService {
   private readonly domain: TenantDomain = environment.tenantDomain;
 
-  get brandName(): string { return this.domain.tenant.brandName; }
-  get cliName():   string { return this.domain.tenant.cliName; }
-  get tenantSlug(): string { return this.domain.tenant.slug; }
-  get version(): string { return this.domain.version; }
+  get brandName(): string {
+    return this.domain.tenant.brandName;
+  }
+  get cliName(): string {
+    return this.domain.tenant.cliName;
+  }
+  get tenantSlug(): string {
+    return this.domain.tenant.slug;
+  }
+  get version(): string {
+    return this.domain.version;
+  }
 
   // ── Operations ──────────────────────────────────────────────────────────────
 
@@ -35,8 +43,8 @@ export class DomainService {
       ({ id, op }) =>
         id.includes(q) ||
         op.label.toLowerCase().includes(q) ||
-        op.controllers.some(c => c.toLowerCase().includes(q)) ||
-        op.services.some(s => s.toLowerCase().includes(q))
+        op.controllers.some((c) => c.toLowerCase().includes(q)) ||
+        op.services.some((s) => s.toLowerCase().includes(q)),
     );
   }
 
@@ -56,9 +64,9 @@ export class DomainService {
 
   getScanRules(severity?: string, category?: string): Array<{ id: string; rule: ScanRule }> {
     return Object.entries(this.domain.scanRules)
-      .filter(([_, rule]) =>
-        (!severity || rule.severity === severity) &&
-        (!category || rule.category === category)
+      .filter(
+        ([_, rule]) =>
+          (!severity || rule.severity === severity) && (!category || rule.category === category),
       )
       .map(([id, rule]) => ({ id, rule }));
   }
@@ -75,7 +83,7 @@ export class DomainService {
       ({ id, term }) =>
         id.includes(q) ||
         term.label.toLowerCase().includes(q) ||
-        term.definition.toLowerCase().includes(q)
+        term.definition.toLowerCase().includes(q),
     );
   }
 
@@ -93,9 +101,9 @@ export class DomainService {
 
   // ── DB ─────────────────────────────────────────────────────────────────
 
-//   getDbs(): Array<{ id: string; name: string; path: string; products: string[] }> {
-//     return Object.entries(this.domain.database).map(([id, p]) => ({ id, ...p }));
-//   }
+  //   getDbs(): Array<{ id: string; name: string; path: string; products: string[] }> {
+  //     return Object.entries(this.domain.database).map(([id, p]) => ({ id, ...p }));
+  //   }
 
   // ── Raw domain access (for React islands) ───────────────────────────────────
 

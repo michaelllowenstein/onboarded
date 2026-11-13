@@ -2,15 +2,9 @@
   "version": "6.0",
   "nxVersion": "22.7.2",
   "pathMappings": {
-    "@onboarded/shared": [
-      "packages/shared/src/index.ts"
-    ],
-    "@onboarded/shared/*": [
-      "packages/shared/src/*"
-    ],
-    "@onboarded/shared/tenants/*": [
-      "packages/shared/src/lib/tenants/*"
-    ]
+    "@onboarded/shared": ["packages/shared/src/index.ts"],
+    "@onboarded/shared/*": ["packages/shared/src/*"],
+    "@onboarded/shared/tenants/*": ["packages/shared/src/lib/tenants/*"]
   },
   "nxJsonPlugins": [
     {
@@ -25,23 +19,31 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": ".gitignore",
-        "hash": "4054948083377460851"
+        "file": "docs/reports/Domain_Schema_Extensions.md",
+        "hash": "9058323691144337335"
       },
       {
-        "file": ".msi-nav-snapshot.sha",
-        "hash": "3208305615283270009"
+        "file": "docs/development/architecture.md",
+        "hash": "4160598636421512576"
       },
       {
-        "file": "Makefile",
-        "hash": "9136414123982176653"
+        "file": "package.json",
+        "hash": "9741754597947432337"
       },
       {
-        "file": "README.md",
-        "hash": "8770212075259679428"
+        "file": "docs/development/linux.md",
+        "hash": "12986559841862331121"
       },
       {
-        "file": "deploy/azure/staticwebapp.config.json",
+        "file": "package-lock.json",
+        "hash": "14000435612604991118"
+      },
+      {
+        "file": "templates/flotilla/mission_run.sql",
+        "hash": "11599762247703933"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/__init__.py",
         "hash": "3244421341483603138"
       },
       {
@@ -49,191 +51,59 @@
         "hash": "3244421341483603138"
       },
       {
-        "file": "deploy/docker/Dockerfile.portal",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "deploy/k8s/onboarded.yml",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "deploy/nginx/nginx.conf",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "deploy/nginx/spa.conf",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "docker-compose.override.yml",
-        "hash": "7593559573157783588"
-      },
-      {
-        "file": "docker-compose.yml",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "docs/development/architecture.md",
-        "hash": "4160598636421512576"
-      },
-      {
-        "file": "docs/development/commands.md",
-        "hash": "18001750218015908047"
-      },
-      {
-        "file": "docs/development/derivation.md",
-        "hash": "6078851254581231963"
-      },
-      {
-        "file": "docs/development/linux.md",
-        "hash": "12986559841862331121"
-      },
-      {
-        "file": "docs/development/windows.md",
-        "hash": "12363725995309812787"
-      },
-      {
-        "file": "docs/patent/Onboarded_Patent_Application_v1_PreReview.docx",
-        "hash": "193386187432179152"
-      },
-      {
         "file": "docs/patent/Onboarded_Patent_Application_v2_Lowenstein.docx",
         "hash": "6575878789686340228"
       },
       {
-        "file": "docs/patent/Onboarded_Patent_Application_v2_Lowenstein.docx:Zone.Identifier",
-        "hash": "6175566146444302201"
-      },
-      {
-        "file": "docs/patent/Onboarded_Patent_Application_v2_Lowenstein.docx:sec.endpointdlp",
-        "hash": "307231651718854890"
-      },
-      {
-        "file": "docs/patent/PATENT_APPLICATION_v1_DRAFT.docx",
-        "hash": "18373525898893469196"
-      },
-      {
-        "file": "docs/reports/Domain_Schema_Extensions.md",
-        "hash": "9058323691144337335"
+        "file": "docs/development/instances.md",
+        "hash": "10161615463632188619"
       },
       {
         "file": "docs/reports/Onboarded_Project_Summary.docx",
         "hash": "14645617732576709851"
       },
       {
-        "file": "docs/roadmap/PR-0_docs-project-foundation.md",
-        "hash": "1537133855719312341"
-      },
-      {
-        "file": "docs/roadmap/PR-1_benchmark.md",
-        "hash": "4198201623444327531"
-      },
-      {
-        "file": "docs/roadmap/onboarded-scratch-build-plan.md",
-        "hash": "6802050899312532171"
-      },
-      {
-        "file": "justfile",
-        "hash": "8509524972993744753"
-      },
-      {
-        "file": "nx.json",
-        "hash": "11044632387527613089"
-      },
-      {
-        "file": "package-lock.json",
-        "hash": "4236916436341510625"
-      },
-      {
-        "file": "package.json",
-        "hash": "9741754597947432337"
-      },
-      {
-        "file": "packages/.gitkeep",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/admin-cli/.gitkeep",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/admin-cli/README.md",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/api/.gitkeep",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/api/README.md",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/feedback/.gitkeep",
-        "hash": "13993176259416255302"
-      },
-      {
-        "file": "packages/feedback/README.md",
-        "hash": "3244421341483603138"
-      },
-      {
         "file": "packages/feedback/pyproject.toml",
         "hash": "3244421341483603138"
       },
       {
-        "file": "packages/feedback/shell/ob_learn.zsh",
-        "hash": "829042639666356235"
+        "file": "deploy/local/sync.conf",
+        "hash": "5522045162765487573"
       },
       {
-        "file": "packages/feedback/shell/ob_suggest.zsh",
-        "hash": "9697021290012604636"
+        "file": "packages/feedback/src/onboarded_feedback/telemetry/store.py",
+        "hash": "1234175425087920283"
       },
       {
-        "file": "packages/feedback/shell/ob_telemetry.zsh",
-        "hash": "13172969088622010629"
+        "file": "templates/generic/schema_probe.sql",
+        "hash": "1428409606532909108"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/__init__.py",
-        "hash": "3244421341483603138"
+        "file": "deploy/local/db/sql/20_demo_schema.sql",
+        "hash": "5874517416370464686"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/cli/__init__.py",
-        "hash": "3244421341483603138"
+        "file": "templates/flotilla/scaffolds/rollback.sql",
+        "hash": "27789380598532019"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/cli/main.py",
-        "hash": "3244421341483603138"
+        "file": "templates/generic/scaffolds/rollback.sql",
+        "hash": "27789380598532019"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/domain_loader.py",
-        "hash": "3244421341483603138"
+        "file": "templates/msi/scaffolds/fix.sql",
+        "hash": "2774321318024648604"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/gap_detection/__init__.py",
-        "hash": "3244421341483603138"
+        "file": "templates/flotilla/scaffolds/fix.sql",
+        "hash": "1488212880384395201"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/gap_detection/operation_gaps.py",
-        "hash": "3244421341483603138"
+        "file": "templates/generic/scaffolds/dryrun.sql",
+        "hash": "8827380028643197150"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/gap_detection/stale_paths.py",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/__init__.py",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/git_scanner.py",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/rule_effectiveness.py",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/suggestions.py",
+        "file": "deploy/azure/staticwebapp.config.json",
         "hash": "3244421341483603138"
       },
       {
@@ -241,64 +111,332 @@
         "hash": "3244421341483603138"
       },
       {
-        "file": "packages/feedback/src/onboarded_feedback/telemetry/store.py",
-        "hash": "1234175425087920283"
+        "file": "docs/development/local-db.md",
+        "hash": "15572204735794058801"
       },
       {
-        "file": "packages/feedback/tests/__init__.py",
+        "file": "instances/generic/instance.json",
+        "hash": "16040360063146498817"
+      },
+      {
+        "file": "packages/feedback/shell/ob_telemetry.zsh",
+        "hash": "13172969088622010629"
+      },
+      {
+        "file": "deploy/local/README.md",
         "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/docker/Dockerfile.portal",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "docs/patent/PATENT_APPLICATION_v1_DRAFT.docx",
+        "hash": "18373525898893469196"
+      },
+      {
+        "file": "README.md",
+        "hash": "8770212075259679428"
+      },
+      {
+        "file": "deploy/local/db/sql/00_roles.sql",
+        "hash": "4211534257318932471"
+      },
+      {
+        "file": "docs/development/windows.md",
+        "hash": "12363725995309812787"
+      },
+      {
+        "file": "docs/roadmap/PR-0_docs-project-foundation.md",
+        "hash": "1537133855719312341"
       },
       {
         "file": "packages/feedback/tests/conftest.py",
         "hash": "16490295234933519223"
       },
       {
-        "file": "packages/feedback/tests/fixtures/sample_domain.json",
-        "hash": "16488815117103706836"
+        "file": "deploy/local/db/.gitignore",
+        "hash": "7017456405475698020"
       },
       {
-        "file": "packages/feedback/tests/fixtures/test/domain.json",
+        "file": "deploy/local/db/init-local-db.sh",
+        "hash": "5953676519150910660"
+      },
+      {
+        "file": "docs/roadmap/onboarded-scratch-build-plan.md",
+        "hash": "6802050899312532171"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/gap_detection/__init__.py",
         "hash": "3244421341483603138"
       },
       {
-        "file": "packages/feedback/tests/test_gap_detection.py",
-        "hash": "15125986599303811312"
+        "file": ".gitignore",
+        "hash": "2887807070977581543"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/gap_detection/operation_gaps.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/rule_effectiveness.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/admin-cli/README.md",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/local/onboarded-sync.py",
+        "hash": "4132026568244789826"
+      },
+      {
+        "file": "instances/flotilla/SCORECARD.md",
+        "hash": "14635308318239130518"
+      },
+      {
+        "file": "packages/feedback/shell/ob_learn.zsh",
+        "hash": "829042639666356235"
       },
       {
         "file": "packages/feedback/tests/test_suggestion_engine.py",
         "hash": "11078587135207810077"
       },
       {
-        "file": "packages/feedback/tests/test_telemetry.py",
-        "hash": "14468986043514989674"
+        "file": "deploy/local/db/.env.example",
+        "hash": "17801108247957973370"
       },
       {
-        "file": "templates/msi/scaffolds/README.md",
-        "hash": "16021051396315707877"
+        "file": "deploy/k8s/onboarded.yml",
+        "hash": "3244421341483603138"
       },
       {
-        "file": "templates/msi/scaffolds/diagnostic.sql",
-        "hash": "4794614274845562976"
+        "file": "docker-compose.yml",
+        "hash": "3244421341483603138"
       },
       {
-        "file": "templates/msi/scaffolds/dryrun.sql",
-        "hash": "12762928888802743671"
+        "file": "instances/flotilla/FINDINGS.md",
+        "hash": "12833359253967227972"
       },
       {
-        "file": "templates/msi/scaffolds/fix.sql",
-        "hash": "2774321318024648604"
+        "file": "templates/flotilla/scaffolds/diagnostic.sql",
+        "hash": "10131463502608088302"
+      },
+      {
+        "file": "templates/generic/scaffolds/README.md",
+        "hash": "6807008385427407360"
+      },
+      {
+        "file": "templates/generic/scaffolds/diagnostic.sql",
+        "hash": "10131463502608088302"
+      },
+      {
+        "file": "packages/api/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/domain_loader.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/tests/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/nginx/spa.conf",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/tests/fixtures/test/domain.json",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "templates/generic/scaffolds/fix.sql",
+        "hash": "1488212880384395201"
       },
       {
         "file": "templates/msi/scaffolds/rollback.sql",
         "hash": "18011590613759308927"
       },
       {
+        "file": "Makefile",
+        "hash": "14064190800072747302"
+      },
+      {
+        "file": "packages/api/README.md",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "instances/flotilla/instance.json",
+        "hash": "13319340328167478721"
+      },
+      {
+        "file": "templates/flotilla/robot_missions.sql",
+        "hash": "12329513764552251053"
+      },
+      {
+        "file": "docs/development/derivation.md",
+        "hash": "6078851254581231963"
+      },
+      {
+        "file": "templates/msi/scaffolds/README.md",
+        "hash": "16021051396315707877"
+      },
+      {
+        "file": ".python-version",
+        "hash": "11649148331255907086"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/cli/main.py",
+        "hash": "3244421341483603138"
+      },
+      {
         "file": "tsconfig.base.json",
         "hash": "1954145905062977063"
       },
       {
+        "file": "templates/msi/scaffolds/dryrun.sql",
+        "hash": "12762928888802743671"
+      },
+      {
+        "file": "install.sh",
+        "hash": "15352798691802033141"
+      },
+      {
+        "file": "docs/development/paths.md",
+        "hash": "15825359676301464465"
+      },
+      {
+        "file": "deploy/nginx/nginx.conf",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/admin-cli/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "docs/patent/Onboarded_Patent_Application_v1_PreReview.docx",
+        "hash": "193386187432179152"
+      },
+      {
+        "file": "templates/flotilla/scaffolds/dryrun.sql",
+        "hash": "8827380028643197150"
+      },
+      {
+        "file": "uv.lock",
+        "hash": "6794590633651192497"
+      },
+      {
+        "file": "packages/feedback/tests/fixtures/sample_domain.json",
+        "hash": "16488815117103706836"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "deploy/local/release.manifest",
+        "hash": "9349828507064582818"
+      },
+      {
+        "file": "deploy/local/db/docker-compose.db.yml",
+        "hash": "6387854916596238428"
+      },
+      {
+        "file": "pyproject.toml",
+        "hash": "5933520948353655964"
+      },
+      {
+        "file": "packages/feedback/shell/ob_suggest.zsh",
+        "hash": "9697021290012604636"
+      },
+      {
+        "file": "nx.json",
+        "hash": "11044632387527613089"
+      },
+      {
+        "file": "packages/feedback/tests/test_gap_detection.py",
+        "hash": "15125986599303811312"
+      },
+      {
+        "file": "packages/feedback/tests/test_telemetry.py",
+        "hash": "14468986043514989674"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/cli/__init__.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/README.md",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "justfile",
+        "hash": "17764236106468635499"
+      },
+      {
+        "file": "packages/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "reorient.sh",
+        "hash": "6774791317446725160"
+      },
+      {
+        "file": "docs/development/commands.md",
+        "hash": "18001750218015908047"
+      },
+      {
+        "file": "packages/feedback/.gitkeep",
+        "hash": "13993176259416255302"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/suggestions.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": ".msi-nav-snapshot.sha",
+        "hash": "3208305615283270009"
+      },
+      {
+        "file": "docker-compose.override.yml",
+        "hash": "7593559573157783588"
+      },
+      {
+        "file": "deploy/local/db/sql/10_instance_db.sql",
+        "hash": "10924151139514568437"
+      },
+      {
+        "file": "templates/flotilla/scaffolds/README.md",
+        "hash": "6807008385427407360"
+      },
+      {
+        "file": "templates/flotilla/stuck_missions.sql",
+        "hash": "7721019953159504979"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/suggestion_engine/git_scanner.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/feedback/src/onboarded_feedback/gap_detection/stale_paths.py",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "templates/msi/scaffolds/diagnostic.sql",
+        "hash": "4794614274845562976"
+      },
+      {
+        "file": "docs/roadmap/PR-1_benchmark.md",
+        "hash": "4198201623444327531"
+      },
+      {
         "file": "tsconfig.json",
         "hash": "1379983966652230747"
+      },
+      {
+        "file": "templates/flotilla/schema_probe.sql",
+        "hash": "1428409606532909108"
       }
     ],
     "projectFileMap": {
@@ -321,55 +459,67 @@
         },
         {
           "file": "packages/cli/src/core/ob_core_display.zsh",
-          "hash": "8609812680579916317"
+          "hash": "9423306087257690266"
         },
         {
           "file": "packages/cli/src/core/ob_core_loader.zsh",
-          "hash": "13181612378821297689"
+          "hash": "696558961524110497"
         },
         {
           "file": "packages/cli/src/nav/ob_nav_capsule.zsh",
-          "hash": "13344704522131717797"
+          "hash": "15022387172721331267"
         },
         {
           "file": "packages/cli/src/nav/ob_nav_db.zsh",
-          "hash": "2473894050000063280"
+          "hash": "13985926126890442229"
         },
         {
           "file": "packages/cli/src/nav/ob_nav_engine.zsh",
-          "hash": "952112297124701057"
+          "hash": "13913319833472115227"
         },
         {
           "file": "packages/cli/src/nav/ob_nav_env.zsh",
-          "hash": "13224811492199171965"
+          "hash": "11874810130557478737"
         },
         {
           "file": "packages/cli/src/nav/ob_nav_ticket.zsh",
-          "hash": "7915080867372488887"
+          "hash": "1355820501601381697"
         },
         {
           "file": "packages/cli/src/nav/ob_nav_where_ext.zsh",
-          "hash": "6753875109192104004"
+          "hash": "4004576174860213579"
         },
         {
           "file": "packages/cli/src/ob_dispatcher.zsh",
-          "hash": "16976169934421518884"
+          "hash": "9705233503425186937"
+        },
+        {
+          "file": "packages/cli/src/ob_instance.zsh",
+          "hash": "2458390526268844633"
+        },
+        {
+          "file": "packages/cli/src/ob_profile.zsh",
+          "hash": "10795011743396029297"
         },
         {
           "file": "packages/cli/src/scan/ob_scan_engine.zsh",
-          "hash": "1446678629937735761"
-        },
-        {
-          "file": "packages/cli/tests/bats/nav/scan/test_scan_msi.bats",
-          "hash": "9747629240147015207"
+          "hash": "14358072675818431812"
         },
         {
           "file": "packages/cli/tests/bats/nav/test_nav_generic.bats",
-          "hash": "1498856498539460384"
+          "hash": "17939055631273000481"
         },
         {
           "file": "packages/cli/tests/bats/nav/test_nav_msi.bats",
           "hash": "9811120562915107953"
+        },
+        {
+          "file": "packages/cli/tests/bats/scan/test_scan_msi.bats",
+          "hash": "9747629240147015207"
+        },
+        {
+          "file": "packages/cli/tests/battery/ob_battery.zsh",
+          "hash": "7437224735830009309"
         },
         {
           "file": "packages/cli/tests/fixtures/scan_fixtures/PolicyService.clean.cs",
@@ -390,44 +540,6 @@
         {
           "file": "packages/cli/tests/helpers/ob_scan_helper.zsh",
           "hash": "17815956578692720429"
-        }
-      ],
-      "@onboarded/shared": [
-        {
-          "file": "packages/shared/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/shared/README.md",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/shared/package.json",
-          "hash": "4086942593256550327"
-        },
-        {
-          "file": "packages/shared/project.json",
-          "hash": "15897087158149509371"
-        },
-        {
-          "file": "packages/shared/src/index.ts",
-          "hash": "18022144944603249768"
-        },
-        {
-          "file": "packages/shared/src/lib/tenants/generic.ts",
-          "hash": "7121708515481128325"
-        },
-        {
-          "file": "packages/shared/src/lib/tenants/msi.ts",
-          "hash": "8674608343674566759"
-        },
-        {
-          "file": "packages/shared/src/lib/types/tenant.types.ts",
-          "hash": "16212261604844496242"
-        },
-        {
-          "file": "packages/shared/tsconfig.json",
-          "hash": "2116374507683025708"
         }
       ],
       "@onboarded/portal": [
@@ -495,10 +607,7 @@
         {
           "file": "packages/portal/src/app/core/services/domain.ts",
           "hash": "13009910271060619236",
-          "deps": [
-            "npm:@angular/core",
-            "@onboarded/shared"
-          ]
+          "deps": ["npm:@angular/core", "@onboarded/shared"]
         },
         {
           "file": "packages/portal/src/app/features/.gitkeep",
@@ -535,9 +644,7 @@
         {
           "file": "packages/portal/src/app/features/nav/index.ts",
           "hash": "10635701933642798153",
-          "deps": [
-            "npm:@angular/core"
-          ]
+          "deps": ["npm:@angular/core"]
         },
         {
           "file": "packages/portal/src/app/features/portals/index.html",
@@ -574,24 +681,25 @@
         {
           "file": "packages/portal/src/app/features/status/index.ts",
           "hash": "9188296381733063407",
-          "deps": [
-            "npm:@angular/core"
-          ]
+          "deps": ["npm:@angular/core"]
+        },
+        {
+          "file": "packages/portal/src/app/index.html",
+          "hash": "17916263328278400182"
+        },
+        {
+          "file": "packages/portal/src/app/index.scss",
+          "hash": "13282244917449313995"
         },
         {
           "file": "packages/portal/src/app/index.ts",
-          "hash": "17458332110146323923",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
-          ]
+          "hash": "12216468609975423532",
+          "deps": ["npm:@angular/core", "npm:@angular/router"]
         },
         {
           "file": "packages/portal/src/app/routes.ts",
           "hash": "3664920929584383844",
-          "deps": [
-            "npm:@angular/router"
-          ]
+          "deps": ["npm:@angular/router"]
         },
         {
           "file": "packages/portal/src/envs/env.generic.ts",
@@ -612,9 +720,7 @@
         {
           "file": "packages/portal/src/main.ts",
           "hash": "16117404295427330518",
-          "deps": [
-            "npm:@angular/platform-browser"
-          ]
+          "deps": ["npm:@angular/platform-browser"]
         },
         {
           "file": "packages/portal/src/styles.css",
@@ -642,65 +748,11 @@
         },
         {
           "file": "packages/portal/tsconfig.json",
-          "hash": "4909486487457475231"
+          "hash": "13482983876087454509"
         },
         {
           "file": "packages/portal/tsconfig.spec.json",
           "hash": "15785744800117888015"
-        }
-      ],
-      "@onboarded/dba": [
-        {
-          "file": "packages/dba/project.json",
-          "hash": "3211797968082900532"
-        },
-        {
-          "file": "packages/dba/pyproject.toml",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/dba/src/dba/__init__.py",
-          "hash": "15070762393888072074"
-        },
-        {
-          "file": "packages/dba/src/dba/connection.py",
-          "hash": "8797914918433114590"
-        },
-        {
-          "file": "packages/dba/src/dba/formatters/__init__.py",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/dba/src/dba/formatters/console.py",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/dba/src/dba/formatters/csv.py",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/dba/src/dba/models.py",
-          "hash": "8464394080621148355"
-        },
-        {
-          "file": "packages/dba/src/dba/registry.py",
-          "hash": "15711118036959425526"
-        },
-        {
-          "file": "packages/dba/src/dba/runner.py",
-          "hash": "7641989356069739785"
-        },
-        {
-          "file": "packages/dba/src/dba/scaffold.py",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/dba/tests/conftest.py",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "packages/dba/tests/test_dba.py",
-          "hash": "3244421341483603138"
         }
       ],
       "@onboarded/core": [
@@ -714,51 +766,75 @@
         },
         {
           "file": "packages/core/data/tenant.schema.json",
-          "hash": "6575403121338184276"
+          "hash": "41788539701741175"
+        },
+        {
+          "file": "packages/core/generated/flotilla/nav_maps.ps1",
+          "hash": "1228407392056601374"
+        },
+        {
+          "file": "packages/core/generated/flotilla/nav_maps.zsh",
+          "hash": "9644989869045334739"
+        },
+        {
+          "file": "packages/core/generated/flotilla/nav_maps_db.ps1",
+          "hash": "1487833856759685267"
+        },
+        {
+          "file": "packages/core/generated/flotilla/nav_maps_db.zsh",
+          "hash": "13700588164702032961"
+        },
+        {
+          "file": "packages/core/generated/flotilla/scan_rules.ps1",
+          "hash": "4123706068796659105"
+        },
+        {
+          "file": "packages/core/generated/flotilla/scan_rules.zsh",
+          "hash": "2023965796206640059"
         },
         {
           "file": "packages/core/generated/generic/nav_maps.ps1",
-          "hash": "4727255429055253136"
+          "hash": "14770602074938738150"
         },
         {
           "file": "packages/core/generated/generic/nav_maps.zsh",
-          "hash": "855088072522573334"
+          "hash": "9578843256557579303"
         },
         {
           "file": "packages/core/generated/generic/nav_maps_db.zsh",
-          "hash": "15349257563137002787"
+          "hash": "2225866663157831177"
         },
         {
           "file": "packages/core/generated/generic/scan_rules.ps1",
-          "hash": "8126313677647256237"
+          "hash": "14885772098437623655"
         },
         {
           "file": "packages/core/generated/generic/scan_rules.zsh",
-          "hash": "15466953160506045104"
+          "hash": "11736522354039033552"
         },
         {
           "file": "packages/core/generated/msi/nav_maps.ps1",
-          "hash": "7273567897396194214"
+          "hash": "13606568149792991750"
         },
         {
           "file": "packages/core/generated/msi/nav_maps.zsh",
-          "hash": "5364247551162642953"
+          "hash": "7302693587428369745"
         },
         {
           "file": "packages/core/generated/msi/nav_maps_db.ps1",
-          "hash": "13323300582222964518"
+          "hash": "7062492138011860365"
         },
         {
           "file": "packages/core/generated/msi/nav_maps_db.zsh",
-          "hash": "3974838214887308659"
+          "hash": "2171567824138740658"
         },
         {
           "file": "packages/core/generated/msi/scan_rules.ps1",
-          "hash": "18014605019040690415"
+          "hash": "13864066973874627038"
         },
         {
           "file": "packages/core/generated/msi/scan_rules.zsh",
-          "hash": "8625242830695511705"
+          "hash": "11293100511878180201"
         },
         {
           "file": "packages/core/package.json",
@@ -770,11 +846,23 @@
         },
         {
           "file": "packages/core/scripts/bootstrap.sh",
-          "hash": "18008269169199029296"
+          "hash": "8142006458791468082"
+        },
+        {
+          "file": "packages/core/scripts/ef_snapshot.py",
+          "hash": "7214477876431682067"
         },
         {
           "file": "packages/core/scripts/generate_adapters.py",
-          "hash": "15620101951555832116"
+          "hash": "17419173113154445363"
+        },
+        {
+          "file": "packages/core/scripts/ob_instance.py",
+          "hash": "17117206965782432441"
+        },
+        {
+          "file": "packages/core/scripts/ob_paths.py",
+          "hash": "17783411723447183263"
         },
         {
           "file": "packages/core/scripts/patch_domain.py",
@@ -782,7 +870,31 @@
         },
         {
           "file": "packages/core/scripts/validate_domain.py",
-          "hash": "9346320528580959971"
+          "hash": "18162341166136982415"
+        },
+        {
+          "file": "packages/core/tenants/flotilla/domain/domain.json",
+          "hash": "1391737766893217793"
+        },
+        {
+          "file": "packages/core/tenants/flotilla/scripts/2001/diagnostic.sql",
+          "hash": "8999507749312898594"
+        },
+        {
+          "file": "packages/core/tenants/flotilla/scripts/2001/dryrun.sql",
+          "hash": "17536121155574131802"
+        },
+        {
+          "file": "packages/core/tenants/flotilla/scripts/2001/fix.sql",
+          "hash": "2595620004477967386"
+        },
+        {
+          "file": "packages/core/tenants/flotilla/scripts/2001/rollback.sql",
+          "hash": "17066494201083681103"
+        },
+        {
+          "file": "packages/core/tenants/flotilla/scripts/2001/runbook.md",
+          "hash": "17704888501955953938"
         },
         {
           "file": "packages/core/tenants/generic/.gitkeep",
@@ -790,11 +902,31 @@
         },
         {
           "file": "packages/core/tenants/generic/domain/domain.json",
-          "hash": "7107912553144228240"
+          "hash": "10154410230236904130"
         },
         {
           "file": "packages/core/tenants/generic/schema.json",
           "hash": "17925496361488992573"
+        },
+        {
+          "file": "packages/core/tenants/generic/scripts/1001/diagnostic.sql",
+          "hash": "13877208794912828865"
+        },
+        {
+          "file": "packages/core/tenants/generic/scripts/1001/dryrun.sql",
+          "hash": "2647778964712110922"
+        },
+        {
+          "file": "packages/core/tenants/generic/scripts/1001/fix.sql",
+          "hash": "12988000501524291944"
+        },
+        {
+          "file": "packages/core/tenants/generic/scripts/1001/rollback.sql",
+          "hash": "703587712605548956"
+        },
+        {
+          "file": "packages/core/tenants/generic/scripts/1001/runbook.md",
+          "hash": "987931270185965925"
         },
         {
           "file": "packages/core/tenants/msi/.gitkeep",
@@ -802,14 +934,142 @@
         },
         {
           "file": "packages/core/tenants/msi/domain/domain.json",
-          "hash": "11992621190015170648"
+          "hash": "12684036131939159686"
         },
         {
           "file": "packages/core/tenants/msi/schema.json",
           "hash": "3555259728613172061"
         }
+      ],
+      "@onboarded/dba": [
+        {
+          "file": "packages/dba/project.json",
+          "hash": "3211797968082900532"
+        },
+        {
+          "file": "packages/dba/pyproject.toml",
+          "hash": "9547857987926777798"
+        },
+        {
+          "file": "packages/dba/src/dba/__init__.py",
+          "hash": "7334273353772757875"
+        },
+        {
+          "file": "packages/dba/src/dba/__main__.py",
+          "hash": "12818904960609968677"
+        },
+        {
+          "file": "packages/dba/src/dba/cli.py",
+          "hash": "4309999193217166595"
+        },
+        {
+          "file": "packages/dba/src/dba/connection.py",
+          "hash": "12813145114617644430"
+        },
+        {
+          "file": "packages/dba/src/dba/formatters/__init__.py",
+          "hash": "14206543885029172906"
+        },
+        {
+          "file": "packages/dba/src/dba/formatters/console.py",
+          "hash": "8675460246636436879"
+        },
+        {
+          "file": "packages/dba/src/dba/formatters/csv.py",
+          "hash": "13573074526779330108"
+        },
+        {
+          "file": "packages/dba/src/dba/models.py",
+          "hash": "6445095933582641692"
+        },
+        {
+          "file": "packages/dba/src/dba/registry.py",
+          "hash": "15711118036959425526"
+        },
+        {
+          "file": "packages/dba/src/dba/runner.py",
+          "hash": "15405757631504888440"
+        },
+        {
+          "file": "packages/dba/src/dba/sandbox.py",
+          "hash": "16762713312022174026"
+        },
+        {
+          "file": "packages/dba/src/dba/scaffold.py",
+          "hash": "10610285170810215187"
+        },
+        {
+          "file": "packages/dba/src/onboarded_dba.egg-info/PKG-INFO",
+          "hash": "7847236042684254349"
+        },
+        {
+          "file": "packages/dba/src/onboarded_dba.egg-info/SOURCES.txt",
+          "hash": "10222741598343746506"
+        },
+        {
+          "file": "packages/dba/src/onboarded_dba.egg-info/dependency_links.txt",
+          "hash": "4055606894390288348"
+        },
+        {
+          "file": "packages/dba/src/onboarded_dba.egg-info/entry_points.txt",
+          "hash": "5284776932554260537"
+        },
+        {
+          "file": "packages/dba/src/onboarded_dba.egg-info/requires.txt",
+          "hash": "15735914733177374726"
+        },
+        {
+          "file": "packages/dba/src/onboarded_dba.egg-info/top_level.txt",
+          "hash": "4984114176853986487"
+        },
+        {
+          "file": "packages/dba/tests/conftest.py",
+          "hash": "13052894544483208383"
+        },
+        {
+          "file": "packages/dba/tests/test_dba.py",
+          "hash": "2998419147483871951"
+        }
+      ],
+      "@onboarded/shared": [
+        {
+          "file": "packages/shared/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/shared/README.md",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "packages/shared/package.json",
+          "hash": "4086942593256550327"
+        },
+        {
+          "file": "packages/shared/project.json",
+          "hash": "15897087158149509371"
+        },
+        {
+          "file": "packages/shared/src/index.ts",
+          "hash": "18022144944603249768"
+        },
+        {
+          "file": "packages/shared/src/lib/tenants/generic.ts",
+          "hash": "7121708515481128325"
+        },
+        {
+          "file": "packages/shared/src/lib/tenants/msi.ts",
+          "hash": "8674608343674566759"
+        },
+        {
+          "file": "packages/shared/src/lib/types/tenant.types.ts",
+          "hash": "16212261604844496242"
+        },
+        {
+          "file": "packages/shared/tsconfig.json",
+          "hash": "2116374507683025708"
+        }
       ]
     }
   },
-  "externalNodesHash": "5170781537991011473"
+  "externalNodesHash": "15511901737817020500"
 }

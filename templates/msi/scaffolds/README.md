@@ -8,12 +8,12 @@
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| diagnostic.sql | Confirms data state matches cluster pattern |
-| dryrun-{{TICKET_ID}}.sql | Full fix path inside ROLLBACK — produces RS5 gate table |
-| fix.sql | Production fix — run only after 5/5 gates pass in dryrun |
-| rollback.sql | Reverses the fix using literal prior values from dryrun RS1 |
+| File                     | Purpose                                                     |
+| ------------------------ | ----------------------------------------------------------- |
+| diagnostic.sql           | Confirms data state matches cluster pattern                 |
+| dryrun-{{TICKET_ID}}.sql | Full fix path inside ROLLBACK — produces RS5 gate table     |
+| fix.sql                  | Production fix — run only after 5/5 gates pass in dryrun    |
+| rollback.sql             | Reverses the fix using literal prior values from dryrun RS1 |
 
 ## Pre-submission checklist
 

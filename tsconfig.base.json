@@ -6,9 +6,9 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@onboarded/shared":            ["packages/shared/src/index.ts"],
-      "@onboarded/shared/*":          ["packages/shared/src/*"],
-      "@onboarded/shared/tenants/*":  ["packages/shared/src/lib/tenants/*"]
+      "@onboarded/shared": ["packages/shared/src/index.ts"],
+      "@onboarded/shared/*": ["packages/shared/src/*"],
+      "@onboarded/shared/tenants/*": ["packages/shared/src/lib/tenants/*"]
     }
   }
 }

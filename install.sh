@@ -5,13 +5,13 @@
 #   ./install.sh                       install / repair (safe to re-run any time)
 #   ./install.sh --tenant flotilla     default tenant when no instance is active
 #   ./install.sh --with-db             also start local Postgres (needs deploy/local/db/.env)
-#   ./install.sh --with-dba            also create packages/dba/.venv with psycopg
+#   ./install.sh --with-dba            legacy option: use root .venv (no second environment)
 #   ./install.sh --drop-msi-nav        forget the legacy msi-nav path
 #   ./install.sh --check               verify only; change nothing
 #   ./install.sh --uninstall           remove shell wiring + launchers (keeps instances, DBs, tickets)
 #
 # What it does
-#   1. checks prerequisites (zsh, python3 ≥ 3.10, git required; psql, docker, just, bats optional)
+#   1. checks prerequisites and syncs the root .venv with uv (Python 3.12)
 #   2. validates every tenant and generates its adapters
 #   3. ~/.onboarded/root → this checkout, ~/.onboarded/paths.conf, ONE managed block
 #      in ~/.zshrc (via packages/core/scripts/ob_paths.py; backups kept)
@@ -27,13 +27,14 @@ MARK="# onboarded launcher (install.sh) — do not edit; re-run install.sh"
 BASH_BEGIN="# >>> onboarded (bash) >>>"; BASH_END="# <<< onboarded (bash) <<<"
 
 TENANT="" MODE=install WITH_DB=0 WITH_DBA=0 DROP_MSI=0
+PY="$HERE/.venv/bin/python"
 while (( $# )); do
     case "$1" in
-        --tenant)       TENANT="$2"; shift 2 ;;
+        --tenant)       (( $# >= 2 )) || { echo "install.sh: --tenant needs a value" >&2; exit 2; }; TENANT="$2"; shift 2 ;;
         --with-db)      WITH_DB=1; shift ;;
         --with-dba)     WITH_DBA=1; shift ;;
         --drop-msi-nav) DROP_MSI=1; shift ;;
-        --check)        MODE=check; shift ;;
+        --check|check)  MODE=check; shift ;;
         --uninstall)    MODE=uninstall; shift ;;
         -h|--help)      sed -n '2,22p' "$0"; exit 0 ;;
         *) echo "install.sh: unknown option $1" >&2; exit 2 ;;
@@ -51,9 +52,13 @@ FAILS=0
 prereqs() {
     step "Prerequisites"
     if command -v zsh >/dev/null; then ok "zsh $(zsh --version | awk '{print $2}')"; else bad "zsh missing — sudo apt install -y zsh"; fi
-    if command -v python3 >/dev/null && python3 -c 'import sys; sys.exit(sys.version_info < (3, 10))'; then
-        ok "python3 $(python3 -c 'import platform; print(platform.python_version())')"
-    else bad "python3 ≥ 3.10 missing — sudo apt install -y python3 python3-venv"; fi
+    if [[ -x "$PY" ]] && "$PY" -c 'import sys; sys.exit(sys.version_info < (3, 12) or sys.version_info >= (3, 13))'; then
+        ok "project Python $("$PY" -c 'import platform; print(platform.python_version())') ($PY)"
+    elif [[ "$MODE" == check ]]; then
+        bad "project Python 3.12 missing or invalid: $PY — run: uv sync --group dev"
+    else
+        warn "project Python 3.12 not ready: $PY (will bootstrap with uv)"
+    fi
     if command -v git >/dev/null; then ok "git $(git --version | awk '{print $3}')"; else bad "git missing — sudo apt install -y git"; fi
     for t in psql docker just bats; do
         if command -v "$t" >/dev/null; then ok "$t (optional)"; else warn "$t not found (optional: $(case $t in psql) echo 'live DB commands — sudo apt install -y postgresql-client';; docker) echo 'local Postgres';; just) echo 'task runner — make works too';; bats) echo 'shell test suites';; esac))"; fi
@@ -76,21 +81,26 @@ default_tenant() {
 selftest() {
     local t="$1"
     step "Self-test (tenant: $t)"
+    if [[ -x "$PY" ]] && "$PY" -c 'import jsonschema, psycopg, dba' >/dev/null 2>&1; then
+        ok "project Python dependencies"
+    else
+        bad "project Python dependencies unavailable — run: uv sync --group dev"
+    fi
     if [[ -L "$HOME/.onboarded/root" && "$(cd "$HOME/.onboarded/root" 2>/dev/null && pwd -P)" == "$HERE" ]]; then
         ok "~/.onboarded/root → this checkout"
     else bad "~/.onboarded/root does not point at $HERE"; fi
     if grep -qF "# >>> onboarded >>>" "${ZDOTDIR:-$HOME}/.zshrc" 2>/dev/null; then ok "managed block in ${ZDOTDIR:-$HOME}/.zshrc"
     else bad "managed block missing from ${ZDOTDIR:-$HOME}/.zshrc"; fi
     if [[ -f "$HERE/packages/core/generated/$t/nav_maps.zsh" ]]; then ok "adapters generated for $t"
-    else bad "no adapters for $t — python3 packages/core/scripts/generate_adapters.py --tenant $t"; fi
+    else bad "no adapters for $t — uv run python packages/core/scripts/generate_adapters.py --tenant $t"; fi
     if command -v zsh >/dev/null; then
         local out
         local -a envv=(HOME="$HOME" PATH="$PATH" TERM=dumb USER="${USER:-}")
         [[ -n "${ZDOTDIR:-}" ]] && envv+=(ZDOTDIR="$ZDOTDIR")
         out="$(cd / && env -i "${envv[@]}" \
-               zsh -i -c 'whence -w onboarded ob 2>&1; onboarded help >/dev/null 2>&1 && print help-ok' 2>&1)"
+               zsh -i -c 'whence -w onboarded ob 2>&1; onboarded help >/dev/null 2>&1 && print help-ok; ob help >/dev/null 2>&1 && print ob-ok' 2>&1)"
         [[ "$out" == *"onboarded: function"* ]] && ok "fresh zsh: onboarded is a function" || bad "fresh zsh: onboarded not defined — output: ${out:0:200}"
-        [[ "$out" == *"ob: alias"* ]] && ok "fresh zsh: ob alias" || bad "fresh zsh: ob alias missing"
+        [[ "$out" == *ob-ok* ]] && ok "fresh zsh: ob help runs" || bad "fresh zsh: ob help failed — output: ${out:0:200}"
         [[ "$out" == *help-ok* ]] && ok "fresh zsh: onboarded help runs" || bad "fresh zsh: onboarded help failed"
     fi
     for l in onboarded ob obi obpaths; do
@@ -100,7 +110,7 @@ selftest() {
     bout="$(cd / && env -i HOME="$HOME" PATH="$BIN:$PATH" TERM=dumb bash -c 'onboarded help >/dev/null 2>&1 && echo bash-ok' 2>&1)"
     [[ "$bout" == *bash-ok* ]] && ok "bash (via launcher): onboarded help runs" || bad "bash (via launcher): onboarded failed — ${bout:0:200}"
     case ":$PATH:" in *":$BIN:"*) ok "$BIN is on your PATH" ;; *) warn "$BIN is not on this shell's PATH yet — open a new terminal" ;; esac
-    if python3 "$HERE/packages/core/scripts/ob_paths.py" check >/dev/null 2>&1; then ok "obpaths check: all paths resolve"
+    if "$PY" "$HERE/packages/core/scripts/ob_paths.py" check >/dev/null 2>&1; then ok "obpaths check: all paths resolve"
     else warn "obpaths check reports stale paths — run: obpaths check"; fi
 }
 
@@ -156,16 +166,34 @@ prereqs
 (( FAILS )) && { echo; echo "${R}Install stopped: required tools missing (see ✖ above).${N}"; exit 1; }
 T="$(default_tenant)"
 
+step "Python environment"
+if ! command -v uv >/dev/null 2>&1; then
+    bad "uv is required — install from https://docs.astral.sh/uv/getting-started/installation/"
+elif [[ ! -f "$HERE/pyproject.toml" ]]; then
+    bad "root pyproject.toml missing"
+elif ! grep -Eq '^package[[:space:]]*=[[:space:]]*false([[:space:]]*(#.*)?)?$' "$HERE/pyproject.toml"; then
+    bad 'root pyproject.toml needs [tool.uv] package = false (monorepo root is not installable)'
+elif (cd "$HERE" && uv sync --python 3.12 --group dev); then
+    if [[ -x "$PY" ]] && "$PY" -c 'import jsonschema, psycopg, dba' >/dev/null 2>&1; then
+        ok "root .venv synchronized; jsonschema, psycopg and dba available"
+    else
+        bad "project dependencies missing after uv sync"
+    fi
+else
+    bad "uv sync failed"
+fi
+(( FAILS )) && { echo "Install stopped: Python environment not ready"; exit 1; }
+
 step "Tenants: validate + generate"
-if ( cd "$HERE" && python3 packages/core/scripts/validate_domain.py --all >/dev/null ); then ok "all tenant domains valid"
-else bad "validation failed — python3 packages/core/scripts/validate_domain.py --all"; fi
-if ( cd "$HERE" && python3 packages/core/scripts/generate_adapters.py --all >/dev/null ); then ok "adapters generated for every tenant"
-else bad "generation failed — python3 packages/core/scripts/generate_adapters.py --all"; fi
+if ( cd "$HERE" && "$PY" packages/core/scripts/validate_domain.py --all >/dev/null ); then ok "all tenant domains valid"
+else bad "validation failed — uv run python packages/core/scripts/validate_domain.py --all"; fi
+if ( cd "$HERE" && "$PY" packages/core/scripts/generate_adapters.py --all >/dev/null ); then ok "adapters generated for every tenant"
+else bad "generation failed — uv run python packages/core/scripts/generate_adapters.py --all"; fi
 
 step "Paths and shell wiring (default tenant: $T)"
 args=(fix --apply --default-tenant "$T")
 (( DROP_MSI )) && args+=(--no-msi-nav)
-if python3 "$HERE/packages/core/scripts/ob_paths.py" "${args[@]}" > "$HOME/.onboarded-install.log" 2>&1; then
+if "$PY" "$HERE/packages/core/scripts/ob_paths.py" "${args[@]}" > "$HOME/.onboarded-install.log" 2>&1; then
     ok "~/.onboarded/root, paths.conf, ~/.zshrc managed block (details: ~/.onboarded-install.log)"
 else
     grep -q '✖' "$HOME/.onboarded-install.log" && warn "some paths still stale — see ~/.onboarded-install.log (obpaths check)" || bad "ob_paths failed — see ~/.onboarded-install.log"
@@ -176,20 +204,22 @@ step "Launchers (any shell)"
 LAUNCH_OB='exec zsh -f -c '"'"'r=$1; shift; source "$r/packages/cli/src/ob_profile.zsh" && onboarded "$@"'"'"' onboarded "$HOME/.onboarded/root" "$@"'
 write_launcher onboarded "$LAUNCH_OB"
 write_launcher ob "$LAUNCH_OB"
-write_launcher obi 'exec python3 "$HOME/.onboarded/root/packages/core/scripts/ob_instance.py" "$@"'
-write_launcher obpaths 'exec python3 "$HOME/.onboarded/root/packages/core/scripts/ob_paths.py" "$@"'
+write_launcher obi 'exec "$HOME/.onboarded/root/.venv/bin/python" "$HOME/.onboarded/root/packages/core/scripts/ob_instance.py" "$@"'
+write_launcher obpaths 'exec "$HOME/.onboarded/root/.venv/bin/python" "$HOME/.onboarded/root/packages/core/scripts/ob_paths.py" "$@"'
 ok "onboarded, ob, obi, obpaths → $BIN"
 bash_block
 
 if (( WITH_DBA )); then
-    step "DBA engine venv"
-    if python3 -m venv "$HERE/packages/dba/.venv" && "$HERE/packages/dba/.venv/bin/pip" install -q -e "$HERE/packages/dba[postgres,test]"; then
-        ok "packages/dba/.venv with psycopg"
-    else bad "DBA venv failed — see pip output above"; fi
+    step "DBA engine (shared environment)"
+    if "$PY" -c 'import dba, psycopg' >/dev/null 2>&1; then
+        ok "DBA engine installed in root .venv (no separate environment)"
+    else
+        bad "DBA dependencies missing from root .venv"
+    fi
 fi
 if (( WITH_DB )); then
     step "Local Postgres"
-    if [[ -f "$HERE/deploy/local/db/.env" ]]; then "$HERE/deploy/local/db/init-local-db.sh" && python3 "$HERE/packages/core/scripts/ob_instance.py" pgpass && ok "Postgres up, ~/.pgpass written"
+    if [[ -f "$HERE/deploy/local/db/.env" ]]; then "$HERE/deploy/local/db/init-local-db.sh" && "$PY" "$HERE/packages/core/scripts/ob_instance.py" pgpass && ok "Postgres up, ~/.pgpass written"
     else warn "deploy/local/db/.env missing — cp deploy/local/db/.env.example deploy/local/db/.env (edit passwords), then re-run with --with-db"; fi
 fi
 
@@ -197,3 +227,4 @@ selftest "$T"
 echo
 if (( FAILS )); then echo "${R}✖ $FAILS problem(s) above.${N} Fix them and re-run ./install.sh (it is safe to re-run)."; exit 1; fi
 echo "${G}✔ onboarded installed.${N} Open a new terminal (or: exec zsh), then:  onboarded help"
+

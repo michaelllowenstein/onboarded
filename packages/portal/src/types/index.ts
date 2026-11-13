@@ -11,5 +11,5 @@ export type {
   ScanFinding,
   Portal,
   Queue,
-  Product
+  Product,
 } from './lib/types/tenant.types';

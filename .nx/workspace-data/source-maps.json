@@ -1,21 +1,9 @@
 {
   "packages/cli": {
-    "root": [
-      "packages/cli/project.json",
-      "nx/core/project-json"
-    ],
-    "name": [
-      "packages/cli/project.json",
-      "nx/core/project-json"
-    ],
-    "tags": [
-      "packages/cli/package.json",
-      "nx/core/package-json"
-    ],
-    "tags.npm:private": [
-      "packages/cli/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["packages/cli/project.json", "nx/core/project-json"],
+    "name": ["packages/cli/project.json", "nx/core/project-json"],
+    "tags": ["packages/cli/package.json", "nx/core/package-json"],
+    "tags.npm:private": ["packages/cli/package.json", "nx/core/package-json"],
     "metadata.targetGroups": [
       "packages/cli/package.json",
       "nx/core/package-json"
@@ -24,10 +12,7 @@
       "packages/cli/package.json",
       "nx/core/package-json"
     ],
-    "metadata.js": [
-      "packages/cli/package.json",
-      "nx/core/package-json"
-    ],
+    "metadata.js": ["packages/cli/package.json", "nx/core/package-json"],
     "metadata.js.packageName": [
       "packages/cli/package.json",
       "nx/core/package-json"
@@ -40,22 +25,10 @@
       "packages/cli/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "packages/cli/package.json",
-      "nx/core/package-json"
-    ],
-    "$schema": [
-      "packages/cli/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
-      "packages/cli/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test-bats": [
-      "packages/cli/project.json",
-      "nx/core/project-json"
-    ],
+    "targets": ["packages/cli/package.json", "nx/core/package-json"],
+    "$schema": ["packages/cli/project.json", "nx/core/project-json"],
+    "projectType": ["packages/cli/project.json", "nx/core/project-json"],
+    "targets.test-bats": ["packages/cli/project.json", "nx/core/project-json"],
     "targets.test-bats.executor": [
       "packages/cli/project.json",
       "nx/core/project-json"
@@ -74,30 +47,15 @@
     ]
   },
   "packages/core": {
-    "root": [
-      "packages/core/project.json",
-      "nx/core/project-json"
-    ],
-    "name": [
-      "packages/core/project.json",
-      "nx/core/project-json"
-    ],
-    "tags": [
-      "packages/core/package.json",
-      "nx/core/package-json"
-    ],
-    "tags.npm:private": [
-      "packages/core/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["packages/core/project.json", "nx/core/project-json"],
+    "name": ["packages/core/project.json", "nx/core/project-json"],
+    "tags": ["packages/core/package.json", "nx/core/package-json"],
+    "tags.npm:private": ["packages/core/package.json", "nx/core/package-json"],
     "metadata.targetGroups": [
       "packages/core/package.json",
       "nx/core/package-json"
     ],
-    "metadata.js": [
-      "packages/core/package.json",
-      "nx/core/package-json"
-    ],
+    "metadata.js": ["packages/core/package.json", "nx/core/package-json"],
     "metadata.js.packageName": [
       "packages/core/package.json",
       "nx/core/package-json"
@@ -110,22 +68,10 @@
       "packages/core/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "packages/core/package.json",
-      "nx/core/package-json"
-    ],
-    "$schema": [
-      "packages/core/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
-      "packages/core/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.validate": [
-      "packages/core/project.json",
-      "nx/core/project-json"
-    ],
+    "targets": ["packages/core/package.json", "nx/core/package-json"],
+    "$schema": ["packages/core/project.json", "nx/core/project-json"],
+    "projectType": ["packages/core/project.json", "nx/core/project-json"],
+    "targets.validate": ["packages/core/project.json", "nx/core/project-json"],
     "targets.validate.executor": [
       "packages/core/project.json",
       "nx/core/project-json"
@@ -142,10 +88,7 @@
       "packages/core/project.json",
       "nx/core/project-json"
     ],
-    "targets.generate": [
-      "packages/core/project.json",
-      "nx/core/project-json"
-    ],
+    "targets.generate": ["packages/core/project.json", "nx/core/project-json"],
     "targets.generate.executor": [
       "packages/core/project.json",
       "nx/core/project-json"
@@ -166,24 +109,12 @@
       "packages/core/project.json",
       "nx/core/project-json"
     ],
-    "targets.generate.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ]
+    "targets.generate.parallelism": ["nx.json", "nx/target-defaults"]
   },
   "packages/portal": {
-    "root": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
-    "name": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
-    "tags": [
-      "packages/portal/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["packages/portal/project.json", "nx/core/project-json"],
+    "name": ["packages/portal/project.json", "nx/core/project-json"],
+    "tags": ["packages/portal/package.json", "nx/core/package-json"],
     "tags.npm:private": [
       "packages/portal/package.json",
       "nx/core/package-json"
@@ -192,10 +123,7 @@
       "packages/portal/package.json",
       "nx/core/package-json"
     ],
-    "metadata.js": [
-      "packages/portal/package.json",
-      "nx/core/package-json"
-    ],
+    "metadata.js": ["packages/portal/package.json", "nx/core/package-json"],
     "metadata.js.packageName": [
       "packages/portal/package.json",
       "nx/core/package-json"
@@ -208,30 +136,12 @@
       "packages/portal/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "packages/portal/package.json",
-      "nx/core/package-json"
-    ],
-    "$schema": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
-    "prefix": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
-    "sourceRoot": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
-    "generators": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
+    "targets": ["packages/portal/package.json", "nx/core/package-json"],
+    "$schema": ["packages/portal/project.json", "nx/core/project-json"],
+    "projectType": ["packages/portal/project.json", "nx/core/project-json"],
+    "prefix": ["packages/portal/project.json", "nx/core/project-json"],
+    "sourceRoot": ["packages/portal/project.json", "nx/core/project-json"],
+    "generators": ["packages/portal/project.json", "nx/core/project-json"],
     "generators.@schematics/angular:component": [
       "packages/portal/project.json",
       "nx/core/project-json"
@@ -244,10 +154,7 @@
       "packages/portal/project.json",
       "nx/core/project-json"
     ],
-    "targets.build": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
+    "targets.build": ["packages/portal/project.json", "nx/core/project-json"],
     "targets.build.executor": [
       "packages/portal/project.json",
       "nx/core/project-json"
@@ -344,10 +251,7 @@
       "packages/portal/project.json",
       "nx/core/project-json"
     ],
-    "targets.serve": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
+    "targets.serve": ["packages/portal/project.json", "nx/core/project-json"],
     "targets.serve.executor": [
       "packages/portal/project.json",
       "nx/core/project-json"
@@ -392,10 +296,7 @@
       "packages/portal/project.json",
       "nx/core/project-json"
     ],
-    "targets.test": [
-      "packages/portal/project.json",
-      "nx/core/project-json"
-    ],
+    "targets.test": ["packages/portal/project.json", "nx/core/project-json"],
     "targets.test.executor": [
       "packages/portal/project.json",
       "nx/core/project-json"
@@ -436,48 +337,18 @@
       "packages/portal/project.json",
       "nx/core/project-json"
     ],
-    "targets.build.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.build.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.build.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.build.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.typecheck.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.typecheck.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.typecheck.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ]
+    "targets.build.dependsOn": ["nx.json", "nx/target-defaults"],
+    "targets.build.inputs": ["nx.json", "nx/target-defaults"],
+    "targets.build.cache": ["nx.json", "nx/target-defaults"],
+    "targets.build.parallelism": ["nx.json", "nx/target-defaults"],
+    "targets.typecheck.inputs": ["nx.json", "nx/target-defaults"],
+    "targets.typecheck.cache": ["nx.json", "nx/target-defaults"],
+    "targets.typecheck.parallelism": ["nx.json", "nx/target-defaults"]
   },
   "packages/shared": {
-    "root": [
-      "packages/shared/project.json",
-      "nx/core/project-json"
-    ],
-    "name": [
-      "packages/shared/project.json",
-      "nx/core/project-json"
-    ],
-    "tags": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["packages/shared/project.json", "nx/core/project-json"],
+    "name": ["packages/shared/project.json", "nx/core/project-json"],
+    "tags": ["packages/shared/package.json", "nx/core/package-json"],
     "tags.npm:private": [
       "packages/shared/package.json",
       "nx/core/package-json"
@@ -490,10 +361,7 @@
       "packages/shared/package.json",
       "nx/core/package-json"
     ],
-    "metadata.js": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
+    "metadata.js": ["packages/shared/package.json", "nx/core/package-json"],
     "metadata.js.packageName": [
       "packages/shared/package.json",
       "nx/core/package-json"
@@ -510,22 +378,10 @@
       "packages/shared/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
-    "$schema": [
-      "packages/shared/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
-      "packages/shared/project.json",
-      "nx/core/project-json"
-    ],
-    "sourceRoot": [
-      "packages/shared/project.json",
-      "nx/core/project-json"
-    ],
+    "targets": ["packages/shared/package.json", "nx/core/package-json"],
+    "$schema": ["packages/shared/project.json", "nx/core/project-json"],
+    "projectType": ["packages/shared/project.json", "nx/core/project-json"],
+    "sourceRoot": ["packages/shared/project.json", "nx/core/project-json"],
     "targets.typecheck": [
       "packages/shared/project.json",
       "nx/core/project-json"
@@ -542,36 +398,15 @@
       "packages/shared/project.json",
       "nx/core/project-json"
     ],
-    "targets.typecheck.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.typecheck.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.typecheck.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ]
+    "targets.typecheck.inputs": ["nx.json", "nx/target-defaults"],
+    "targets.typecheck.cache": ["nx.json", "nx/target-defaults"],
+    "targets.typecheck.parallelism": ["nx.json", "nx/target-defaults"]
   },
   "packages/dba": {
-    "root": [
-      "packages/dba/project.json",
-      "nx/core/project-json"
-    ],
-    "name": [
-      "packages/dba/project.json",
-      "nx/core/project-json"
-    ],
-    "targets": [
-      "packages/dba/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test": [
-      "packages/dba/project.json",
-      "nx/core/project-json"
-    ],
+    "root": ["packages/dba/project.json", "nx/core/project-json"],
+    "name": ["packages/dba/project.json", "nx/core/project-json"],
+    "targets": ["packages/dba/project.json", "nx/core/project-json"],
+    "targets.test": ["packages/dba/project.json", "nx/core/project-json"],
     "targets.test.executor": [
       "packages/dba/project.json",
       "nx/core/project-json"

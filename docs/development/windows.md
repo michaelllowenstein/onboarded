@@ -2,12 +2,12 @@
 
 ## Requirements
 
-| Dependency | Required | Notes |
-|---|---|---|
-| PowerShell 5.1+ | Yes | Pre-installed on Windows 10/11; PowerShell 7 recommended |
-| python3 | Recommended | For `generate_adapters.py`, `validate_domain.py`; `winget install Python.Python.3` |
-| ripgrep (`rg`) | Optional | `winget install BurntSushi.ripgrep.MSVC`; `Select-String` fallback used if absent |
-| Pester v5 | Dev only | `Install-Module Pester -Force` |
+| Dependency      | Required    | Notes                                                                              |
+| --------------- | ----------- | ---------------------------------------------------------------------------------- |
+| PowerShell 5.1+ | Yes         | Pre-installed on Windows 10/11; PowerShell 7 recommended                           |
+| python3         | Recommended | For `generate_adapters.py`, `validate_domain.py`; `winget install Python.Python.3` |
+| ripgrep (`rg`)  | Optional    | `winget install BurntSushi.ripgrep.MSVC`; `Select-String` fallback used if absent  |
+| Pester v5       | Dev only    | `Install-Module Pester -Force`                                                     |
 
 ---
 
@@ -22,6 +22,7 @@ msi doctor
 ```
 
 The installer:
+
 1. Creates `$HOME\bin\msi-nav.ps1` launcher
 2. Adds `$HOME\bin` to user `PATH`
 3. Runs `generate_adapters.py --ps1` to build `msi_domain.ps1` from JSON
@@ -48,6 +49,7 @@ $env:MSI_NAV_HOME   = "$HOME\msi-nav"
 ```
 
 Then generate the domain adapters once:
+
 ```powershell
 python3 "$HOME\msi-nav\src\python\generate_adapters.py" --ps1
 . $PROFILE

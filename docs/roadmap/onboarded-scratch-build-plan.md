@@ -1,7 +1,9 @@
 # `onboarded` — Scratch-Build Plan
+
 ### msi-nav Preserved in Parallel · 8 PRs · Terminal-First · One Command at a Time
 
 > **Document model:** Each PR section is structured as:
+>
 > 1. **Architectural deep-dive** — what is being built and why each decision was made this way
 > 2. **Generic principle** — what this technique teaches beyond this specific case
 > 3. **Terminal commands** — exact Linux shell steps, one at a time, from a fresh directory
@@ -455,6 +457,7 @@ onboarded/
 ```
 
 **Key takeaways:**
+
 - `cache: false` on `generate` is the load-bearing decision. Everything else in `nx.json` is convenience.
 - The `packages/*` wildcard in `workspaces` means every directory added under `packages/` is automatically part of the npm workspace — no manual registration.
 - `msi-nav` is unaware this repo exists.
@@ -950,6 +953,7 @@ packages/core/
 ```
 
 **Key takeaways:**
+
 - Glossary as typed objects, not pipe-strings, is the decision that determines whether the API and portal can consume the data directly. Always make JSON self-describing.
 - `validate` as a separate process from `generate` is a contract boundary — domain correctness is asserted before any output is produced.
 - The `generic` tenant is the first proof of multi-tenancy. The engine knows about `${SLUG}_OPS`, not `MSI_OPS`. That variable is set by the loader from `tenant.slug`.
@@ -965,13 +969,13 @@ PR-3 is the most developer-visible PR because it is the one that changes (or pre
 **The decomposition: from monolith to engine/dispatcher pattern**
 `msi_nav.zsh` (or the v2.0.0 dispatcher + modules) is decomposed into five files:
 
-| File | Responsibility | msi-nav equivalent |
-|---|---|---|
-| `ob_dispatcher.zsh` | Entry point, `onboarded()` function, `msi()` alias | `msi_dispatcher.zsh` |
-| `ob_core_display.zsh` | ANSI colour helpers, `_ob_kv`, `_ob_sep` | `msi_core_display.zsh` |
-| `ob_core_loader.zsh` | Tenant resolution, generated adapter sourcing | `msi_core_loader.zsh` |
-| `ob_nav_engine.zsh` | All nav commands: `ob_where`, `ob_status`, etc. | `msi_nav_*.sh` modules |
-| `ob_scan_engine.zsh` | All scan commands: `ob_scan`, `ob_secrets`, etc. | `msi_scan_rules.sh` + `msi_scan_secrets.sh` |
+| File                  | Responsibility                                     | msi-nav equivalent                          |
+| --------------------- | -------------------------------------------------- | ------------------------------------------- |
+| `ob_dispatcher.zsh`   | Entry point, `onboarded()` function, `msi()` alias | `msi_dispatcher.zsh`                        |
+| `ob_core_display.zsh` | ANSI colour helpers, `_ob_kv`, `_ob_sep`           | `msi_core_display.zsh`                      |
+| `ob_core_loader.zsh`  | Tenant resolution, generated adapter sourcing      | `msi_core_loader.zsh`                       |
+| `ob_nav_engine.zsh`   | All nav commands: `ob_where`, `ob_status`, etc.    | `msi_nav_*.sh` modules                      |
+| `ob_scan_engine.zsh`  | All scan commands: `ob_scan`, `ob_secrets`, etc.   | `msi_scan_rules.sh` + `msi_scan_secrets.sh` |
 
 The critical tenant-isolation mechanism is in `ob_core_loader.zsh`. When `OB_TENANT=msi` is set, the loader sets `OB_NAV_SLUG=MSI` (the slug uppercased). Every engine uses `${OB_NAV_SLUG}_OPS` to access the operation hash map. For `msi`, this resolves to `MSI_OPS`. For `generic`, it resolves to `GENERIC_OPS`. The engine files contain zero MSI-specific code — they are runtime-generic.
 
@@ -1089,27 +1093,27 @@ cat > packages/cli/src/core/ob_core_loader.zsh << 'SHELL_EOF'
 _ob_load_tenant() {
     local tenant="${OB_TENANT:-msi}"
     local slug_upper="${tenant:u}"   # uppercase slug → MSI, GENERIC, ACME …
-    
+
     # Exported: engines use ${OB_NAV_SLUG}_OPS, not MSI_OPS directly
     export OB_NAV_SLUG="$slug_upper"
-    
+
     # Locate repo root relative to this file (robust vs dot-sourcing)
     local loader_path="${${(%):-%x}:A}"
     local cli_src="${loader_path:h}"
     local repo_root="${cli_src:h:h:h}"
-    
+
     local nav_maps="${repo_root}/packages/core/generated/${tenant}/nav_maps.zsh"
     local scan_rules="${repo_root}/packages/core/generated/${tenant}/scan_rules.zsh"
-    
+
     if [[ ! -f "$nav_maps" ]]; then
         print -u2 "onboarded: generated maps not found for tenant '${tenant}'."
         print -u2 "  Run: python3 packages/core/scripts/generate_adapters.py --tenant ${tenant}"
         return 1
     fi
-    
+
     source "$nav_maps"
     [[ -f "$scan_rules" ]] && source "$scan_rules"
-    
+
     # Read CLI name from domain (set by generator as a shell variable)
     # Fallback to tenant slug if variable not present
     local cli_name_var="${slug_upper}_CLI_NAME"
@@ -1239,7 +1243,7 @@ public class PolicyService
 {
     private readonly IConfiguration _config;
     public PolicyService(IConfiguration config) => _config = config;
-    
+
     public async Task<Policy> BindAsync(int policyId, CancellationToken ct = default)
     {
         var connectionString = _config["ConnectionStrings:Default"];
@@ -1254,10 +1258,10 @@ public class ViolationService
 {
     // critical: hardcoded credential
     private string _password = "SuperSecret123";
-    
+
     // error: direct DB connection string
     private string _conn = "Server=prod-sql;Database=PolicyDB;User=sa;Password=abc123";
-    
+
     // warning: async without CancellationToken
     public async Task<string> GetDataAsync()
     {
@@ -1470,6 +1474,7 @@ packages/cli/
 ```
 
 **Key takeaways:**
+
 - Engines use `${OB_NAV_SLUG}_OPS` — the slug is the only thing that changes between tenants at runtime. The engine code is identical for MSI and generic.
 - `msi()` is a free alias. No logic lives there. This means every existing `msi` invocation continues to work without changes.
 - Tests are written in the same PR as the code they test. The bats gate is what makes the PR safe to merge.
@@ -1852,6 +1857,7 @@ packages/portal/src/app/
 ```
 
 **Key takeaways:**
+
 - Build-time injection = zero latency for nav data and zero API dependency on the portal's critical path.
 - Custom Elements are the framework-neutral island boundary. Angular does not know React is in the DOM; React does not know Angular put it there.
 - `--configuration=msi` vs `--configuration=generic` is the frontend equivalent of `OB_TENANT=msi`. The mechanism is data, not code branching.
@@ -2403,6 +2409,7 @@ packages/api/
 ```
 
 **Key takeaways:**
+
 - Lifespan loading is `O(1)` per request for domain data. The health endpoint is a reliable indicator — if domains fail to load at startup, the service is degraded immediately.
 - Tenant middleware enforces a single resolution point. No handler makes a tenant decision.
 - Tests use `TestClient` (sync) wrapping the ASGI app. No uvicorn, no network, no port conflicts.
@@ -2693,6 +2700,7 @@ deploy/
 ```
 
 **Key takeaways:**
+
 - Multi-stage Dockerfile = no build tools in production. This is a security posture requirement, not an optimisation.
 - Nginx owns the single ingress port. Services don't know about each other.
 - The `OB_TENANT` build arg in Dockerfile.portal is the same tenant-parameterization pattern applied to the container build layer.
@@ -2707,6 +2715,7 @@ PR-7 wires everything together into a 7-job CI pipeline. The pipeline structure 
 
 **Why `validate` and `generate` are separate jobs with artifact upload**
 Generating adapters takes < 2 seconds. Running it as a separate CI job rather than as a step inside each downstream job adds a few seconds of GitHub Actions overhead but provides three benefits:
+
 1. If the generator fails (e.g., a bug introduced in `generate_adapters.py`), the failure is attributed to the `generate` job — not buried inside a `portal-build` or `bats` log.
 2. The generated adapters are uploaded as a GitHub Actions artifact. Every downstream job downloads the same artifact — they use identical generated files. This eliminates the "works locally because I regenerated" class of CI failure.
 3. Developers can download the generated artifact from the Actions UI and inspect it without re-running the job.
@@ -2833,11 +2842,11 @@ jobs:
           python3 - << 'PYEOF'
           import json, re, base64, sys
           from pathlib import Path
-          
+
           root = Path(".")
           domain = json.loads((root / "packages/core/tenants/msi/domain/domain.json").read_text())
           rules = {rid: r for rid, r in domain["scan_rules"].items() if r.get("severity") == "critical"}
-          
+
           findings = []
           skip_dirs = {".git", "node_modules", ".nx", "dist", "coverage"}
           for rule_id, rule in rules.items():
@@ -2855,7 +2864,7 @@ jobs:
                                   findings.append(f"CRITICAL [{rule_id}] {f}:{lineno}: {line.strip()[:80]}")
                       except Exception:
                           pass
-          
+
           if findings:
               print("CRITICAL findings — merge blocked:")
               for f in findings:
@@ -2967,6 +2976,7 @@ generate (upload artifact)                                 api-test
 ```
 
 **Key takeaways:**
+
 - Artifact upload/download is the correct inter-job communication mechanism in ephemeral CI agents. Cache is for reproducible artifacts (node_modules). Artifacts are for outputs that must be identical across consumers.
 - The secrets-scan job is a CI merge gate, not a lint warning. Exit code 1 = merge blocked.
 - The `validate` → `generate` dependency chain means CI enforces the same invariant as the local developer workflow: you cannot generate from an invalid domain.
@@ -2998,7 +3008,7 @@ The `CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/) forma
 
 ### 3. Terminal Commands
 
-```bash
+````bash
 git checkout -b feat/install-ux
 
 # ── Step 1: Create admin-cli package structure ────────────────────────────────
@@ -3102,7 +3112,7 @@ def scan(
     root = Path(__file__).resolve().parents[4]
     domain_file = root / "packages/core/tenants" / tenant / "domain/domain.json"
     domain = json.loads(domain_file.read_text())
-    
+
     # Inline minimal scanner (mirrors ScanEngine in packages/api)
     import re
     rules = domain.get("scan_rules", {})
@@ -3238,7 +3248,7 @@ cd ~/onboarded
 ./packages/core/scripts/bootstrap.sh --tenant msi
 source ~/.zshrc
 msi where bind
-```
+````
 
 ## Quick Start (Windows PowerShell)
 
@@ -3267,14 +3277,14 @@ curl http://localhost/health   # API health
 
 ## Package Map
 
-| Package | Runtime | What |
-|---|---|---|
-| `@onboarded/core` | Python | Domain data, generator, validator |
-| `@onboarded/cli` | Zsh + pwsh | CLI engines for nav + scan |
-| `@onboarded/api` | Python/FastAPI | REST domain + scan service |
-| `@onboarded/portal` | Angular 19 | Web UI |
-| `@onboarded/shared` | TypeScript | Types + tenant snapshots |
-| `@onboarded/admin-cli` | Python + Node | Admin tooling |
+| Package                | Runtime        | What                              |
+| ---------------------- | -------------- | --------------------------------- |
+| `@onboarded/core`      | Python         | Domain data, generator, validator |
+| `@onboarded/cli`       | Zsh + pwsh     | CLI engines for nav + scan        |
+| `@onboarded/api`       | Python/FastAPI | REST domain + scan service        |
+| `@onboarded/portal`    | Angular 19     | Web UI                            |
+| `@onboarded/shared`    | TypeScript     | Types + tenant snapshots          |
+| `@onboarded/admin-cli` | Python + Node  | Admin tooling                     |
 
 ## Developer Workflow
 
@@ -3292,29 +3302,37 @@ npm run portal:start
 # Full CI locally:
 npx nx affected --target=test
 ```
+
 EOF
 
 # ── Step 6: Final integration smoke test ─────────────────────────────────────
+
 # 1. Validate + generate
+
 npm run validate
 npm run generate
 
 # 2. CLI test
+
 source packages/cli/src/ob_dispatcher.zsh
 msi where bind
 msi status 36
 msi explain fnol
 
 # 3. API test
+
 cd packages/api && pytest --tb=short -q && cd ../..
 
 # 4. Bats
+
 npm run test:cli
 
 # 5. Portal build
+
 npm run portal:build
 
 # 6. Docker
+
 docker compose up --build -d
 sleep 10
 curl -s http://localhost:8000/health
@@ -3322,15 +3340,18 @@ curl -s http://localhost/api/v1/domain/operations/bind -H "X-Onboarded-Tenant: m
 docker compose down
 
 # ── Step 7: Final commit ──────────────────────────────────────────────────────
+
 git add .
 git commit -m "feat(install-ux): admin-cli, CHANGELOG, README, final install experience
 
 packages/admin-cli:
+
 - Python 'ob' CLI (Typer + Rich): ob domain get/validate, ob scan run, ob generate run
 - TypeScript 'ob-admin' CLI (Commander + Chalk): ob-admin tenants, ob-admin domain <op>
 - Two entry points for two workflows: offline (Python) vs API-connected (TypeScript)
 
 Documentation:
+
 - CHANGELOG.md: v1.0.0 with full Added list and architecture decisions
 - README.md: quick start for Linux/macOS, Windows, PSGallery, Docker
 
@@ -3339,6 +3360,7 @@ Integration smoke test: msi where bind, msi status 36, msi explain fnol — all 
 msi-nav: UNTOUCHED — both repos live in parallel"
 
 git push origin feat/install-ux
+
 ```
 
 ### 4. Benchmark Recap — Final State
@@ -3348,142 +3370,144 @@ git push origin feat/install-ux
 **Complete final directory tree:**
 
 ```
+
 onboarded/
 ├── .env.example
 ├── .gitignore
 ├── .prettierrc / .prettierignore
 ├── .vscode/extensions.json
 ├── .github/workflows/
-│   ├── ci.yml                              ← 7-job: validate→generate→[typecheck|bats|api-test|secrets-scan]→portal-build
-│   └── release.yml                         ← tag-triggered: Docker push GHCR + GitHub Release
+│ ├── ci.yml ← 7-job: validate→generate→[typecheck|bats|api-test|secrets-scan]→portal-build
+│ └── release.yml ← tag-triggered: Docker push GHCR + GitHub Release
 ├── CHANGELOG.md
 ├── README.md
 ├── nx.json
-├── package.json                            ← @onboarded/mono, workspaces, all scripts
+├── package.json ← @onboarded/mono, workspaces, all scripts
 ├── package-lock.json
 ├── tsconfig.base.json
 ├── tsconfig.json
 ├── docker-compose.yml
 ├── docker-compose.override.yml
 ├── deploy/
-│   ├── docker/
-│   │   ├── Dockerfile.api                  ← multi-stage: builder→runtime, no build tools in prod
-│   │   └── Dockerfile.portal               ← Node build→nginx:alpine, OB_TENANT build arg
-│   ├── nginx/
-│   │   ├── nginx.conf                      ← /api/*→FastAPI, /→Angular SPA
-│   │   └── spa.conf
-│   ├── azure/
-│   │   └── staticwebapp.config.json        ← SWA nav fallback + security headers
-│   └── k8s/
-│       └── onboarded.yml                   ← Namespace+ConfigMap+Deployments+Services+Ingress
+│ ├── docker/
+│ │ ├── Dockerfile.api ← multi-stage: builder→runtime, no build tools in prod
+│ │ └── Dockerfile.portal ← Node build→nginx:alpine, OB*TENANT build arg
+│ ├── nginx/
+│ │ ├── nginx.conf ← /api/\*→FastAPI, /→Angular SPA
+│ │ └── spa.conf
+│ ├── azure/
+│ │ └── staticwebapp.config.json ← SWA nav fallback + security headers
+│ └── k8s/
+│ └── onboarded.yml ← Namespace+ConfigMap+Deployments+Services+Ingress
 └── packages/
-    ├── core/
-    │   ├── data/tenant.schema.json          ← JSON Schema Draft-7 for all domain.json files
-    │   ├── generated/
-    │   │   ├── generic/{nav_maps,scan_rules}.{zsh,ps1}
-    │   │   └── msi/{nav_maps,scan_rules}.{zsh,ps1}
-    │   ├── scripts/
-    │   │   ├── bootstrap.sh                 ← validate→generate→profile inject, tenant-aware
-    │   │   ├── generate_adapters.py         ← emits zsh+ps1+ts per tenant
-    │   │   └── validate_domain.py           ← standalone validator
-    │   ├── tenants/
-    │   │   ├── generic/domain/domain.json   ← 10-op / 5-rule baseline
-    │   │   └── msi/domain/domain.json       ← full MSI domain, typed glossary
-    │   ├── package.json
-    │   └── project.json
-    ├── shared/
-    │   ├── src/
-    │   │   ├── index.ts
-    │   │   ├── lib/types/tenant.types.ts    ← TenantDomain, Operation, ScanRule, IslandProps…
-    │   │   └── lib/tenants/                 ← GITIGNORED; generated by npm run generate:ts
-    │   │       ├── msi.ts
-    │   │       └── generic.ts
-    │   ├── tsconfig.json
-    │   ├── package.json
-    │   └── project.json
-    ├── cli/
-    │   ├── src/
-    │   │   ├── core/
-    │   │   │   ├── ob_core_display.zsh      ← _ob_red, _ob_kv, _ob_sep, _ob_print_path
-    │   │   │   └── ob_core_loader.zsh       ← tenant→OB_NAV_SLUG, sources generated adapters
-    │   │   ├── nav/
-    │   │   │   └── ob_nav_engine.zsh        ← ob_where, ob_status, ob_product, ob_explain…
-    │   │   ├── scan/
-    │   │   │   └── ob_scan_engine.zsh       ← ob_scan, ob_scan_list, ob_audit, ob_secrets
-    │   │   ├── powershell/
-    │   │   │   ├── Onboarded.MSI.psm1       ← PS module; FunctionsToExport is public API
-    │   │   │   └── Onboarded.MSI.psd1       ← manifest; enables Install-Module from PSGallery
-    │   │   └── ob_dispatcher.zsh            ← onboarded() + msi() alias from tenant.cli_name
-    │   ├── tests/
-    │   │   ├── bats/nav/test_nav_{msi,generic}.bats
-    │   │   ├── bats/scan/test_scan_msi.bats
-    │   │   ├── pester/Onboarded.MSI.Tests.ps1
-    │   │   └── fixtures/scan_fixtures/
-    │   │       ├── PolicyService.clean.cs
-    │   │       ├── ViolationService.cs
-    │   │       └── TestData.violation.json
-    │   ├── package.json
-    │   └── project.json
-    ├── api/
-    │   ├── app/
-    │   │   ├── __init__.py
-    │   │   ├── main.py                      ← lifespan + tenant middleware
-    │   │   ├── routers/
-    │   │   │   ├── domain.py                ← 8 GET endpoints
-    │   │   │   ├── scan.py                  ← POST /scan/ and /scan/secrets
-    │   │   │   ├── admin.py                 ← tenants, reload, generate
-    │   │   │   └── health.py
-    │   │   └── services/
-    │   │       ├── domain_loader.py         ← walks tenants/ at startup, no per-request I/O
-    │   │       └── scanner.py               ← ScanEngine, ScanFinding, severity-ranked output
-    │   ├── tests/
-    │   │   ├── conftest.py
-    │   │   ├── test_health.py
-    │   │   ├── test_domain.py
-    │   │   ├── test_scan.py
-    │   │   └── test_admin.py
-    │   ├── Dockerfile
-    │   ├── pyproject.toml
-    │   ├── requirements.txt
-    │   └── pytest.ini
-    ├── portal/
-    │   ├── src/
-    │   │   ├── app/
-    │   │   │   ├── core/services/domain.service.ts   ← reads TENANT_DOMAIN at build time
-    │   │   │   ├── features/
-    │   │   │   │   ├── nav/nav.component.ts
-    │   │   │   │   ├── status/status.component.ts
-    │   │   │   │   ├── scan/scan.component.ts
-    │   │   │   │   ├── glossary/glossary.component.ts
-    │   │   │   │   ├── queues/queues.component.ts
-    │   │   │   │   ├── portals/portals.component.ts
-    │   │   │   │   └── react-island/
-    │   │   │   │       ├── react-bridge.service.ts
-    │   │   │   │       ├── react-island-host.component.ts
-    │   │   │   │       ├── glossary-search.island.tsx
-    │   │   │   │       └── scan-dashboard.island.tsx
-    │   │   │   ├── app.component.ts
-    │   │   │   ├── app.config.ts
-    │   │   │   └── app.routes.ts
-    │   │   └── environments/
-    │   │       ├── environment.ts           ← imports msi TENANT_DOMAIN
-    │   │       ├── environment.prod.ts
-    │   │       └── environment.generic.ts   ← imports generic TENANT_DOMAIN
-    │   ├── package.json
-    │   └── project.json
-    └── admin-cli/
-        ├── ob/
-        │   ├── __init__.py
-        │   ├── main.py                      ← Typer app: domain + scan + generate subcommands
-        │   └── commands/
-        │       ├── domain.py                ← ob domain get/validate
-        │       ├── scan.py                  ← ob scan run (offline)
-        │       └── generate.py              ← ob generate run
-        ├── src/
-        │   ├── index.ts                     ← Commander app: ob-admin tenants, ob-admin domain
-        │   └── commands/domain.ts
-        ├── package.json
-        └── pyproject.toml
+├── core/
+│ ├── data/tenant.schema.json ← JSON Schema Draft-7 for all domain.json files
+│ ├── generated/
+│ │ ├── generic/{nav_maps,scan_rules}.{zsh,ps1}
+│ │ └── msi/{nav_maps,scan_rules}.{zsh,ps1}
+│ ├── scripts/
+│ │ ├── bootstrap.sh ← validate→generate→profile inject, tenant-aware
+│ │ ├── generate_adapters.py ← emits zsh+ps1+ts per tenant
+│ │ └── validate_domain.py ← standalone validator
+│ ├── tenants/
+│ │ ├── generic/domain/domain.json ← 10-op / 5-rule baseline
+│ │ └── msi/domain/domain.json ← full MSI domain, typed glossary
+│ ├── package.json
+│ └── project.json
+├── shared/
+│ ├── src/
+│ │ ├── index.ts
+│ │ ├── lib/types/tenant.types.ts ← TenantDomain, Operation, ScanRule, IslandProps…
+│ │ └── lib/tenants/ ← GITIGNORED; generated by npm run generate:ts
+│ │ ├── msi.ts
+│ │ └── generic.ts
+│ ├── tsconfig.json
+│ ├── package.json
+│ └── project.json
+├── cli/
+│ ├── src/
+│ │ ├── core/
+│ │ │ ├── ob_core_display.zsh ← \_ob_red, \_ob_kv, \_ob_sep, \_ob_print_path
+│ │ │ └── ob_core_loader.zsh ← tenant→OB_NAV_SLUG, sources generated adapters
+│ │ ├── nav/
+│ │ │ └── ob_nav_engine.zsh ← ob_where, ob_status, ob_product, ob_explain…
+│ │ ├── scan/
+│ │ │ └── ob_scan_engine.zsh ← ob_scan, ob_scan_list, ob_audit, ob_secrets
+│ │ ├── powershell/
+│ │ │ ├── Onboarded.MSI.psm1 ← PS module; FunctionsToExport is public API
+│ │ │ └── Onboarded.MSI.psd1 ← manifest; enables Install-Module from PSGallery
+│ │ └── ob_dispatcher.zsh ← onboarded() + msi() alias from tenant.cli_name
+│ ├── tests/
+│ │ ├── bats/nav/test_nav*{msi,generic}.bats
+│ │ ├── bats/scan/test_scan_msi.bats
+│ │ ├── pester/Onboarded.MSI.Tests.ps1
+│ │ └── fixtures/scan_fixtures/
+│ │ ├── PolicyService.clean.cs
+│ │ ├── ViolationService.cs
+│ │ └── TestData.violation.json
+│ ├── package.json
+│ └── project.json
+├── api/
+│ ├── app/
+│ │ ├── **init**.py
+│ │ ├── main.py ← lifespan + tenant middleware
+│ │ ├── routers/
+│ │ │ ├── domain.py ← 8 GET endpoints
+│ │ │ ├── scan.py ← POST /scan/ and /scan/secrets
+│ │ │ ├── admin.py ← tenants, reload, generate
+│ │ │ └── health.py
+│ │ └── services/
+│ │ ├── domain_loader.py ← walks tenants/ at startup, no per-request I/O
+│ │ └── scanner.py ← ScanEngine, ScanFinding, severity-ranked output
+│ ├── tests/
+│ │ ├── conftest.py
+│ │ ├── test_health.py
+│ │ ├── test_domain.py
+│ │ ├── test_scan.py
+│ │ └── test_admin.py
+│ ├── Dockerfile
+│ ├── pyproject.toml
+│ ├── requirements.txt
+│ └── pytest.ini
+├── portal/
+│ ├── src/
+│ │ ├── app/
+│ │ │ ├── core/services/domain.service.ts ← reads TENANT_DOMAIN at build time
+│ │ │ ├── features/
+│ │ │ │ ├── nav/nav.component.ts
+│ │ │ │ ├── status/status.component.ts
+│ │ │ │ ├── scan/scan.component.ts
+│ │ │ │ ├── glossary/glossary.component.ts
+│ │ │ │ ├── queues/queues.component.ts
+│ │ │ │ ├── portals/portals.component.ts
+│ │ │ │ └── react-island/
+│ │ │ │ ├── react-bridge.service.ts
+│ │ │ │ ├── react-island-host.component.ts
+│ │ │ │ ├── glossary-search.island.tsx
+│ │ │ │ └── scan-dashboard.island.tsx
+│ │ │ ├── app.component.ts
+│ │ │ ├── app.config.ts
+│ │ │ └── app.routes.ts
+│ │ └── environments/
+│ │ ├── environment.ts ← imports msi TENANT_DOMAIN
+│ │ ├── environment.prod.ts
+│ │ └── environment.generic.ts ← imports generic TENANT_DOMAIN
+│ ├── package.json
+│ └── project.json
+└── admin-cli/
+├── ob/
+│ ├── **init**.py
+│ ├── main.py ← Typer app: domain + scan + generate subcommands
+│ └── commands/
+│ ├── domain.py ← ob domain get/validate
+│ ├── scan.py ← ob scan run (offline)
+│ └── generate.py ← ob generate run
+├── src/
+│ ├── index.ts ← Commander app: ob-admin tenants, ob-admin domain
+│ └── commands/domain.ts
+├── package.json
+└── pyproject.toml
+
 ```
 
 ---
@@ -3531,3 +3555,4 @@ onboarded/
 6. **Artifact upload/download replaces shared filesystem state in ephemeral CI.** Generate once, upload, all consumers download the same artifact. This eliminates the "works on my machine because I already generated" class of CI failure.
 
 7. **Custom Elements are the framework-neutral island boundary.** The `connectedCallback` / `disconnectedCallback` lifecycle is the only interface all JavaScript frameworks respect. Angular does not know React is in the DOM; React does not know Angular put it there. This pattern works for any framework pair and outlasts specific framework versions.
+```

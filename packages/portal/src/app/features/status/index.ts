@@ -16,8 +16,6 @@ export class StatusComponent {
     const q = this.searchQuery().toLowerCase().trim();
     const all = this.domain.getStatuses();
     if (!q) return all;
-    return all.filter(
-      s => s.code.includes(q) || s.description.toLowerCase().includes(q)
-    );
+    return all.filter((s) => s.code.includes(q) || s.description.toLowerCase().includes(q));
   });
 }

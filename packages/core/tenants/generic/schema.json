@@ -3,11 +3,19 @@
   "$id": "https://onboarded.ca/schemas/tenant.schema.json",
   "title": "Onboarded Tenant Domain Schema",
   "type": "object",
-  "required": ["version", "tenant", "config", "operations", "statuses", "glossary", "scan_rules"],
+  "required": [
+    "version",
+    "tenant",
+    "config",
+    "operations",
+    "statuses",
+    "glossary",
+    "scan_rules"
+  ],
   "additionalProperties": true,
   "properties": {
-    "$schema":   { "type": "string" },
-    "version":   { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "$schema": { "type": "string" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
     "generated": { "type": "string" },
 
     "tenant": {
@@ -15,19 +23,19 @@
       "required": ["slug", "brand_name", "cli_name", "terminology"],
       "additionalProperties": false,
       "properties": {
-        "slug":       { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+        "slug": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
         "brand_name": { "type": "string" },
-        "cli_name":   { "type": "string" },
+        "cli_name": { "type": "string" },
         "terminology": {
           "type": "object",
           "required": ["operations", "statuses", "products"],
           "additionalProperties": false,
           "properties": {
             "operations": { "type": "string" },
-            "statuses":   { "type": "string" },
-            "products":   { "type": "string" },
-            "queues":     { "type": "string" },
-            "portals":    { "type": "string" }
+            "statuses": { "type": "string" },
+            "products": { "type": "string" },
+            "queues": { "type": "string" },
+            "portals": { "type": "string" }
           }
         }
       }
@@ -45,7 +53,7 @@
             "required": ["env", "default"],
             "additionalProperties": false,
             "properties": {
-              "env":     { "type": "string" },
+              "env": { "type": "string" },
               "default": { "type": "string" }
             }
           }
@@ -60,11 +68,11 @@
         "required": ["label", "controllers", "services", "queues"],
         "additionalProperties": false,
         "properties": {
-          "label":       { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
           "controllers": { "type": "array", "items": { "type": "string" } },
-          "services":    { "type": "array", "items": { "type": "string" } },
-          "queues":      { "type": "array", "items": { "type": "string" } },
-          "js":          { "type": "array", "items": { "type": "string" } }
+          "services": { "type": "array", "items": { "type": "string" } },
+          "queues": { "type": "array", "items": { "type": "string" } },
+          "js": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
@@ -79,12 +87,12 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "code":        { "type": "integer" },
-          "label":       { "type": "string", "minLength": 1 },
+          "code": { "type": "integer" },
+          "label": { "type": "string", "minLength": 1 },
           "controllers": { "type": "array", "items": { "type": "string" } },
-          "gen3":        { "type": "array", "items": { "type": "string" } },
-          "js":          { "type": "array", "items": { "type": "string" } },
-          "webjobs":     { "type": "array", "items": { "type": "string" } }
+          "gen3": { "type": "array", "items": { "type": "string" } },
+          "js": { "type": "array", "items": { "type": "string" } },
+          "webjobs": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
@@ -96,8 +104,8 @@
         "required": ["label", "url"],
         "additionalProperties": false,
         "properties": {
-          "label":       { "type": "string" },
-          "url":         { "type": "string" },
+          "label": { "type": "string" },
+          "url": { "type": "string" },
           "description": { "type": "string" }
         }
       }
@@ -109,9 +117,9 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "label":       { "type": "string" },
-          "webjobs":     { "type": "string" },
-          "consumer":    { "type": "string" },
+          "label": { "type": "string" },
+          "webjobs": { "type": "string" },
+          "consumer": { "type": "string" },
           "description": { "type": "string" }
         }
       }
@@ -124,7 +132,11 @@
         "required": ["paths"],
         "additionalProperties": false,
         "properties": {
-          "paths": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          "paths": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          }
         }
       }
     },
@@ -136,9 +148,9 @@
         "required": ["label", "definition"],
         "additionalProperties": false,
         "properties": {
-          "label":      { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
           "definition": { "type": "string", "minLength": 10 },
-          "see_also":   {
+          "see_also": {
             "type": "array",
             "items": { "type": "string" },
             "uniqueItems": true
@@ -146,21 +158,21 @@
         }
       }
     },
-    
+
     "glossary_xrefs": {
-        "type": "object",
-        "additionalProperties": {
-            "type": "string",
-            "minLength": 10
-        }
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 10
+      }
     },
 
     "status_triggers": {
-        "type": "object",
-        "additionalProperties": {
-            "type": "string",
-            "minLength": 5
-        }
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 5
+      }
     },
 
     "scan_rules": {
@@ -170,15 +182,27 @@
         "required": ["label", "pattern", "severity", "scope"],
         "additionalProperties": false,
         "properties": {
-          "label":     { "type": "string", "minLength": 1 },
-          "pattern":   { "type": "string", "minLength": 1 },
-          "severity":  { "enum": ["critical", "error", "warning", "info"] },
-          "category":  { "enum": ["security", "convention", "architecture", "dependency", "observability"] },
-          "scope":     { "type": "array", "items": { "type": "string" }, "minItems": 1 },
-          "repos":     { "type": "array", "items": { "type": "string" } },
-          "exclude":   { "type": "array", "items": { "type": "string" } },
+          "label": { "type": "string", "minLength": 1 },
+          "pattern": { "type": "string", "minLength": 1 },
+          "severity": { "enum": ["critical", "error", "warning", "info"] },
+          "category": {
+            "enum": [
+              "security",
+              "convention",
+              "architecture",
+              "dependency",
+              "observability"
+            ]
+          },
+          "scope": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "repos": { "type": "array", "items": { "type": "string" } },
+          "exclude": { "type": "array", "items": { "type": "string" } },
           "reference": { "type": "string" },
-          "fixHint":   { "type": "string" }
+          "fixHint": { "type": "string" }
         }
       }
     }

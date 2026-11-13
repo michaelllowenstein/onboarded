@@ -55,21 +55,31 @@
  *   no) CC type restriction — with zero code changes.
  */
 
-import fs   from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 // ── Colours ───────────────────────────────────────────────────────────────────
 const c = {
-  reset: '\x1b[0m', bold: '\x1b[1m', dim: '\x1b[2m',
-  green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m',
-  cyan: '\x1b[36m', gray: '\x1b[90m', blue: '\x1b[34m',
+  reset: '\x1b[0m',
+  bold: '\x1b[1m',
+  dim: '\x1b[2m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  red: '\x1b[31m',
+  cyan: '\x1b[36m',
+  gray: '\x1b[90m',
+  blue: '\x1b[34m',
 };
 
-const ok     = (s) => console.log(`  ${c.green}✓${c.reset}  ${s}`);
-const skip   = (s) => console.log(`  ${c.yellow}–${c.reset}  ${c.dim}${s} (already exists)${c.reset}`);
+const ok = (s) => console.log(`  ${c.green}✓${c.reset}  ${s}`);
+const skip = (s) =>
+  console.log(`  ${c.yellow}–${c.reset}  ${c.dim}${s} (already exists)${c.reset}`);
 const dryLog = (s) => console.log(`  ${c.cyan}~${c.reset}  ${c.dim}[dry]${c.reset} ${s}`);
-const fatal  = (s) => { console.error(`\n  ${c.red}✗${c.reset}  ${s}\n`); process.exit(1); };
-const info   = (s) => console.log(`  ${c.blue}i${c.reset}  ${c.dim}${s}${c.reset}`);
+const fatal = (s) => {
+  console.error(`\n  ${c.red}✗${c.reset}  ${s}\n`);
+  process.exit(1);
+};
+const info = (s) => console.log(`  ${c.blue}i${c.reset}  ${c.dim}${s}${c.reset}`);
 
 // ── Arg parsing ───────────────────────────────────────────────────────────────
 const rawArgs = process.argv.slice(2);
@@ -78,7 +88,10 @@ function extractValueFlag(args, ...keys) {
   for (let i = 0; i < args.length; i++) {
     for (const key of keys) {
       if (args[i].startsWith(`${key}=`)) {
-        return { value: args[i].slice(key.length + 1), filtered: [...args.slice(0, i), ...args.slice(i + 1)] };
+        return {
+          value: args[i].slice(key.length + 1),
+          filtered: [...args.slice(0, i), ...args.slice(i + 1)],
+        };
       }
       if (args[i] === key && i + 1 < args.length && !args[i + 1].startsWith('-')) {
         return { value: args[i + 1], filtered: [...args.slice(0, i), ...args.slice(i + 2)] };
@@ -90,15 +103,15 @@ function extractValueFlag(args, ...keys) {
 
 const { value: customName, filtered: argsAfterName } = extractValueFlag(rawArgs, '--name', '-n');
 
-const flags   = new Set(argsAfterName.filter(a => a.startsWith('-')));
-const posArgs = argsAfterName.filter(a => !a.startsWith('-'));
+const flags = new Set(argsAfterName.filter((a) => a.startsWith('-')));
+const posArgs = argsAfterName.filter((a) => !a.startsWith('-'));
 
-const withScss  = flags.has('--scss');
-const isDry     = flags.has('--dry');
-const isForce   = flags.has('--force');
+const withScss = flags.has('--scss');
+const isDry = flags.has('--dry');
+const isForce = flags.has('--force');
 const isService = flags.has('--service');
-const isGuard   = flags.has('--guard');
-const isPipe    = flags.has('--pipe');
+const isGuard = flags.has('--guard');
+const isPipe = flags.has('--pipe');
 
 function printHelp() {
   console.log(`
@@ -155,18 +168,21 @@ function findProjectRoot(start) {
 }
 
 const root = findProjectRoot(process.cwd());
-if (!root) fatal('Could not find an Angular project root (no angular.json / @angular/core found). Run from inside an Angular project.');
+if (!root)
+  fatal(
+    'Could not find an Angular project root (no angular.json / @angular/core found). Run from inside an Angular project.',
+  );
 
 // ── Per-project config (.tools) — grep-free, awk-friendly KEY=VALUE parsing ──
 
 const DEFAULT_CONFIG = {
   GEN_COMPONENT_BASE: 'src/app/components',
-  GEN_SERVICE_BASE:   'src/app/core/services',
-  GEN_GUARD_BASE:     'src/app/core/guards',
-  GEN_PIPE_BASE:      'src/app/core/pipes',
-  GEN_TYPES:          'feature,page,layout,ui',
-  GEN_PREFIX:         'app',
-  GEN_STYLE_EXT:      'scss',
+  GEN_SERVICE_BASE: 'src/app/core/services',
+  GEN_GUARD_BASE: 'src/app/core/guards',
+  GEN_PIPE_BASE: 'src/app/core/pipes',
+  GEN_TYPES: 'feature,page,layout,ui',
+  GEN_PREFIX: 'app',
+  GEN_STYLE_EXT: 'scss',
 };
 
 function loadToolsConfig(projectRoot) {
@@ -184,7 +200,10 @@ function loadToolsConfig(projectRoot) {
     if (!Object.prototype.hasOwnProperty.call(DEFAULT_CONFIG, key)) continue;
     let value = trimmed.slice(eq + 1).trim();
     // strip matching surrounding quotes
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1);
     }
     config[key] = value;
@@ -195,21 +214,23 @@ function loadToolsConfig(projectRoot) {
 const { config, source: configSource } = loadToolsConfig(root);
 
 const COMPONENT_BASE = path.join(root, config.GEN_COMPONENT_BASE);
-const SERVICE_BASE   = path.join(root, config.GEN_SERVICE_BASE);
-const GUARD_BASE      = path.join(root, config.GEN_GUARD_BASE);
-const PIPE_BASE       = path.join(root, config.GEN_PIPE_BASE);
-const STYLE_EXT       = config.GEN_STYLE_EXT.replace(/^\./, '');
+const SERVICE_BASE = path.join(root, config.GEN_SERVICE_BASE);
+const GUARD_BASE = path.join(root, config.GEN_GUARD_BASE);
+const PIPE_BASE = path.join(root, config.GEN_PIPE_BASE);
+const STYLE_EXT = config.GEN_STYLE_EXT.replace(/^\./, '');
 const SELECTOR_PREFIX = config.GEN_PREFIX;
-const CC_TYPES = config.GEN_TYPES
-  .split(',')
-  .map(t => t.trim())
+const CC_TYPES = config.GEN_TYPES.split(',')
+  .map((t) => t.trim())
   .filter(Boolean);
 
 // ── Name utilities ────────────────────────────────────────────────────────────
 
 function toPascalCase(s) {
   if (/^[A-Z]/.test(s) && !s.includes('-') && !s.includes('_')) return s;
-  return s.split(/[-_/]/).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+  return s
+    .split(/[-_/]/)
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+    .join('');
 }
 
 function toCamelCase(s) {
@@ -218,7 +239,11 @@ function toCamelCase(s) {
 }
 
 function toSelector(s) {
-  const kebab = s.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '').replace(/--+/g, '-');
+  const kebab = s
+    .replace(/([A-Z])/g, '-$1')
+    .toLowerCase()
+    .replace(/^-/, '')
+    .replace(/--+/g, '-');
   return `${SELECTOR_PREFIX}-${kebab}`;
 }
 
@@ -237,8 +262,14 @@ function resolveClassName(dirName, customName) {
 // ── File writing ──────────────────────────────────────────────────────────────
 
 function write(filePath, content) {
-  if (isDry) { dryLog(path.relative(root, filePath)); return; }
-  if (fs.existsSync(filePath) && !isForce) { skip(path.relative(root, filePath)); return; }
+  if (isDry) {
+    dryLog(path.relative(root, filePath));
+    return;
+  }
+  if (fs.existsSync(filePath) && !isForce) {
+    skip(path.relative(root, filePath));
+    return;
+  }
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, content, 'utf8');
   ok(path.relative(root, filePath));
@@ -247,7 +278,7 @@ function write(filePath, content) {
 // ── Templates ─────────────────────────────────────────────────────────────────
 
 function componentTs(className, withScss) {
-  const selector  = toSelector(className);
+  const selector = toSelector(className);
   const styleUrls = withScss ? `\n  styleUrls:   ['./index.${STYLE_EXT}'],` : '';
   return `import {
   Component,
@@ -328,7 +359,9 @@ export class ${className}Pipe implements PipeTransform {
 
 console.log(`\n  ${c.bold}gen.mjs${c.reset}  ${c.gray}${isDry ? '[dry run] ' : ''}${c.reset}`);
 console.log(`  ${c.dim}root:   ${root}${c.reset}`);
-console.log(`  ${c.dim}config: ${configSource ? path.relative(root, configSource) : '(defaults — no .tools found)'}${c.reset}`);
+console.log(
+  `  ${c.dim}config: ${configSource ? path.relative(root, configSource) : '(defaults — no .tools found)'}${c.reset}`,
+);
 
 // ── Dispatch ──────────────────────────────────────────────────────────────────
 
@@ -338,17 +371,25 @@ if (isService || isGuard || isPipe) {
   const { segments, dirName } = parsePath(rawPathArg);
   const className = resolveClassName(dirName, customName);
 
-  if (customName) info(`class name overridden: ${c.reset}${c.bold}${className}${c.reset}${c.dim} (folder: ${dirName})`);
+  if (customName)
+    info(
+      `class name overridden: ${c.reset}${c.bold}${className}${c.reset}${c.dim} (folder: ${dirName})`,
+    );
   console.log('');
 
   if (isService) {
-    write(path.join(SERVICE_BASE, ...segments.slice(0, -1), `${dirName}.service.ts`), serviceTs(className));
+    write(
+      path.join(SERVICE_BASE, ...segments.slice(0, -1), `${dirName}.service.ts`),
+      serviceTs(className),
+    );
   } else if (isGuard) {
-    write(path.join(GUARD_BASE, ...segments.slice(0, -1), `${dirName}.guard.ts`), guardTs(className, dirName));
+    write(
+      path.join(GUARD_BASE, ...segments.slice(0, -1), `${dirName}.guard.ts`),
+      guardTs(className, dirName),
+    );
   } else {
     write(path.join(PIPE_BASE, ...segments.slice(0, -1), `${dirName}.pipe.ts`), pipeTs(className));
   }
-
 } else {
   // Component: CC mode (<type> <name>) vs legacy free-path mode (<path>)
   const first = posArgs[0];
@@ -359,31 +400,37 @@ if (isService || isGuard || isPipe) {
   if (isCcMode) {
     const type = first;
     const name = posArgs[1];
-    if (!/^[a-z][a-z0-9-]*$/.test(name)) fatal(`Name must be kebab-case (e.g. my-component) — got "${name}"`);
+    if (!/^[a-z][a-z0-9-]*$/.test(name))
+      fatal(`Name must be kebab-case (e.g. my-component) — got "${name}"`);
     dirName = name;
     className = resolveClassName(dirName, customName);
     compDir = path.join(COMPONENT_BASE, type, name);
     info(`Capsule Convention mode: type=${type}, name=${name}`);
   } else {
     if (CC_TYPES.length && !CC_TYPES.includes(first)) {
-      info(`"${first}" isn't a configured type (${CC_TYPES.join(', ')}) — falling back to free-path mode`);
+      info(
+        `"${first}" isn't a configured type (${CC_TYPES.join(', ')}) — falling back to free-path mode`,
+      );
     }
     const rawPathArg = posArgs[0];
     const parsed = parsePath(rawPathArg);
     dirName = parsed.dirName;
     className = resolveClassName(dirName, customName);
-    compDir = rawPathArg.startsWith('src/') || rawPathArg.startsWith('app/')
-      ? path.join(root, rawPathArg)
-      : path.join(COMPONENT_BASE, ...parsed.segments);
+    compDir =
+      rawPathArg.startsWith('src/') || rawPathArg.startsWith('app/')
+        ? path.join(root, rawPathArg)
+        : path.join(COMPONENT_BASE, ...parsed.segments);
   }
 
-  if (customName) info(`class name overridden: ${c.reset}${c.bold}${className}${c.reset}${c.dim} (folder: ${dirName})`);
+  if (customName)
+    info(
+      `class name overridden: ${c.reset}${c.bold}${className}${c.reset}${c.dim} (folder: ${dirName})`,
+    );
   console.log('');
 
-  write(path.join(compDir, 'index.ts'),   componentTs(className, withScss));
+  write(path.join(compDir, 'index.ts'), componentTs(className, withScss));
   write(path.join(compDir, 'index.html'), componentHtml(className));
   if (withScss) write(path.join(compDir, `index.${STYLE_EXT}`), componentScss(className));
 }
 
 console.log('');
-

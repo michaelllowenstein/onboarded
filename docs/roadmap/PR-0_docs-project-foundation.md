@@ -1,4 +1,5 @@
 # PR-0 — `docs/project-foundation`
+
 # Project Foundation: Patent, Summary, Architecture, Roadmaps
 
 **Branch:** `docs/project-foundation`  
@@ -34,52 +35,52 @@ Three reasons:
 
 ### Root files — new
 
-| File | Content |
-|---|---|
-| `README.md` | Onboarded project entry point — what it is, repo structure, where to start |
-| `CHANGELOG.md` | Version history starting with this foundation entry |
-| `.gitignore` | Standard ignores: `node_modules/`, `dist/`, `.env`, `*.pyc`, `.nx/cache`, `packages/shared/src/lib/tenants/` |
+| File           | Content                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `README.md`    | Onboarded project entry point — what it is, repo structure, where to start                                   |
+| `CHANGELOG.md` | Version history starting with this foundation entry                                                          |
+| `.gitignore`   | Standard ignores: `node_modules/`, `dist/`, `.env`, `*.pyc`, `.nx/cache`, `packages/shared/src/lib/tenants/` |
 
 ### `docs/` — project documentation
 
-| File | Source |
-|---|---|
-| `docs/Onboarded_Project_Summary.docx` | Produced this session — 4-part summary (non-technical, technical, patent, playbook) |
-| `docs/Onboarded_SelfImprovement_RD_Roadmap.md` | Produced this session — 5-phase, 12-spike R&D roadmap |
+| File                                           | Source                                                                              |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `docs/Onboarded_Project_Summary.docx`          | Produced this session — 4-part summary (non-technical, technical, patent, playbook) |
+| `docs/Onboarded_SelfImprovement_RD_Roadmap.md` | Produced this session — 5-phase, 12-spike R&D roadmap                               |
 
 ### `docs/patent/` — patent artefacts
 
-| File | Source |
-|---|---|
+| File                                                          | Source                                                                                |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `docs/patent/Onboarded_Patent_Application_v0_Lowenstein.docx` | Pre-filing draft — docket OB-2026-001, applicant Lowenstein, assignee SoftwareLabs.ca |
 
 ### `docs/automation-playbook/` — companion artefact
 
-| File | Source |
-|---|---|
+| File                                                           | Source                                                                                        |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `docs/automation-playbook/senior_eng_automation_playbook.html` | 10-method senior engineer automation playbook; methods 2, 8, 10 align with Onboarded features |
 
 ### `docs/figures/` — architecture diagrams
 
-| File | Source |
-|---|---|
-| `docs/figures/fig1_system_architecture.svg` | FIG. 1 — domain.json → synthesis engine → 4 runtime targets |
-| `docs/figures/fig2_tenant_isolation.svg` | FIG. 2 — multiple tenant specs → shared schema + engines |
-| `docs/figures/fig3_adapter_synthesis_flow.svg` | FIG. 3 — domain.json → validate → b64 encode → 5 output files |
-| `docs/figures/figure_4_web_portal_architecture.svg` | FIG. 4 — Angular shell → lazy routes → React islands |
-| `docs/figures/figure_5_static_analysis_engine.svg` | FIG. 5 — ScanRequest → decode → compile → traverse → ScanResult |
+| File                                                | Source                                                          |
+| --------------------------------------------------- | --------------------------------------------------------------- |
+| `docs/figures/fig1_system_architecture.svg`         | FIG. 1 — domain.json → synthesis engine → 4 runtime targets     |
+| `docs/figures/fig2_tenant_isolation.svg`            | FIG. 2 — multiple tenant specs → shared schema + engines        |
+| `docs/figures/fig3_adapter_synthesis_flow.svg`      | FIG. 3 — domain.json → validate → b64 encode → 5 output files   |
+| `docs/figures/figure_4_web_portal_architecture.svg` | FIG. 4 — Angular shell → lazy routes → React islands            |
+| `docs/figures/figure_5_static_analysis_engine.svg`  | FIG. 5 — ScanRequest → decode → compile → traverse → ScanResult |
 
 ### `docs/pr-roadmap/` — implementation roadmap
 
-| File | Source | Notes |
-|---|---|---|
+| File                                             | Source                | Notes                                                    |
+| ------------------------------------------------ | --------------------- | -------------------------------------------------------- |
 | `docs/pr-roadmap/PR-1_feat-monorepo-scaffold.md` | Produced this session | Branch corrected from original: `feat/monorepo-scaffold` |
-| `docs/pr-roadmap/PR-2_feat-core-data.md` | Produced this session | Branch corrected from original: `feat/core-data` |
-| `docs/pr-roadmap/PR-3_feat-cli-engines.md` | Produced this session | Branch name unchanged |
-| `docs/pr-roadmap/PR-4_feat-api.md` | Produced this session | All-new component, no msi-nav predecessor |
-| `docs/pr-roadmap/PR-5_feat-portal-shared.md` | Produced this session | All-new component, no msi-nav predecessor |
-| `docs/pr-roadmap/PR-6_feat-devops.md` | Produced this session | Includes CI pipeline, Docker, K8s, admin CLI |
-| `docs/pr-roadmap/PR-1-3_Reconciliation_Notes.md` | Produced this session | Deltas from msi-nav migration context |
+| `docs/pr-roadmap/PR-2_feat-core-data.md`         | Produced this session | Branch corrected from original: `feat/core-data`         |
+| `docs/pr-roadmap/PR-3_feat-cli-engines.md`       | Produced this session | Branch name unchanged                                    |
+| `docs/pr-roadmap/PR-4_feat-api.md`               | Produced this session | All-new component, no msi-nav predecessor                |
+| `docs/pr-roadmap/PR-5_feat-portal-shared.md`     | Produced this session | All-new component, no msi-nav predecessor                |
+| `docs/pr-roadmap/PR-6_feat-devops.md`            | Produced this session | Includes CI pipeline, Docker, K8s, admin CLI             |
+| `docs/pr-roadmap/PR-1-3_Reconciliation_Notes.md` | Produced this session | Deltas from msi-nav migration context                    |
 
 ---
 
@@ -106,16 +107,17 @@ that single source of truth.
 ## What It Does
 
 One file (`domain.json`) drives everything:
-
 ```
+
 domain.json
-  → validate_domain.py          (schema gate)
-  → generate_adapters.py        (one-pass synthesis)
-      → nav_maps.zsh            (Zsh shell CLI)
-      → scan_rules.zsh          (Zsh compliance scanner)
-      → nav_maps.ps1            (PowerShell module)
-      → scan_rules.ps1          (PowerShell scanner)
-      → packages/shared/src/lib/tenants/{slug}.ts  (Angular portal)
+→ validate_domain.py (schema gate)
+→ generate_adapters.py (one-pass synthesis)
+→ nav_maps.zsh (Zsh shell CLI)
+→ scan_rules.zsh (Zsh compliance scanner)
+→ nav_maps.ps1 (PowerShell module)
+→ scan_rules.ps1 (PowerShell scanner)
+→ packages/shared/src/lib/tenants/{slug}.ts (Angular portal)
+
 ```
 
 Developers get `{tenant} where {operation}`, `{tenant} status {code}`,
@@ -128,21 +130,23 @@ The FastAPI microservice exposes everything via REST.
 ## Repository Structure
 
 ```
-docs/                          ← Project documentation (this PR)
-  patent/                      ← Patent application (pre-filing draft)
-  figures/                     ← Architecture diagrams (FIG. 1–5)
-  pr-roadmap/                  ← Implementation PRs 1–6
-  Onboarded_Project_Summary.docx
-  Onboarded_SelfImprovement_RD_Roadmap.md
 
-packages/                      ← Monorepo packages (PRs 1–6)
-  core/                        ← domain.json, generator, validator (PR-2)
-  shared/                      ← TypeScript interfaces + tenant snapshots (PR-5)
-  cli/                         ← Zsh + PowerShell engines (PR-3)
-  api/                         ← FastAPI microservice (PR-4)
-  portal/                      ← Angular 19 SPA + React islands (PR-5)
-  admin-cli/                   ← TypeScript + Python admin CLIs (PR-6)
-```
+docs/ ← Project documentation (this PR)
+patent/ ← Patent application (pre-filing draft)
+figures/ ← Architecture diagrams (FIG. 1–5)
+pr-roadmap/ ← Implementation PRs 1–6
+Onboarded_Project_Summary.docx
+Onboarded_SelfImprovement_RD_Roadmap.md
+
+packages/ ← Monorepo packages (PRs 1–6)
+core/ ← domain.json, generator, validator (PR-2)
+shared/ ← TypeScript interfaces + tenant snapshots (PR-5)
+cli/ ← Zsh + PowerShell engines (PR-3)
+api/ ← FastAPI microservice (PR-4)
+portal/ ← Angular 19 SPA + React islands (PR-5)
+admin-cli/ ← TypeScript + Python admin CLIs (PR-6)
+
+````
 
 ---
 
@@ -178,7 +182,7 @@ python3 packages/core/scripts/generate_adapters.py --all
 
 # 4. Reload
 source ~/.zshrc   # or . $PROFILE on Windows
-```
+````
 
 ---
 
@@ -195,7 +199,8 @@ to `domain.json` or transmitting tenant data outside the local machine.
 
 This repository is pre-filing. Contents are confidential to Michael Lowenstein
 and SoftwareLabs.ca. Do not disclose publicly before patent filing.
-```
+
+````
 
 ---
 
@@ -276,7 +281,7 @@ JSON as single source of truth, generate_adapters.py, cross-platform
 ## [msi-nav 1.x] — Historical
 
 See msi-nav ADO git log. Original single-platform Zsh implementation.
-```
+````
 
 ---
 
@@ -538,14 +543,14 @@ Untouched. Lives in ADO. This repo is independent.
 
 These are explicitly deferred to later PRs and should not be added here:
 
-| Not in this PR | Where it lands |
-|---|---|
-| `packages/` directory | PR-1 (scaffold), PR-2 (core), PR-3–6 (everything else) |
-| `nx.json`, root `package.json` | PR-1 |
-| Any `.zsh`, `.ps1`, `.py`, `.ts` source files | PR-2 through PR-6 |
-| `domain.json` files | PR-2 |
-| Docker, CI, K8s configs | PR-6 |
-| The self-improvement implementation | Post-PR-6 spikes |
+| Not in this PR                                | Where it lands                                         |
+| --------------------------------------------- | ------------------------------------------------------ |
+| `packages/` directory                         | PR-1 (scaffold), PR-2 (core), PR-3–6 (everything else) |
+| `nx.json`, root `package.json`                | PR-1                                                   |
+| Any `.zsh`, `.ps1`, `.py`, `.ts` source files | PR-2 through PR-6                                      |
+| `domain.json` files                           | PR-2                                                   |
+| Docker, CI, K8s configs                       | PR-6                                                   |
+| The self-improvement implementation           | Post-PR-6 spikes                                       |
 
 ---
 
@@ -590,6 +595,7 @@ onboarded/
 **What changed from baseline:** The repository exists. Every decision made today is recorded and citable. The patent application has a git timestamp. The implementation sequence is locked in `docs/pr-roadmap/`. The R&D boundary (what the tool will and will not do automatically) is committed before a single line of implementation code is written.
 
 **Key takeaways:**
+
 1. The PR-1 and PR-2 filenames in `docs/pr-roadmap/` use the corrected branch names from the reconciliation notes (`feat/monorepo-scaffold`, `feat/core-data`). The original files produced during the session used different names. The copies made in Step 10 apply the corrections.
 2. The `.gitignore` entry for `packages/shared/src/lib/tenants/` is committed here even though that directory doesn't exist yet. This prevents the generated TypeScript snapshots from ever being accidentally staged when the directory is created in PR-5.
 3. Patent counsel should review before merge, not after. The commit timestamp on this PR is a potential prior art reference point.

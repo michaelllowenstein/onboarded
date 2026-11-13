@@ -25,9 +25,7 @@
             "input": "packages/portal/public"
           }
         ],
-        "styles": [
-          "packages/portal/src/styles.scss"
-        ],
+        "styles": ["packages/portal/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -45,9 +43,7 @@
           ]
         },
         "msi": {
-          "budgets": [
-            { "type": "initial", "maximumWarning": "500kB", "maximumError": "1MB" }
-          ],
+          "budgets": [{ "type": "initial", "maximumWarning": "500kB", "maximumError": "1MB" }],
           "outputHashing": "all"
         },
         "generic": {
@@ -89,9 +85,7 @@
             "input": "packages/portal/public"
           }
         ],
-        "styles": [
-          "packages/portal/src/styles.scss"
-        ]
+        "styles": ["packages/portal/src/styles.scss"]
       }
     },
     "typecheck": {

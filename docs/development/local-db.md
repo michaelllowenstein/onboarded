@@ -6,15 +6,15 @@ collides with another local Postgres on 5432.
 
 ## Pieces
 
-| Path | What it is |
-|---|---|
-| `deploy/local/db/docker-compose.db.yml` | `postgres:18`, loopback-only, volume `onboarded_pg_data` |
-| `deploy/local/db/.env` (gitignored) | superuser + `ob_dba` + `ob_reader` passwords, port |
-| `deploy/local/db/sql/00_roles.sql` | roles: `ob_dba` (owns instance DBs, CREATEDB for sandboxes), `ob_reader` (read-only) |
-| `deploy/local/db/sql/10_instance_db.sql` | per-instance DB, `err.db_exception_tank`, default read grants |
-| `deploy/local/db/sql/20_demo_schema.sql` | demo data for the generic tenant (P-1002 is broken on purpose) |
-| `deploy/local/db/init-local-db.sh` | up + roles + `ob_generic` + demo, idempotent |
-| `packages/dba/` | `ob-dba` / `onboarded dba`: ticket runner (psycopg 3) |
+| Path                                     | What it is                                                                           |
+| ---------------------------------------- | ------------------------------------------------------------------------------------ |
+| `deploy/local/db/docker-compose.db.yml`  | `postgres:18`, loopback-only, volume `onboarded_pg_data`                             |
+| `deploy/local/db/.env` (gitignored)      | superuser + `ob_dba` + `ob_reader` passwords, port                                   |
+| `deploy/local/db/sql/00_roles.sql`       | roles: `ob_dba` (owns instance DBs, CREATEDB for sandboxes), `ob_reader` (read-only) |
+| `deploy/local/db/sql/10_instance_db.sql` | per-instance DB, `err.db_exception_tank`, default read grants                        |
+| `deploy/local/db/sql/20_demo_schema.sql` | demo data for the generic tenant (P-1002 is broken on purpose)                       |
+| `deploy/local/db/init-local-db.sh`       | up + roles + `ob_generic` + demo, idempotent                                         |
+| `packages/dba/`                          | `ob-dba` / `onboarded dba`: ticket runner (psycopg 3)                                |
 
 ## Bring-up
 

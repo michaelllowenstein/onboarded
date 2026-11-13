@@ -6,11 +6,11 @@ one stable link. When anything moves, run one command from the new checkout.
 
 ## The three anchors
 
-| Anchor | What it holds | Who reads it |
-|---|---|---|
-| the checkout itself | `ONBOARDED_DIR`, derived from each script's own location | loader, dispatcher, Makefile, justfile, `ob_instance.py`, `ob-dba`, battery |
-| `~/.onboarded/root` | symlink to the checkout | the one managed block in `~/.zshrc` |
-| `~/.onboarded/paths.conf` | `MSI_NAV_DIR`, `OB_WORKSPACE`, `OB_REPOS_ROOT`, `OB_DEFAULT_TENANT` | `ob_profile.zsh`, Makefile (`-include`), justfile, `ob_instance.py` |
+| Anchor                    | What it holds                                                       | Who reads it                                                                |
+| ------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| the checkout itself       | `ONBOARDED_DIR`, derived from each script's own location            | loader, dispatcher, Makefile, justfile, `ob_instance.py`, `ob-dba`, battery |
+| `~/.onboarded/root`       | symlink to the checkout                                             | the one managed block in `~/.zshrc`                                         |
+| `~/.onboarded/paths.conf` | `MSI_NAV_DIR`, `OB_WORKSPACE`, `OB_REPOS_ROOT`, `OB_DEFAULT_TENANT` | `ob_profile.zsh`, Makefile (`-include`), justfile, `ob_instance.py`         |
 
 `~/.zshrc` contains only:
 
@@ -41,15 +41,15 @@ Same commands: `obpaths …` in zsh, `just paths …`, `make paths ARGS="…"`.
 
 ## What `--apply` repairs
 
-| Item | Repair |
-|---|---|
-| `~/.onboarded/root` | repointed at this checkout |
-| `~/.onboarded/paths.conf` | written; msi-nav auto-detected under `~` (depth ≤ 4) if moved |
-| shell profiles | legacy bootstrap block removed (its `OB_ROOT` / `OB_TENANT` carried into paths.conf); managed block added once; old repo and msi-nav prefixes rewritten (absolute, `~/` and `$HOME` spellings); onboarded lines whose path is gone are commented out with a dated note |
-| instance env files | regenerated for every instance in this checkout |
-| confidential overlays | repo symlinks relinked into the current workspace |
-| `~/.onboarded/active` | cleared if that instance isn't in this checkout |
-| `.git/info/exclude` | confidential block re-synced |
+| Item                      | Repair                                                                                                                                                                                                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `~/.onboarded/root`       | repointed at this checkout                                                                                                                                                                                                                                             |
+| `~/.onboarded/paths.conf` | written; msi-nav auto-detected under `~` (depth ≤ 4) if moved                                                                                                                                                                                                          |
+| shell profiles            | legacy bootstrap block removed (its `OB_ROOT` / `OB_TENANT` carried into paths.conf); managed block added once; old repo and msi-nav prefixes rewritten (absolute, `~/` and `$HOME` spellings); onboarded lines whose path is gone are commented out with a dated note |
+| instance env files        | regenerated for every instance in this checkout                                                                                                                                                                                                                        |
+| confidential overlays     | repo symlinks relinked into the current workspace                                                                                                                                                                                                                      |
+| `~/.onboarded/active`     | cleared if that instance isn't in this checkout                                                                                                                                                                                                                        |
+| `.git/info/exclude`       | confidential block re-synced                                                                                                                                                                                                                                           |
 
 Reported, not changed: Makefile / justfile / bootstrap.sh self-location, and
 `deploy/local/sync.conf` DEST (the client install target, which is yours to set).

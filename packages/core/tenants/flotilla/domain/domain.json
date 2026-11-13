@@ -37,27 +37,18 @@
       ],
       "queues": [],
       "js": [],
-      "tables": [
-        "public.MissionRuns",
-        "public.MissionDefinitions"
-      ],
-      "clusters": [
-        "F-BUSY"
-      ]
+      "tables": ["public.MissionRuns", "public.MissionDefinitions"],
+      "clusters": ["F-BUSY"]
     },
     "rerun_mission": {
       "label": "Re-run an existing mission run",
       "controllers": [
         "flotilla:backend/api/Controllers/MissionSchedulingController.cs"
       ],
-      "services": [
-        "flotilla:backend/api/Services/MissionRunService.cs"
-      ],
+      "services": ["flotilla:backend/api/Services/MissionRunService.cs"],
       "queues": [],
       "js": [],
-      "tables": [
-        "public.MissionRuns"
-      ]
+      "tables": ["public.MissionRuns"]
     },
     "start_next_mission": {
       "label": "Start the next queued mission when the robot is free",
@@ -70,68 +61,36 @@
       ],
       "queues": [],
       "js": [],
-      "tables": [
-        "public.MissionRuns",
-        "public.Robots"
-      ],
-      "clusters": [
-        "F-BUSY",
-        "F-STUCK"
-      ]
+      "tables": ["public.MissionRuns", "public.Robots"],
+      "clusters": ["F-BUSY", "F-STUCK"]
     },
     "mission_status_update": {
       "label": "ISAR reports mission progress; Flotilla updates the run",
-      "controllers": [
-        "flotilla:backend/api/EventHandlers/MqttEventHandler.cs"
-      ],
+      "controllers": ["flotilla:backend/api/EventHandlers/MqttEventHandler.cs"],
       "services": [
         "flotilla:backend/api/Services/MissionRunService.cs",
         "isar:src/isar/state_machine/states/monitor.py"
       ],
-      "queues": [
-        "isar/+/mission/+"
-      ],
+      "queues": ["isar/+/mission/+"],
       "js": [],
-      "tables": [
-        "public.MissionRuns"
-      ],
-      "clusters": [
-        "F-STUCK",
-        "F-NOMISSION"
-      ]
+      "tables": ["public.MissionRuns"],
+      "clusters": ["F-STUCK", "F-NOMISSION"]
     },
     "task_status_update": {
       "label": "ISAR reports task progress; Flotilla updates the task",
-      "controllers": [
-        "flotilla:backend/api/EventHandlers/MqttEventHandler.cs"
-      ],
-      "services": [
-        "flotilla:backend/api/Services/MissionTaskService.cs"
-      ],
-      "queues": [
-        "isar/+/task/+"
-      ],
+      "controllers": ["flotilla:backend/api/EventHandlers/MqttEventHandler.cs"],
+      "services": ["flotilla:backend/api/Services/MissionTaskService.cs"],
+      "queues": ["isar/+/task/+"],
       "js": [],
-      "tables": [
-        "public.MissionTasks"
-      ]
+      "tables": ["public.MissionTasks"]
     },
     "abort_mission": {
       "label": "Abort a mission run (ISAR reports aborted mission)",
-      "controllers": [
-        "flotilla:backend/api/EventHandlers/MqttEventHandler.cs"
-      ],
-      "services": [
-        "flotilla:backend/api/Services/MissionSchedulingService.cs"
-      ],
-      "queues": [
-        "isar/+/aborted_mission"
-      ],
+      "controllers": ["flotilla:backend/api/EventHandlers/MqttEventHandler.cs"],
+      "services": ["flotilla:backend/api/Services/MissionSchedulingService.cs"],
+      "queues": ["isar/+/aborted_mission"],
       "js": [],
-      "tables": [
-        "public.MissionRuns",
-        "public.Robots"
-      ]
+      "tables": ["public.MissionRuns", "public.Robots"]
     },
     "robot_status": {
       "label": "Robot status and availability",
@@ -143,18 +102,10 @@
         "flotilla:backend/api/Services/RobotService.cs",
         "isar:src/isar/state_machine/state_machine.py"
       ],
-      "queues": [
-        "isar/+/status",
-        "isar/+/robot_info"
-      ],
+      "queues": ["isar/+/status", "isar/+/robot_info"],
       "js": [],
-      "tables": [
-        "public.Robots"
-      ],
-      "clusters": [
-        "F-OFFLINE",
-        "F-NOROBOT"
-      ]
+      "tables": ["public.Robots"],
+      "clusters": ["F-OFFLINE", "F-NOROBOT"]
     },
     "return_home": {
       "label": "Send a robot back to its home position",
@@ -167,32 +118,24 @@
       ],
       "queues": [],
       "js": [],
-      "tables": [
-        "public.Robots"
-      ]
+      "tables": ["public.Robots"]
     },
     "emergency_lockdown": {
       "label": "Lock down all robots on an installation",
       "controllers": [
         "flotilla:backend/api/Controllers/EmergencyActionController.cs"
       ],
-      "services": [
-        "isar:src/isar/state_machine/states/lockdown.py"
-      ],
+      "services": ["isar:src/isar/state_machine/states/lockdown.py"],
       "queues": [],
       "js": [],
-      "tables": [
-        "public.Robots"
-      ]
+      "tables": ["public.Robots"]
     },
     "access_control": {
       "label": "Installation access roles",
       "controllers": [
         "flotilla:backend/api/Controllers/AccessRoleController.cs"
       ],
-      "services": [
-        "flotilla:backend/api/Services/AccessRoleService.cs"
-      ],
+      "services": ["flotilla:backend/api/Services/AccessRoleService.cs"],
       "queues": [],
       "js": []
     },
@@ -201,37 +144,27 @@
       "controllers": [
         "flotilla:backend/api/Controllers/InspectionAreaController.cs"
       ],
-      "services": [
-        "flotilla:backend/api/Services/InspectionAreaService.cs"
-      ],
+      "services": ["flotilla:backend/api/Services/InspectionAreaService.cs"],
       "queues": [],
       "js": [],
-      "tables": [
-        "public.InspectionAreas"
-      ]
+      "tables": ["public.InspectionAreas"]
     },
     "mission_definitions": {
       "label": "Create and edit mission definitions",
       "controllers": [
         "flotilla:backend/api/Controllers/MissionDefinitionController.cs"
       ],
-      "services": [
-        "flotilla:backend/api/Services/MissionDefinitionService.cs"
-      ],
+      "services": ["flotilla:backend/api/Services/MissionDefinitionService.cs"],
       "queues": [],
       "js": [],
-      "tables": [
-        "public.MissionDefinitions"
-      ]
+      "tables": ["public.MissionDefinitions"]
     },
     "auto_schedule": {
       "label": "Automatically scheduled missions",
       "controllers": [
         "flotilla:backend/api/Controllers/MissionDefinitionController.cs"
       ],
-      "services": [
-        "flotilla:backend/api/Services/AutoScheduleService.cs"
-      ],
+      "services": ["flotilla:backend/api/Services/AutoScheduleService.cs"],
       "queues": [],
       "js": []
     }
@@ -346,14 +279,10 @@
       ]
     },
     "robot_status": {
-      "paths": [
-        "flotilla:backend/api.test/Services/RobotService.cs"
-      ]
+      "paths": ["flotilla:backend/api.test/Services/RobotService.cs"]
     },
     "access_control": {
-      "paths": [
-        "flotilla:backend/api.test/Services/AccessRoleService.cs"
-      ]
+      "paths": ["flotilla:backend/api.test/Services/AccessRoleService.cs"]
     },
     "mission_status_update": {
       "paths": [
@@ -367,72 +296,47 @@
     "flotilla": {
       "label": "Flotilla",
       "definition": "Fleet management backend (ASP.NET Core + Postgres) that schedules robot missions and tracks robots.",
-      "see_also": [
-        "isar",
-        "mission_run"
-      ]
+      "see_also": ["isar", "mission_run"]
     },
     "isar": {
       "label": "ISAR",
       "definition": "Integration and Supervision of Autonomous Robots: Python service on/next to each robot, runs a state machine and talks to Flotilla over MQTT.",
-      "see_also": [
-        "flotilla",
-        "mqtt"
-      ]
+      "see_also": ["flotilla", "mqtt"]
     },
     "mqtt": {
       "label": "MQTT",
       "definition": "Message bus between ISAR and Flotilla; topics isar/<isar_id>/<topic>.",
-      "see_also": [
-        "isar"
-      ]
+      "see_also": ["isar"]
     },
     "installation": {
       "label": "Installation",
       "definition": "A site (e.g. an offshore platform or onshore plant) identified by InstallationCode; access roles are per installation.",
-      "see_also": [
-        "plant",
-        "access_role"
-      ]
+      "see_also": ["plant", "access_role"]
     },
     "plant": {
       "label": "Plant",
       "definition": "A plant within an installation (Plants table).",
-      "see_also": [
-        "installation",
-        "inspection_area"
-      ]
+      "see_also": ["installation", "inspection_area"]
     },
     "inspection_area": {
       "label": "Inspection area",
       "definition": "Area of a plant a robot inspects; missions and robots are tied to one.",
-      "see_also": [
-        "plant",
-        "mission_definition"
-      ]
+      "see_also": ["plant", "mission_definition"]
     },
     "mission_definition": {
       "label": "Mission definition",
       "definition": "Reusable mission template (tasks, inspection area, optional auto-schedule).",
-      "see_also": [
-        "mission_run",
-        "auto_schedule"
-      ]
+      "see_also": ["mission_run", "auto_schedule"]
     },
     "mission_run": {
       "label": "Mission run",
       "definition": "One execution of a mission definition by a robot (MissionRuns table).",
-      "see_also": [
-        "mission_definition",
-        "task"
-      ]
+      "see_also": ["mission_definition", "task"]
     },
     "task": {
       "label": "Task",
       "definition": "One inspection step of a mission run (MissionTasks table).",
-      "see_also": [
-        "mission_run"
-      ]
+      "see_also": ["mission_run"]
     },
     "return_home": {
       "label": "Return home",
@@ -442,23 +346,17 @@
     "lockdown": {
       "label": "Lockdown",
       "definition": "Emergency action that stops robots and sends them to a safe position.",
-      "see_also": [
-        "return_home"
-      ]
+      "see_also": ["return_home"]
     },
     "access_role": {
       "label": "Access role",
       "definition": "Maps an installation to a role (AccessRoles table) used to filter what a user can see.",
-      "see_also": [
-        "installation"
-      ]
+      "see_also": ["installation"]
     },
     "auto_schedule": {
       "label": "Auto-schedule",
       "definition": "Recurring schedule on a mission definition; AutoScheduleService creates runs.",
-      "see_also": [
-        "mission_definition"
-      ]
+      "see_also": ["mission_definition"]
     }
   },
   "glossary_xrefs": {
@@ -472,17 +370,9 @@
       "pattern": "password['\"]?\\s*[:=]\\s*['\"][^'\"]{4,}['\"]",
       "severity": "critical",
       "category": "security",
-      "scope": [
-        "*.cs",
-        "*.py",
-        "*.json",
-        "*.ts"
-      ],
+      "scope": ["*.cs", "*.py", "*.json", "*.ts"],
       "repos": [],
-      "exclude": [
-        "**/tests/**",
-        "**/api.test/**"
-      ],
+      "exclude": ["**/tests/**", "**/api.test/**"],
       "reference": "OWASP A02:2021",
       "fixHint": "Move to environment variables or Key Vault."
     },
@@ -491,16 +381,9 @@
       "pattern": "console\\.log\\(",
       "severity": "warning",
       "category": "convention",
-      "scope": [
-        "*.ts",
-        "*.tsx"
-      ],
-      "repos": [
-        "flotilla"
-      ],
-      "exclude": [
-        "**/tests/**"
-      ],
+      "scope": ["*.ts", "*.tsx"],
+      "repos": ["flotilla"],
+      "exclude": ["**/tests/**"],
       "reference": "internal",
       "fixHint": "Use the app logger."
     },
@@ -509,12 +392,7 @@
       "pattern": "TODO(?!.*#\\d+)",
       "severity": "info",
       "category": "convention",
-      "scope": [
-        "*.cs",
-        "*.py",
-        "*.ts",
-        "*.tsx"
-      ],
+      "scope": ["*.cs", "*.py", "*.ts", "*.tsx"],
       "repos": [],
       "exclude": [],
       "reference": "internal",
@@ -525,15 +403,9 @@
       "pattern": "\\.Wait\\(\\)|\\.Result\\b",
       "severity": "warning",
       "category": "architecture",
-      "scope": [
-        "*.cs"
-      ],
-      "repos": [
-        "flotilla"
-      ],
-      "exclude": [
-        "**/api.test/**"
-      ],
+      "scope": ["*.cs"],
+      "repos": ["flotilla"],
+      "exclude": ["**/api.test/**"],
       "reference": "Microsoft async guidance",
       "fixHint": "await the task instead of .Wait()/.Result."
     },
@@ -542,15 +414,9 @@
       "pattern": "async void ",
       "severity": "warning",
       "category": "architecture",
-      "scope": [
-        "*.cs"
-      ],
-      "repos": [
-        "flotilla"
-      ],
-      "exclude": [
-        "**/api.test/**"
-      ],
+      "scope": ["*.cs"],
+      "repos": ["flotilla"],
+      "exclude": ["**/api.test/**"],
       "reference": "Microsoft async guidance",
       "fixHint": "Return Task; async void exceptions crash the process."
     }
@@ -945,9 +811,7 @@
         "staging": "false",
         "production": "false"
       },
-      "related": [
-        "Database:InitializeInMemDb"
-      ],
+      "related": ["Database:InitializeInMemDb"],
       "notes": "Local runs on an in-memory DB; every other environment on Postgres."
     },
     "db_server": {
@@ -960,10 +824,7 @@
         "staging": "robotics-staging-psql-server",
         "production": "robotics-prod-psql-server"
       },
-      "related": [
-        "Database:PostgresDatabase",
-        "Database:User"
-      ],
+      "related": ["Database:PostgresDatabase", "Database:User"],
       "notes": "From appsettings.<Environment>.json."
     },
     "otel_enabled": {
@@ -976,9 +837,7 @@
         "staging": "(not set)",
         "production": "(not set)"
       },
-      "related": [
-        "OpenTelemetry:OtelExporterOtlpEndpoint"
-      ],
+      "related": ["OpenTelemetry:OtelExporterOtlpEndpoint"],
       "notes": "Unset in Staging/Production appsettings."
     },
     "mqtt_host": {
@@ -991,20 +850,12 @@
         "staging": "localhost",
         "production": "localhost"
       },
-      "related": [
-        "Mqtt:Port",
-        "Mqtt:Topics"
-      ],
+      "related": ["Mqtt:Port", "Mqtt:Topics"],
       "notes": "Base appsettings.json; docker compose overrides with Mqtt__Host=broker."
     }
   },
   "env_config": {
-    "env_names": [
-      "local",
-      "development",
-      "staging",
-      "production"
-    ],
+    "env_names": ["local", "development", "staging", "production"],
     "instances": {
       "local": "appsettings.Local.json",
       "development": "appsettings.Development.json",

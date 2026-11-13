@@ -21,7 +21,7 @@ Stdlib-only Python; needs git, and psql or the `onboarded-pg` container.
    leaves the previous one's variables behind.
 2. **Reproducibility.** Client repos are pinned to commits in `instance.json`;
    a finding is only meaningful against a known commit.
-3. **Confidentiality by construction.** A *confidential* instance's tenant,
+3. **Confidentiality by construction.** A _confidential_ instance's tenant,
    templates and manifest physically live in the workspace and are symlinked
    into the repo; git exclude rules and a pre-commit guard keep them, and their
    generated adapters, out of commits.
@@ -31,12 +31,12 @@ Stdlib-only Python; needs git, and psql or the `onboarded-pg` container.
 
 ## Classification
 
-| | public | confidential |
-|---|---|---|
-| Use for | open-source test codebases | employer / client codebases |
-| Tenant + templates + manifest | committed | workspace overlay, symlinked, git-excluded |
-| Generated adapters | committed | git-excluded |
-| Guard | — | `obi guard` pre-commit hook blocks them even with `git add -f` |
+|                               | public                     | confidential                                                   |
+| ----------------------------- | -------------------------- | -------------------------------------------------------------- |
+| Use for                       | open-source test codebases | employer / client codebases                                    |
+| Tenant + templates + manifest | committed                  | workspace overlay, symlinked, git-excluded                     |
+| Generated adapters            | committed                  | git-excluded                                                   |
+| Guard                         | —                          | `obi guard` pre-commit hook blocks them even with `git add -f` |
 
 `obi new <slug> --confidential` sets this up. For an existing tenant:
 `obi adopt <slug> --confidential`, then follow the printed steps to untrack it and
@@ -45,14 +45,14 @@ anything from earlier commits.
 
 ## Lifecycle
 
-| State | Exit criteria |
-|---|---|
-| `planned` | `obi new` done; repos listed in the manifest |
-| `cloned` | `obi clone` done; commits pinned and manifest committed |
-| `derived` | domain.json derived (docs/development/derivation.md steps 1–8); `obi check-paths` all resolve |
-| `generated` | `obi generate` clean; `obi doctor` healthy |
-| `benchmarked` | SCORECARD sections 2–4 filled; at least one DBA ticket rehearsed end to end |
-| `archived` | findings rolled up; database dropped (`obi db-drop --yes`) or kept read-only |
+| State         | Exit criteria                                                                                 |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| `planned`     | `obi new` done; repos listed in the manifest                                                  |
+| `cloned`      | `obi clone` done; commits pinned and manifest committed                                       |
+| `derived`     | domain.json derived (docs/development/derivation.md steps 1–8); `obi check-paths` all resolve |
+| `generated`   | `obi generate` clean; `obi doctor` healthy                                                    |
+| `benchmarked` | SCORECARD sections 2–4 filled; at least one DBA ticket rehearsed end to end                   |
+| `archived`    | findings rolled up; database dropped (`obi db-drop --yes`) or kept read-only                  |
 
 Move between states with `obi status <slug> <state>` (`clone` and `generate` advance it automatically).
 
