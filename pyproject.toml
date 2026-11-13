@@ -1,0 +1,27 @@
+[project]
+name = "onboarded-workspace"
+version = "0.1.0"
+requires-python = ">=3.12,<=3.14"
+dependencies = [
+    "jsonschema>=4.23",
+    "onboarded-dba[postgres]",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.9",
+]
+
+[tool.uv.sources]
+onboarded-dba = { path = "packages/dba", editable = true }
+
+[tool.pytest.ini_options]
+testpaths = ["packages/dba/tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.uv]
+package = false

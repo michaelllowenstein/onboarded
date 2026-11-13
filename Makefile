@@ -18,8 +18,8 @@ ONBOARDED_DIR  := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 -include $(HOME)/.onboarded/paths.conf
 OB_TENANT      ?= $(or $(OB_DEFAULT_TENANT),$(if $(wildcard $(ONBOARDED_DIR)/packages/core/generated/flotilla/nav_maps.zsh),flotilla,generic))
 BATS           ?= $(shell command -v bats 2>/dev/null || echo bats)
-PY             ?= python3
-DBA_PY         := $(if $(wildcard $(ONBOARDED_DIR)/packages/dba/.venv/bin/python),$(ONBOARDED_DIR)/packages/dba/.venv/bin/python,$(PY))
+PY 	       := $(ONBOARDED_DIR)/.venv/bin/python
+DBA_PY 	       := $(PY)
 COMPOSE        := docker compose -f $(ONBOARDED_DIR)/deploy/local/db/docker-compose.db.yml --env-file $(ONBOARDED_DIR)/deploy/local/db/.env
 
 .PHONY: help install install-check uninstall status generate generate-all smoke test battery baseline \

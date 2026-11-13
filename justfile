@@ -23,7 +23,7 @@ MSI_NAV_DIR   := `sh -c '[ -r "$HOME/.onboarded/paths.conf" ] && . "$HOME/.onboa
 BATS          := env_var_or_default("BATS", `command -v bats 2>/dev/null || echo bats`)
 PROFILE       := ONBOARDED_DIR + "/packages/cli/src/ob_profile.zsh"
 OB_GENERATED  := ONBOARDED_DIR + "/packages/core/generated/" + OB_TENANT
-PY            := "python3"
+PY 	      := ONBOARDED_DIR + "/.venv/bin/python"
 
 # One non-interactive zsh with onboarded loaded for OB_TENANT (no ~/.zshrc involved).
 OB_ZSH := 'OB_TENANT=' + OB_TENANT + ' zsh -f -c'
