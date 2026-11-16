@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "onboarded-api"
+version = "0.1.0"
+description = "Onboarded REST API — tenant domain, scan engine and DBA tickets over HTTP"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+]
+
+[project.optional-dependencies]
+# DBA endpoints import packages/dba; the driver is only needed to run SQL.
+dba = ["onboarded-dba"]
+postgres = ["onboarded-dba[postgres]"]
+test = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+onboarded-api = "onboarded_api.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "../dba/src"]

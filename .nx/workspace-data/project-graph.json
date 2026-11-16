@@ -6,7 +6,9 @@
       "data": {
         "root": "packages/portal",
         "name": "@onboarded/portal",
-        "tags": ["npm:private"],
+        "tags": [
+          "npm:private"
+        ],
         "metadata": {
           "targetGroups": {},
           "js": {
@@ -29,7 +31,9 @@
                   "input": "packages/portal/public"
                 }
               ],
-              "styles": ["packages/portal/src/styles.scss"],
+              "styles": [
+                "packages/portal/src/styles.scss"
+              ],
               "scripts": []
             },
             "configurations": {
@@ -80,8 +84,13 @@
             },
             "defaultConfiguration": "production",
             "parallelism": true,
-            "dependsOn": ["^build"],
-            "inputs": ["production", "^production"],
+            "dependsOn": [
+              "^build"
+            ],
+            "inputs": [
+              "production",
+              "^production"
+            ],
             "cache": true
           },
           "serve": {
@@ -118,7 +127,9 @@
                   "input": "packages/portal/public"
                 }
               ],
-              "styles": ["packages/portal/src/styles.scss"]
+              "styles": [
+                "packages/portal/src/styles.scss"
+              ]
             },
             "configurations": {},
             "parallelism": true
@@ -130,7 +141,10 @@
             },
             "configurations": {},
             "parallelism": true,
-            "inputs": ["default", "^default"],
+            "inputs": [
+              "default",
+              "^default"
+            ],
             "cache": true
           }
         },
@@ -153,7 +167,9 @@
       "data": {
         "root": "packages/shared",
         "name": "@onboarded/shared",
-        "tags": ["npm:private"],
+        "tags": [
+          "npm:private"
+        ],
         "metadata": {
           "targetGroups": {},
           "description": "Onboarded shared TypeScript types and generated tenant snapshots",
@@ -172,7 +188,10 @@
             },
             "configurations": {},
             "parallelism": true,
-            "inputs": ["default", "^default"],
+            "inputs": [
+              "default",
+              "^default"
+            ],
             "cache": true
           }
         },
@@ -188,7 +207,9 @@
       "data": {
         "root": "packages/core",
         "name": "@onboarded/core",
-        "tags": ["npm:private"],
+        "tags": [
+          "npm:private"
+        ],
         "metadata": {
           "targetGroups": {},
           "js": {
@@ -229,7 +250,9 @@
       "data": {
         "root": "packages/cli",
         "name": "@onboarded/cli",
-        "tags": ["npm:private"],
+        "tags": [
+          "npm:private"
+        ],
         "metadata": {
           "targetGroups": {},
           "description": "Onboarded CLI — Zsh + PowerShell shell engines",
@@ -32698,5 +32721,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1794550893541
+  "computedAt": 1794641841770
 }

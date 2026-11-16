@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  pull-requests:
+    event: PR
+    branches: [main]
+  main-pushes:
+    event: PUSH
+    branches: [main]
+
+worker-templates:
+  default:
+    # Distribute across 3 workers using the linux-large-js launch template
+    workers: 3 linux-large-js
+    # Shut idle workers down once every build task has been requested
+    stop-after:
+      - build
+
+jobs:
+  main:
+    # Checks out the repository and installs dependencies
+    runs-on: linux-medium-js
+    workers: default
+    steps:
+      # Runs lint, test, and build only for projects affected by this change.
+      # Nx Cloud distributes these tasks across the workers started above.
+      - run: npx nx affected -t lint test build

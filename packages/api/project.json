@@ -1,0 +1,21 @@
+{
+  "name": "@onboarded/api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "root": "packages/api",
+  "sourceRoot": "packages/api/src",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "python3 -m onboarded_api --reload",
+        "cwd": "packages/api",
+        "env": { "PYTHONPATH": "src:../dba/src" }
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": { "command": "python3 -m pytest -q", "cwd": "packages/api" }
+    }
+  }
+}

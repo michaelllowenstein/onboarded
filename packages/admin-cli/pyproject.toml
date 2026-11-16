@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "onboarded-admin"
+version = "0.1.0"
+description = "ob-admin — Onboarded admin CLI (talks to the API, or reads the repo directly with --local)"
+requires-python = ">=3.11"
+dependencies = []                       # stdlib only in API mode
+
+[project.optional-dependencies]
+local = ["onboarded-api", "onboarded-dba"]   # --local reuses the API's service layer
+test = ["pytest>=8"]
+
+[project.scripts]
+ob-admin = "onboarded_admin.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "../api/src", "../dba/src"]

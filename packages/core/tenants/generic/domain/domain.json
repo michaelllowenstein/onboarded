@@ -179,7 +179,7 @@
     },
     "missing_cancellation_token": {
       "label": "Async method missing CancellationToken",
-      "pattern": "public async Task",
+      "pattern": "public async Task[^(]*\\((?![^)]*CancellationToken)",
       "severity": "warning",
       "category": "architecture",
       "scope": ["*.cs"],
