@@ -1,0 +1,12 @@
+# Paths named in the roadmap/workflow docs that later PRs create. The PR-00 gate
+# accepts these as "planned"; once every PR is applied they all exist.
+packages/core/scripts/domain_view.py
+packages/api/README.md
+packages/admin-cli/README.md
+packages/portal/README.md
+scripts/gates/pr-09.sh
+scripts/gates/pr-10.sh
+scripts/gates/pr-11.sh
+scripts/gates/pr-12.sh
+scripts/gates/pr-13.sh
+scripts/gates/pr-14.sh

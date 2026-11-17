@@ -32,6 +32,18 @@ default:
     @just --list --unsorted
 
 # ─────────────────────────────────────────────────────────────────────────────
+# PR WORKFLOW (docs/roadmap/PR_WORKFLOW.md)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Gate a PR: just gate 11 [--fast|--strict|--only|-v]
+gate PR *FLAGS:
+    @{{ONBOARDED_DIR}}/scripts/pr.sh gate {{PR}} {{FLAGS}}
+
+# PR routine: just pr list | flow NN | start NN | smoke NN | finish NN [--push]
+pr *ARGS:
+    @{{ONBOARDED_DIR}}/scripts/pr.sh {{ARGS}}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # INSTALL
 # ─────────────────────────────────────────────────────────────────────────────
 

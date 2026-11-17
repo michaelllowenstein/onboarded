@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+src/onboarded-admin/__init__.py
+src/onboarded-admin/__main__.py
+src/onboarded-admin/backends.py
+src/onboarded-admin/cli.py
+src/onboarded-admin/render.py
+src/onboarded_admin.egg-info/PKG-INFO
+src/onboarded_admin.egg-info/SOURCES.txt
+src/onboarded_admin.egg-info/dependency_links.txt
+src/onboarded_admin.egg-info/entry_points.txt
+src/onboarded_admin.egg-info/requires.txt
+src/onboarded_admin.egg-info/top_level.txt
+tests/test_cli.py

@@ -1,4 +1,4 @@
-# ob-admin — Onboarded admin CLI
+# @onboarded/admin-cli
 
 One CLI, two backends, same answers:
 

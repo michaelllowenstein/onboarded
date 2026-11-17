@@ -30,6 +30,13 @@ help:
 	@echo "  install install-check uninstall status generate generate-all smoke test"
 	@echo "  battery ARGS=..  baseline ARGS=..  paths ARGS=..  db-init db-up db-down  dba ARGS=..  dba-test  i ARGS=.."
 
+# PR workflow (docs/roadmap/PR_WORKFLOW.md):  make gate PR=11 FLAGS=--strict
+.PHONY: gate pr
+gate:
+	@$(ONBOARDED_DIR)/scripts/pr.sh gate $(PR) $(FLAGS)
+pr:
+	@$(ONBOARDED_DIR)/scripts/pr.sh $(ARGS)
+
 install:
 	@$(ONBOARDED_DIR)/install.sh $(ARGS)
 

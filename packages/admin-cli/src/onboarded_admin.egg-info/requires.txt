@@ -1,0 +1,7 @@
+
+[local]
+onboarded-api
+onboarded-dba
+
+[test]
+pytest>=8

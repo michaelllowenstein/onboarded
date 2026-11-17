@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: onboarded-admin
+Version: 0.1.0
+Summary: ob-admin — Onboarded admin CLI (talks to the API, or reads the repo directly with --local)
+Requires-Python: >=3.11
+Provides-Extra: local
+Requires-Dist: onboarded-api; extra == "local"
+Requires-Dist: onboarded-dba; extra == "local"
+Provides-Extra: test
+Requires-Dist: pytest>=8; extra == "test"

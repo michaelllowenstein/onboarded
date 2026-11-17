@@ -13,3 +13,6 @@ __pycache__/
 *.pyc
 .venv/
 packages/dba/.venv/
+
+# PR gate state (scripts/pr.sh)
+.gates/
