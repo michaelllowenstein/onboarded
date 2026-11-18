@@ -14,7 +14,7 @@ import pathlib
 import argparse
 
 try:
-    import jsonschema
+    import jsonschema  # noqa: F401  # availability check; the names below are what we use
     from jsonschema import validate, ValidationError, SchemaError
 except ImportError:
     print("ERROR: jsonschema is required.  Run: pip install jsonschema", file=sys.stderr)
@@ -42,7 +42,7 @@ def find_domain(tenant: str) -> pathlib.Path:
     if flat.exists():
         return flat
     print(f"ERROR: domain.json not found for tenant '{tenant}'", file=sys.stderr)
-    print(f"  Expected: {path}", file=sys.stderr)
+    print(f"  Expected: {nested}  (or {flat})", file=sys.stderr)
     sys.exit(1)
 
 

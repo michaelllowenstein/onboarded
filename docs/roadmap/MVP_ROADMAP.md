@@ -10,9 +10,10 @@
 all backed by one **REST API** that serves the same data the portal compiles in.
 
 This continues the scratch-build plan (`onboarded-scratch-build-plan.md`, PR-1…PR-8) as
-**PR-9…PR-14**. Each PR ships as an overlay archive (see *Applying the archives*) and
+**PR-9…PR-17**. Each PR ships as an overlay archive (see *Applying the archives*) and
 carries its own **gate** — the routine every PR must pass before the next one starts is in
-[`PR_WORKFLOW.md`](PR_WORKFLOW.md) (`scripts/pr.sh start → gate → smoke → finish`).
+[`PR_WORKFLOW.md`](PR_WORKFLOW.md) (`scripts/pr.sh start → gate → smoke → finish`); the
+hands-on runbook, including ShellCheck, is `docs/development/runbook-pr-gates.md`.
 
 ---
 
@@ -27,7 +28,7 @@ carries its own **gate** — the routine every PR must pass before the next one 
 | `portal` | **Would not build** | 2 of 8 routes; config pointed at files that don't exist (F3) |
 | `api` | Empty (`.gitkeep`) | fully specified in plan PR-5, never scaffolded |
 | `admin-cli` | Empty (`.gitkeep`) | plan PR-8 |
-| `feedback` | Stubs | telemetry store + tests only; out of MVP scope |
+| `feedback` | Stubs | telemetry store + tests only; empty `pyproject.toml`; out of MVP scope (PR-16 makes it installable) |
 | `deploy` | Placeholders | one-line Dockerfiles / nginx / k8s |
 
 ## 2. Findings
@@ -46,6 +47,8 @@ carries its own **gate** — the routine every PR must pass before the next one 
 | F8 | root `.env` (NX Cloud token) tracked and not ignored | secret in history | PR-14 (untracked + ignored) — **rotate the token** |
 | F9 | `tsconfig.base.json` uses `baseUrl`, removed in TypeScript 6 | breaks on TS 6 upgrade | PR-12 (relative `paths`, works on 5.9 and 6) |
 | F10 | Scan exclude globs ignored directory boundaries: `**/fixtures/**` also excluded `scan_fixtures/…`, `**/tests/**` excluded `unit_tests/…` | real findings silently dropped | PR-9 (glob → regex with segment boundaries). *Caught by the PR-11 gate's local-vs-API parity check.* |
+| F12 | `generated/generic/nav_maps_db.zsh` (hand-written) used `NAME=( [key]=value )`, rejected by `zsh -n` and older zsh ("bad subscript for direct array assignment") | generic tenant DB maps fail to load there; gate 15 red | PR-17 (`NAME+=( "key" "value" )`, the generator's own form). *Caught by `lint-shell.sh --all`.* |
+| F13 | `validate_domain.py --tenant <unknown>` crashed with `NameError: path` instead of its error message (ruff F821) | confusing traceback | PR-17 |
 | F11 | `ob-admin --local` only worked when run inside the repo; scan paths were relative to the scanned folder, so `**/tests/**` never applied locally | CLI unusable on other projects; local ≠ API results | PR-11 (repo located via the installed package; paths relative to the current directory) |
 
 ### Open — not blocking the MVP
@@ -56,6 +59,7 @@ carries its own **gate** — the routine every PR must pass before the next one 
 | O2 | `package-lock.json` is stale (no resolved `typescript`, mixed versions) | `rm package-lock.json && npm install`, commit |
 | O3 | `deploy/local/db/.env` (local Postgres passwords) appears in the export | confirm it is untracked; rotate if it was ever pushed |
 | O4 | Hand-written API types in `shared` | generate from `/openapi.json` with `openapi-typescript` once the API settles |
+| O6 | `feedback` test suite cannot import (`domain_loader`, `gap_detection`, `suggestion_engine` are placeholders); `nx test @onboarded/feedback` fails | implement the modules (§6 item 6); until then `nx run-many -t test --exclude=@onboarded/feedback` |
 | O5 | API has no auth | fine for localhost MVP; add a bearer token / reverse-proxy auth before any shared deploy |
 
 ## 3. Decisions (and where they differ from the scratch plan)
@@ -81,6 +85,9 @@ carries its own **gate** — the routine every PR must pass before the next one 
 | 12 | `fix/portal-build` | **portal**, root tsconfig | build config fixes, per-tenant configs, all 6 build-time pages | `gate 12` (config/route/template lint + 3 tenant builds) | `portal-v0.1` |
 | 13 | `feat/portal-api` | **portal** | interceptor + `ApiService`, Live scan, DBA tickets (run), Instances, API status | `gate 13` (HTTP boundary lint, build, live endpoints) + smoke | `portal-v0.2` |
 | 14 | `feat/mvp-devstack` | deploy, root | Dockerfiles, nginx, compose, `just`/`make` recipes, README, `.env` hygiene | `gate 14` (secrets, compose, `make mvp-test`, compose e2e) | `devstack-v0.1` |
+| 15 | `chore/shell-lint` | scripts, docs | `.shellcheckrc`, `scripts/lint-shell.sh`, `.gitattributes` (LF), `pr.sh doctor`, gates runbook | `gate 15` (bash -n, CRLF, ShellCheck on tooling + changed files, `zsh -n`) | `tooling` |
+| 16 | `chore/python-entrypoints` | dba, api, admin-cli, feedback | guarded `__main__` everywhere, `onboarded-api --host/--port/--version`, documented `__init__`s, feedback made installable (`ob-feedback telemetry …`) | `gate 16` (help/version/console scripts, framework-free services) | `python-entrypoints` |
+| 17 | `fix/lint-findings` | cli data, core, dba, api, root | fixes from the first real `lint-shell.sh --all` run; ruff rules pinned (`E4 E7 E9 F`) with scoped ignores; F12, F13 | `gate 17` (repo-wide ShellCheck + `zsh -n`, ruff clean, regressions for F12/F13) | `lint-fixes` |
 
 Merge order is linear (each branch is cut from the previous). PR-11 needs only PR-9/10;
 PR-12 needs only PR-9 (snapshots) — they can be reviewed in parallel.
@@ -115,7 +122,7 @@ scripts/pr.sh gate 00 --strict && scripts/pr.sh finish 00 --push
 scripts/pr.sh start 09 --patch PR-09.patch     # refuses unless PR-00 is green on HEAD
 scripts/pr.sh gate 09 --strict
 scripts/pr.sh smoke 09
-scripts/pr.sh finish 09 --push                 # … then 10, 11, 12, 13, 14 the same way
+scripts/pr.sh finish 09 --push                 # … then 10 through 17 the same way
 ```
 
 If `git am` stops on drift: resolve, `git add`, `git am --continue`, then gate.

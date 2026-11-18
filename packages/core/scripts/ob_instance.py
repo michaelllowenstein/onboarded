@@ -609,7 +609,7 @@ def iter_path_refs(dom: dict):
 
 
 def cmd_check_paths(a) -> int:
-    m = load(a.slug)
+    load(a.slug)  # validates the slug (exits with a message if the instance is unknown)
     dom = json.loads((repo_paths(a.slug)["tenant"] / "domain" / "domain.json").read_text())
     repos = dom.get("config", {}).get("repos") or {}
     good = bad = 0

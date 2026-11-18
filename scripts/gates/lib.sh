@@ -1,4 +1,6 @@
 # shellcheck shell=bash
+# shellcheck disable=SC2034
+# SC2034: GATE_FAILED_STEPS, C_* and API_SKIP_REASON are read by scripts/pr.sh and the gate files.
 # ─────────────────────────────────────────────────────────────────────────────
 # scripts/gates/lib.sh — shared helpers for the per-PR gates (sourced by scripts/pr.sh)
 #
@@ -84,7 +86,7 @@ expect_exit() {
   [ "$got" = "$want" ] || { echo "expected exit $want, got $got: $*"; return 1; }
 }
 
-# file_absent_in_git PATH  — passes when PATH is not tracked
+# not_tracked PATH  — passes when PATH is not tracked by git
 not_tracked() { [ -z "$(git ls-files -- "$1")" ] || { echo "$1 is tracked by git"; return 1; }; }
 
 # no_match REGEX PATH...    — passes when grep finds nothing
@@ -121,7 +123,7 @@ http() {
   [ -n "$body" ] && args+=(-H 'Content-Type: application/json' -d "$body")
   for h in "$@"; do args+=(-H "$h"); done
   local code; code=$(curl "${args[@]}") || return 1
-  printf '%s %s\n' "$code" "$(cat /tmp/ob_gate_body)"
+  printf '%s %s\n' "$code" "$(< /tmp/ob_gate_body)"
 }
 
 # expect_http STATUS METHOD PATH [JSON] [HEADER...] [-- JQ-free substring]
@@ -162,8 +164,10 @@ api_up() {  # api_up [ENV=VAL...]
     else API_URL=""; API_SKIP_REASON="needs a server started with $*; GATE_API_URL is fixed"; fi
     return 0
   fi
-  has_py fastapi && has_py uvicorn || { API_URL=""; API_SKIP_REASON="fastapi/uvicorn not installed — just mvp-install"; return 0; }
-  has curl || { API_URL=""; API_SKIP_REASON="curl not installed"; return 0; }
+  if ! has_py fastapi || ! has_py uvicorn; then
+    API_URL=""; API_SKIP_REASON="fastapi/uvicorn not installed — just mvp-install"; return 0
+  fi
+  if ! has curl; then API_URL=""; API_SKIP_REASON="curl not installed"; return 0; fi
   local port; port=$("$PY" -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1])')
   (cd "$REPO" && env OB_API_HOST=127.0.0.1 OB_API_PORT="$port" "$@" "$PY" -m onboarded_api \
      >"$GATE_LOG_DIR/api-server.log" 2>&1) &

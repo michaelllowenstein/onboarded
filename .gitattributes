@@ -1,0 +1,8 @@
+# Line endings. Shell scripts must be LF or bash/zsh fail with "$'\r': command not found"
+# (and ShellCheck reports SC1017). Applies to every checkout, including Windows + autocrlf.
+*.sh      text eol=lf
+*.zsh     text eol=lf
+*.bats    text eol=lf
+justfile  text eol=lf
+Makefile  text eol=lf
+.shellcheckrc text eol=lf

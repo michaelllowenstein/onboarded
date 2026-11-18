@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: onboarded-api
+Version: 0.1.0
+Summary: Onboarded REST API — tenant domain, scan engine and DBA tickets over HTTP
+Requires-Python: >=3.11
+Requires-Dist: fastapi>=0.115
+Requires-Dist: uvicorn[standard]>=0.32
+Provides-Extra: dba
+Requires-Dist: onboarded-dba; extra == "dba"
+Provides-Extra: postgres
+Requires-Dist: onboarded-dba[postgres]; extra == "postgres"
+Provides-Extra: test
+Requires-Dist: pytest>=8; extra == "test"
+Requires-Dist: httpx>=0.27; extra == "test"

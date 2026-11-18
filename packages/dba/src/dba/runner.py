@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import os
 import re
-from typing import Optional, Union
+from typing import Optional
 
 from dba.models import ResultSet, Script
 

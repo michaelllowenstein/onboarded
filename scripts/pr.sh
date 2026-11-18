@@ -2,6 +2,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # scripts/pr.sh — the routine for every MVP PR (see docs/roadmap/PR_WORKFLOW.md)
 #
+#   scripts/pr.sh doctor                    which tools are installed, and which gates need them
 #   scripts/pr.sh list                      PRs known to this checkout + gate status
 #   scripts/pr.sh flow   NN                 print the whole routine for PR NN
 #   scripts/pr.sh start  NN [--patch FILE] [--force]
@@ -21,13 +22,19 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 
+if [ -z "${BASH_VERSINFO:-}" ] || [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+  echo "scripts/pr.sh needs bash >= 4 (associative arrays); this is ${BASH_VERSION:-not bash}." >&2
+  echo "macOS: brew install bash  (then re-run; the #!/usr/bin/env bash shebang picks it up)" >&2
+  exit 2
+fi
+
 REPO=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 GATES_DIR="$REPO/scripts/gates"
 STATE="$REPO/.gates"
 export REPO
 
 declare -A PR_TITLE PR_BRANCH PR_BASE
-# shellcheck source=gates/lib.sh
+# shellcheck source=scripts/gates/lib.sh
 . "$GATES_DIR/lib.sh"
 for f in "$GATES_DIR"/pr-*.sh; do
   # shellcheck disable=SC1090
@@ -36,7 +43,7 @@ done
 IDS=$(printf '%s\n' "${!PR_TITLE[@]}" | sort)
 
 die() { echo "${C_BAD}✖ $*${C_0}" >&2; exit 2; }
-known() { [ -n "${PR_TITLE[$1]:-}" ] || die "unknown PR '$1' (known: $(echo $IDS))"; }
+known() { [ -n "${PR_TITLE[$1]:-}" ] || die "unknown PR '$1' (known: ${IDS//$'\n'/ })"; }
 prev_of() { local p=""; for i in $IDS; do [ "$i" = "$1" ] && break; p=$i; done; echo "$p"; }
 fingerprint() { (cd "$REPO" && { git rev-parse HEAD; git status --porcelain --untracked-files=no; } | sha1sum | cut -c1-12); }
 marker_ok() {  # marker_ok NN → 0 when .gates/NN.pass matches HEAD and a clean tree
@@ -53,6 +60,50 @@ cmd_list() {
     if [ -f "$STATE/$i.pass" ]; then if marker_ok "$i"; then s=green c=$C_OK; else s=stale c=$C_SKIP; fi; fi
     printf '%-4s %-22s %s%-8s%s %s\n' "$i" "${PR_BRANCH[$i]}" "$c" "$s" "$C_0" "${PR_TITLE[$i]}"
   done
+}
+
+cmd_doctor() {
+  local missing=0
+  row() {  # row OK|NO|-- LABEL DETAIL NEEDED-BY
+    local mark
+    case $1 in OK) mark="${C_OK}✔${C_0}" ;; NO) mark="${C_BAD}✖${C_0}"; missing=$((missing + 1)) ;; *) mark="${C_SKIP}○${C_0}" ;; esac
+    printf '  %s %-20s %-34s %s%s%s\n' "$mark" "$2" "$3" "$C_DIM" "$4" "$C_0"
+  }
+  ver() { "$@" 2>/dev/null | head -1 | grep -oE '[0-9]+(\.[0-9]+)+' | head -1; }
+  pymod() { "$PY" -c "import $1, sys; print(getattr($1, '__version__', 'ok'))" 2>/dev/null; }
+
+  echo "${C_B}Toolchain for scripts/pr.sh gates${C_0}  (python: $PY)"
+  row OK "bash" "$BASH_VERSION" "all"
+  if has git; then row OK git "$(ver git --version)" all; else row NO git "" all; fi
+  if has shellcheck; then row OK shellcheck "$(shellcheck --version | sed -n 's/^version: //p')" "00 · 15 (strict)"
+  else row NO shellcheck "not installed" "00 · 15 (strict)"; fi
+  if has zsh; then row OK zsh "$(ver zsh --version)" "15 (zsh -n)"; else row -- zsh "not installed (zsh -n skipped)" "15"; fi
+  local m v
+  for m in pytest fastapi uvicorn httpx psycopg yaml; do
+    if v=$(pymod "$m"); then row OK "python: $m" "$v" "$(case $m in pytest) echo 09-16;; fastapi|uvicorn) echo 'live steps 09-13';; httpx) echo '09-10 HTTP tests';; psycopg) echo '10 db steps';; yaml) echo 14;; esac)"
+    else row NO "python: $m" "missing - just mvp-install" "$(case $m in pytest) echo 09-16;; fastapi|uvicorn) echo 'live steps 09-13';; httpx) echo '09-10 HTTP tests';; psycopg) echo '10 db steps';; yaml) echo 14;; esac)"; fi
+  done
+  if [ -x "$REPO/node_modules/.bin/tsc" ]; then row OK tsc "node_modules $(ver "$REPO/node_modules/.bin/tsc" -v)" "09"
+  elif has tsc; then row OK tsc "PATH $(ver tsc -v)" "09"; else row NO tsc "npm install" "09"; fi
+  if [ -d "$REPO/node_modules/@angular/build" ]; then row OK "node_modules" "@angular/build present" "12-13 builds"
+  else row NO "node_modules" "npm install" "12-13 builds"; fi
+  if has curl; then row OK curl "$(ver curl --version)" "live steps"; else row NO curl "" "live steps"; fi
+  if has docker; then
+    if docker info >/dev/null 2>&1; then row OK docker "daemon running" "14"; else row NO docker "CLI only - daemon not running" "14 (compose e2e)"; fi
+  else row NO docker "not installed" "14"; fi
+  if has make; then row OK make "$(ver make --version)" "14"; else row NO make "" "14"; fi
+  if has just; then row OK just "$(ver just --version)" "14 (recipes)"; else row NO just "not installed" "14 (recipes)"; fi
+  if pg_up; then row OK "postgres :${OB_DB_PORT:-55432}" "answering" "10 db steps"; else row NO "postgres :${OB_DB_PORT:-55432}" "not answering - just db-init" "10 db steps"; fi
+  if [ -n "${OB_DB_USER:-}${PGUSER:-}" ]; then row OK "DB user" "${OB_DB_USER:-$PGUSER}" "10 db steps"; else row NO "DB user" "export OB_DB_USER=ob_dba" "10 db steps"; fi
+  local pgpass=${PGPASSFILE:-$HOME/.pgpass}
+  if [ -f "$pgpass" ]; then row OK "pgpass" "$pgpass" "10 db steps"; else row NO "pgpass" "ob_instance.py pgpass" "10 db steps"; fi
+  if has gh; then
+    if gh auth status >/dev/null 2>&1; then row OK gh "authenticated" "finish --push"; else row NO gh "not logged in - gh auth login" "finish --push"; fi
+  else row -- gh "not installed (finish prints the commands)" "finish --push"; fi
+  echo
+  if [ "$missing" -eq 0 ]; then echo "${C_OK}✔ everything a --strict gate needs is available${C_0}"
+  else echo "${C_SKIP}▲ $missing missing - those steps SKIP normally and FAIL under --strict${C_0}"; fi
+  return 0
 }
 
 cmd_flow() {
@@ -165,6 +216,7 @@ usage() { sed -n '3,21p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 2; }
 cmd=$1; shift
 case $cmd in
   list) cmd_list ;;
+  doctor) cmd_doctor ;;
   flow|start|gate|smoke|finish)
     [ $# -ge 1 ] || usage
     n=$(norm "$1"); shift; known "$n"; "cmd_$cmd" "$n" "$@" ;;

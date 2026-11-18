@@ -7,6 +7,8 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="$HERE/.env"
 [[ -f "$ENV_FILE" ]] || { echo "Create $ENV_FILE from .env.example first"; exit 1; }
+# .env is per-machine (gitignored); .env.example in this directory lists the same keys.
+# shellcheck source=.env.example
 set -a; source "$ENV_FILE"; set +a
 COMPOSE=(docker compose -f "$HERE/docker-compose.db.yml" --env-file "$ENV_FILE")
 

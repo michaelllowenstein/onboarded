@@ -41,7 +41,7 @@ while (( $# )); do
     esac
 done
 
-if [[ -t 1 ]]; then G=$'\e[32m' R=$'\e[31m' Y=$'\e[33m' D=$'\e[2m' B=$'\e[1m' N=$'\e[0m'; else G="" R="" Y="" D="" B="" N=""; fi
+if [[ -t 1 ]]; then G=$'\e[32m' R=$'\e[31m' Y=$'\e[33m' B=$'\e[1m' N=$'\e[0m'; else G="" R="" Y="" B="" N=""; fi
 ok()   { printf '  %s✔%s %s\n' "$G" "$N" "$*"; }
 bad()  { printf '  %s✖%s %s\n' "$R" "$N" "$*"; FAILS=$((FAILS+1)); }
 warn() { printf '  %s⚠%s %s\n' "$Y" "$N" "$*"; }
@@ -86,6 +86,7 @@ selftest() {
     else
         bad "project Python dependencies unavailable — run: uv sync --group dev"
     fi
+    # shellcheck disable=SC2088  # display text: a literal ~ is intended in these messages
     if [[ -L "$HOME/.onboarded/root" && "$(cd "$HOME/.onboarded/root" 2>/dev/null && pwd -P)" == "$HERE" ]]; then
         ok "~/.onboarded/root → this checkout"
     else bad "~/.onboarded/root does not point at $HERE"; fi
@@ -128,6 +129,7 @@ bash_block() {   # keep ~/.local/bin on PATH for bash users
     grep -qF "$BASH_BEGIN" "$rc" && return 0
     printf '\n%s\ncase ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac\n%s\n' \
         "$BASH_BEGIN" "$BASH_END" >> "$rc"
+    # shellcheck disable=SC2088  # display text: a literal ~ is intended
     ok "~/.bashrc: ~/.local/bin on PATH"
 }
 
@@ -194,6 +196,7 @@ step "Paths and shell wiring (default tenant: $T)"
 args=(fix --apply --default-tenant "$T")
 (( DROP_MSI )) && args+=(--no-msi-nav)
 if "$PY" "$HERE/packages/core/scripts/ob_paths.py" "${args[@]}" > "$HOME/.onboarded-install.log" 2>&1; then
+    # shellcheck disable=SC2088  # display text: a literal ~ is intended
     ok "~/.onboarded/root, paths.conf, ~/.zshrc managed block (details: ~/.onboarded-install.log)"
 else
     grep -q '✖' "$HOME/.onboarded-install.log" && warn "some paths still stale — see ~/.onboarded-install.log (obpaths check)" || bad "ob_paths failed — see ~/.onboarded-install.log"
@@ -227,4 +230,3 @@ selftest "$T"
 echo
 if (( FAILS )); then echo "${R}✖ $FAILS problem(s) above.${N} Fix them and re-run ./install.sh (it is safe to re-run)."; exit 1; fi
 echo "${G}✔ onboarded installed.${N} Open a new terminal (or: exec zsh), then:  onboarded help"
-

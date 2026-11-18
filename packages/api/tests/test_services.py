@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
 
 import pytest
 
@@ -39,7 +38,7 @@ def test_api_view_equals_generated_ts_snapshot(store, slug):
     ts = (REPO / "packages/shared/src/lib/tenants" / f"{slug}.ts").read_text(encoding="utf-8")
     body = re.search(r"TENANT_DOMAIN: TenantDomain = (\{.*\});\s*$", ts, re.S).group(1)
     assert json.loads(body) == store.view(slug), \
-        f"stale snapshot — run: npm run generate:ts"
+        "stale snapshot — run: npm run generate:ts"
 
 
 def test_unknown_tenant_is_not_found(store):
@@ -173,6 +172,10 @@ def test_exit_code_contract(sev, code):
 @pytest.mark.parametrize("path,pat,hit", [
     ("tests/a.cs", "**/tests/**", True), ("x/tests/a.cs", "**/tests/**", True),
     ("x/testsuite/a.cs", "**/tests/**", False), ("db/migrations/1.cs", "**/migrations/**", True),
+    # directory boundaries: a folder that merely ends in the name must not match
+    ("scan_fixtures/a.cs", "**/fixtures/**", False), ("unit_tests/a.cs", "**/tests/**", False),
+    ("fixtures/a.cs", "**/fixtures/**", True), ("a/b/fixtures/c/d.cs", "**/fixtures/**", True),
+    ("src/a.spec.ts", "*.spec.ts", True), ("src/a/b.ts", "src/*.ts", False), ("x/src/b.ts", "src/*.ts", True),
 ])
 def test_exclude_globs(path, pat, hit):
     assert scanner._glob_match(path, pat) is hit

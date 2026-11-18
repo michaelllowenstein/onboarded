@@ -223,3 +223,44 @@ legacy-diff CMD: _need-msi-nav
     @zsh -f -c 'source "{{MSI_NAV_DIR}}/msi_domain.zsh" 2>/dev/null; source "{{MSI_NAV_DIR}}/msi_nav.zsh" 2>/dev/null; {{CMD}}' > /tmp/ob_diff_a.txt 2>&1 || true
     @OB_TENANT=msi zsh -f -c 'source "{{PROFILE}}"; {{CMD}}' > /tmp/ob_diff_b.txt 2>&1 || true
     @diff -u /tmp/ob_diff_a.txt /tmp/ob_diff_b.txt || true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MVP: API · ADMIN CLI · PORTAL
+# ─────────────────────────────────────────────────────────────────────────────
+
+API_PYTHONPATH := ONBOARDED_DIR + "/packages/api/src:" + ONBOARDED_DIR + "/packages/dba/src:" + ONBOARDED_DIR + "/packages/admin-cli/src"
+SYS_PY := `sh -c '[ -x .venv/bin/python ] && echo .venv/bin/python || echo python3'`
+
+# One-time Python deps for api + admin-cli + dba (into the repo .venv)
+mvp-install:
+    @cd {{ONBOARDED_DIR}} && [ -d .venv ] || python3 -m venv .venv
+    @cd {{ONBOARDED_DIR}} && .venv/bin/pip install -q -e 'packages/dba[postgres]' -e 'packages/api[test]' -e packages/admin-cli -e packages/feedback
+    @cd {{ONBOARDED_DIR}} && npm install --no-audit --no-fund
+    @echo "✔ installed — next: just api   (and in another terminal) just portal"
+
+# REST API with reload on :8000. Extra env passes through, e.g. OB_API_DBA_EXEC=1 just api
+api:
+    @cd {{ONBOARDED_DIR}} && PYTHONPATH={{API_PYTHONPATH}} {{SYS_PY}} -m onboarded_api --reload
+
+# Admin CLI. Usage: just admin -t flotilla where schedule_mission
+admin *ARGS:
+    @cd {{ONBOARDED_DIR}} && PYTHONPATH={{API_PYTHONPATH}} {{SYS_PY}} -m onboarded_admin {{ARGS}}
+
+# Portal dev server for the current tenant (proxies /api to :8000)
+portal:
+    @cd {{ONBOARDED_DIR}} && python3 packages/core/scripts/generate_adapters.py --all --ts-only >/dev/null
+    @cd {{ONBOARDED_DIR}} && npx nx serve @onboarded/portal --configuration={{OB_TENANT}}
+
+# All MVP test suites (api + admin-cli + dba); portal typecheck when node_modules exists
+mvp-test:
+    @cd {{ONBOARDED_DIR}}/packages/api && {{SYS_PY}} -m pytest -q
+    @cd {{ONBOARDED_DIR}}/packages/admin-cli && {{SYS_PY}} -m pytest -q
+    @cd {{ONBOARDED_DIR}}/packages/dba && {{SYS_PY}} -m pytest -q
+    @cd {{ONBOARDED_DIR}} && [ ! -d node_modules ] || npx nx typecheck @onboarded/portal
+
+# Containerised stack: portal http://localhost:4200, API http://localhost:8000
+mvp-up:
+    @cd {{ONBOARDED_DIR}} && docker compose up --build -d && docker compose ps
+
+mvp-down:
+    @cd {{ONBOARDED_DIR}} && docker compose down

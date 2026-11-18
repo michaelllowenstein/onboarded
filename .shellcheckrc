@@ -1,0 +1,7 @@
+# Repo-wide ShellCheck settings (read automatically by shellcheck, editors and CI).
+# Severity is a command-line choice: scripts/lint-shell.sh defaults to -S warning.
+
+# Follow `source`/`.` into other files (pr.sh → scripts/gates/lib.sh).
+external-sources=true
+# Resolve relative `# shellcheck source=` paths against the script's own directory first.
+source-path=SCRIPTDIR

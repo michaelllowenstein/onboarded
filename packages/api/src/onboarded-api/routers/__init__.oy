@@ -1,0 +1,10 @@
+"""
+FastAPI routers — thin adapters from HTTP to ``onboarded_api.services``.
+Registered in ``onboarded_api.main.create_app``.
+
+Modules:
+    system   GET /health, POST /api/v1/admin/reload
+    domain   GET /api/v1/tenants[/{slug}[/domain|operations|where|statuses|glossary|…]]
+    scan     POST /api/v1/tenants/{slug}/scan
+    dba      /api/v1/tenants/{slug}/tickets…, /api/v1/instances…
+"""

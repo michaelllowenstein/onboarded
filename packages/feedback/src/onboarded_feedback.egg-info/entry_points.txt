@@ -1,0 +1,2 @@
+[console_scripts]
+ob-feedback = onboarded_feedback.cli.main:main

@@ -5,23 +5,42 @@ requires-python = ">=3.12,<=3.14"
 dependencies = [
     "jsonschema>=4.23",
     "onboarded-dba[postgres]",
+    "onboarded-api",
+    "onboarded-admin",
+    "onboarded-feedback",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8",
+    "httpx>=0.27",
     "ruff>=0.9",
 ]
 
 [tool.uv.sources]
 onboarded-dba = { path = "packages/dba", editable = true }
+onboarded-api = { path = "packages/api", editable = true }
+onboarded-admin = { path = "packages/admin-cli", editable = true }
+onboarded-feedback = { path = "packages/feedback", editable = true }
 
 [tool.pytest.ini_options]
-testpaths = ["packages/dba/tests"]
+testpaths = ["packages/dba/tests"]   # api/admin-cli run per package (conftest names collide): just mvp-test
 
 [tool.ruff]
 line-length = 100
 target-version = "py313"
+
+[tool.ruff.lint]
+# Pinned: ruff's default rule set grows between releases, and `ruff>=0.9` floats.
+# pyflakes (F) + pycodestyle errors (E4/E7/E9) — real bugs, not style churn.
+select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# Established house style in these packages: compact one-liners (`a; b`).
+"packages/dba/**" = ["E702"]
+"packages/core/scripts/**" = ["E702", "E731", "E741", "F541"]
+# Spec suite for modules not written yet: the imports *are* the specification.
+"packages/feedback/tests/**" = ["F401", "F811"]
 
 [tool.uv]
 package = false

@@ -7,7 +7,6 @@ The qualified_label encodes the full path: tenant:ticket_id/script_name.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
